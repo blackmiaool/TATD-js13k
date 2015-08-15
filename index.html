@@ -211,7 +211,7 @@
         </div>
         <div id="right-panel">
             <div id="mn">
-                <div class="emy">
+                <div class="emy emy_test" style="visibility:hidden;">
 
                 </div>
             </div>
@@ -236,6 +236,18 @@
         //        var $=HTMLSelectElement;
         var level = 0;
         var doc = document;
+        var csl = console;
+        var emys = [];
+        var emy_tests=doc.getElementsByClassName("emy_test");
+//        csl.log(emy_tests);
+        var emys_height=[];
+        var emys_width=[];
+        for(var i =0;i<emy_tests.length;i++){
+            emys_height.push(emy_tests[i].offsetHeight)
+            emys_width.push(emy_tests[i].offsetWidth)
+        }
+//        csl.log(emys_height);
+        
         var maps = [
             [
                 "111111111111111",
@@ -258,9 +270,17 @@
         ]
         var row_sum = 10;
         var column_sum = 15;
-        console.log(maps)
+        csl.log(maps)
         var mn = doc.querySelector("#mn");
         var grids = [];
+        function obj_add(target,src){
+            for (var i in src) {
+                target[i] = src[i];
+            }
+        }
+//        Object.prototype.add = function (to_add) {
+//            
+//        }
 
         function get_bit(num, pos) {
             return Math.floor(num / Math.pow(2, pos)) % 2;
@@ -268,7 +288,7 @@
         var toi = parseInt;
 
         function put() {
-            console.log.apply(console, arguments);
+            csl.log.apply(csl, arguments);
         }
 
         //        console.log(get_bit(7, 1));
@@ -316,72 +336,73 @@
                 return get_bit(map[y], x);
             }
 
-            function dirs_create() {
+            function dirs_create() { //this function can be replaced by direct array;
                 var dirs = []; //0:up,1:right,2:down,3:left
-                var cnt=0;
-                function handle_grid(start, end,pre) {
-                    
-                    function get_next(start,pre) {
-                        var state=false;
+                var cnt = 0;
+
+                function handle_grid(start, end, pre) {
+
+                    function get_next(start, pre) {
+                        var state = false;
                         var dir;
-                        
-                        function search(x,y){
-                            if(pre){
-                                if(x==pre[0]&&y==pre[1])
-                                    return;      
+
+                        function search(x, y) {
+                            if (pre) {
+                                if (x == pre[0] && y == pre[1])
+                                    return;
                             }
-                            if(!get_pos_value(map,x,y))
-                            {
-                                state=true;
+                            if (!get_pos_value(map, x, y)) {
+                                state = true;
                             }
-                            return [false,x,y]
+                            return [false, x, y]
                         }
                         if (start[0] != 0) {
-                            var result=search(start[0] - 1, start[1]);
+                            var result = search(start[0] - 1, start[1]);
                             if (state) {
-                                result[0]=3;//left
-                                return result; 
+                                result[0] = 3; //left
+                                return result;
                             }
                         }
                         if (start[1] != 0) {
-                            var result=search(start[0], start[1]-1);
+                            var result = search(start[0], start[1] - 1);
                             if (state) {
-                                result[0]=0;//up
-                                return result; 
+                                result[0] = 0; //up
+                                return result;
                             }
                         }
                         if (start[0] != column_sum) {
-                            var result=search(start[0] + 1, start[1]);
+                            var result = search(start[0] + 1, start[1]);
                             if (state) {
-                                result[0]=1;//right
-                                return result; 
+                                result[0] = 1; //right
+                                return result;
                             }
                         }
                         if (start[1] != row_sum) {
-                            var result=search(start[0] , start[1]+1);
+                            var result = search(start[0], start[1] + 1);
                             if (state) {
-                                result[0]=2;//down
-                                return result; 
+                                result[0] = 2; //down
+                                return result;
                             }
                         }
                     }
-                    var next = get_next(start,pre);
+                    var next = get_next(start, pre);
                     dirs.push(next[0]);
-                    var pre=start;
+                    var pre = start;
                     start = [next[1], next[2]];
                     console.log(start)
                     cnt++;
-                    if(cnt==100)
+                    if (cnt == 100)
                         return;
                     if (start[0] == end[0] && start[1] == end[1]) {
                         return;
                     } else {
-                        handle_grid(start, end,pre);
+                        handle_grid(start, end, pre);
                     }
 
                 }
                 handle_grid(map_start, map_end)
                 put(dirs);
+                return dirs;
             }
             var dirs = dirs_create();
 
@@ -389,9 +410,7 @@
 
             }
 
-            function emy_handle(emy, kind) {
 
-            }
 
             function get_grid_pos(pos) {
                 var h = start_grid.offsetHeight;
@@ -401,38 +420,61 @@
 
             }
 
-            function emy_create() {
-                var Emy = function () {
-                    this.init();
-                }
-                Emy.prototype.init = function () {
-                    this.dom = doc.createElement("div");
-                    this.dom.className = "emy";
-                }
-                Emy.prototype.setPos = function (pos) {
-                    var array = get_grid_pos(pos);
 
-                    this.dom.style.left = array[0];
-                    this.dom.style.top = array[1];
+            var emy_create = function (kind) {
+                var emy = doc.createElement("div");
+                emy.className = "emy";
+                
+                var style = emy.style;
+                emy.set_pos = function (pos) {
+                    var array = get_grid_pos(pos);
+                    obj_add(style,{
+                        "left": array[0],
+                        "top": array[1]
+                    })
                 }
-                return Emy;
-            }
-            var Emy = emy_create();
+                emy.register = function () {
+                    emys.push(emy);
+                    
+                }
+                var pos;
+                var dir;
+                var speed=10;//pixel per sec
+                function goto(x,y){
+                    x-=emys_width[kind]/2;
+                    y-=emys_height[kind]/2;
+//                    csl.log(x,y);
+                    emy.style.transform="translate("+x+"px,"+y+"px)";
+//                    emy.style.left=x+"px";
+//                    emy.style.top=y+"px";
+
+                }
+                var x=0;
+                var y=0;
+                emy.step=function(){//called 60 times per sec 
+                    
+//                csl.log(height,width) 
+                    if(!dir)//uninited
+                    { 
+                        dir=dirs[0];
+                        pos=map_start;
+                        emy.set_pos(maps_start[level]);
+                    }
+                    goto(x,y++);     
+                    
+                }
+                return emy;
+            } 
 
             function put_emy(kind) {
-                var emy = new Emy(kind);
+                var emy = emy_create(kind);
 
-                emy.setPos(maps_start[level]);
-                mn.appendChild(emy.dom);
+                
+                emy.register()
+                mn.appendChild(emy);
 
             }
             put_emy(0);
-
-
-
-
-
-
 
         }
         enter_level(0);
@@ -443,9 +485,19 @@
 
 
 
-
+        csl.log(emys)
+        var cnt=1;
         function step() {
-            //            console.log("s")
+//            csl.log(cnt++);
+            for(var i in emys){
+               
+//                csl.log(emys[i].step)
+                emys[i].step();
+            }
+
+
+
+
             requestAnimationFrame(step);
         }
 

@@ -20,10 +20,38 @@ window.onload = function () {
             }
         }
     }
+    Array.prototype.r_forEach = function (f) {
+        for (var i = this.length - 1; i >= 0; i--) {
+            f(this[i]);
+        }
+    }
+
+    function hasClass(obj, cls) {
+        return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+    }
+
+    function addClass(obj, cls) {
+        if (!hasClass(obj, cls)) obj.className += " " + cls;
+    }
+
+    function removeClass(obj, cls) {
+        if (hasClass(obj, cls)) {
+            var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+            obj.className = obj.className.replace(reg, ' ');
+        }
+    }
+
+    function toggleClass(obj, cls) {
+        if (hasClass(obj, cls)) {
+            removeClass(obj, cls);
+        } else {
+            addClass(obj, cls);
+        }
+    }
     var $ = function (tag) {
         return doc.querySelector(tag);
     }
-
+    var m = Math;
     var maps = [
             [
                 "111111111111111",
@@ -38,6 +66,9 @@ window.onload = function () {
                 "111111111111111",
             ],
         ]
+    var tower_rage = [
+        [2.5, 3, 3.5],
+    ]
     var maps_start = [
             [0, 2],
         ]
@@ -46,9 +77,10 @@ window.onload = function () {
         ]
     var row_sum = 10;
     var column_sum = 15;
-    csl.log(maps)
+    //    csl.log(maps)
     var mn = doc.querySelector("#mn");
     var grids = [];
+    var towers = [];
 
     function point_add(src, d) {
         src[0] += d[0];
@@ -58,7 +90,12 @@ window.onload = function () {
     function clone(myObj) {
         if (typeof (myObj) != 'object') return myObj;
         if (myObj == null) return myObj;
-        var myNewObj = {};
+        if (myObj.concat) {
+            var myNewObj = [];
+        } else {
+            var myNewObj = {};
+        }
+
         for (var i in myObj)
             myNewObj[i] = clone(myObj[i]);
         return myNewObj;
@@ -78,9 +115,7 @@ window.onload = function () {
     }
     var toi = parseInt;
 
-    function put() {
-        csl.log.apply(csl, arguments);
-    }
+
 
     //        console.log(get_bit(7, 1));
 
@@ -153,6 +188,10 @@ window.onload = function () {
 
         }
 
+        function cal_dis(p1, p2) {
+            return m.sqrt(m.pow(m.abs(p1[0] - p2[0]), 2) + m.pow(m.abs(p1[1] - p2[1]), 2));
+        }
+
         function dirs_create() { //this function can be replaced by direct array;
             var dirs = []; //0:up,1:right,2:down,3:left
             var cnt = 0;
@@ -209,7 +248,7 @@ window.onload = function () {
                 dirs.push(next[0]);
                 var pre = start;
                 start = [next[1], next[2]];
-                console.log(start)
+                //                console.log(start)
                 cnt++;
                 if (cnt == 100)
                     return;
@@ -221,18 +260,13 @@ window.onload = function () {
 
             }
             handle_grid(map_start, map_end)
-            put(dirs);
+                //            put(dirs);
             return dirs;
         }
         var dirs = dirs_create();
-        var test = [1, 2];
-        var t = []
-        t.push(test);
-        test[0] = 5;
-        console.log(t[0][0])
         var paths = [];
         paths.push(clone(map_start));
-        console.log(dirs)
+        //        console.log(dirs)
         dirs.forEach(
             function (d) {
                 paths.push(clone(paths.last()))
@@ -242,7 +276,7 @@ window.onload = function () {
             }
         )
 
-        console.log(paths);
+        //        console.log(paths);
 
         function start() {
 
@@ -258,66 +292,64 @@ window.onload = function () {
 
         }
 
-        function hasClass(obj, cls) {
-            return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
-        }
 
-        function addClass(obj, cls) {
-            if (!hasClass(obj, cls)) obj.className += " " + cls;
-        }
-
-        function removeClass(obj, cls) {
-            if (hasClass(obj, cls)) {
-                var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
-                obj.className = obj.className.replace(reg, ' ');
-            }
-        }
-
-        function toggleClass(obj, cls) {
-            if (hasClass(obj, cls)) {
-                removeClass(obj, cls);
-            } else {
-                addClass(obj, cls);
-            }
-        }
-
-        function toggleClassTest() {
-            var obj = document.getElementById('test');
-            toggleClass(obj, "testClass");
-        }
-        var tower_create = function (kind) {
+        var tower_create = function (kind, pos) {
             //                var tower = doc.createElement("div");
             var tower = $("#tower_to_copy").cloneNode(true);
-            //                tower.className = "tower_svg";
+            tower.id = undefined;
             var style = tower.style;
-            tower.register = function () {};
+            tower.kind = kind;
             tower.set_pos = function (pos) {
+                tower.pos = pos;
                 var array = get_grid_pos(pos);
                 obj_add(style, {
                     left: array[0],
                     top: array[1]
                 })
             }
+            tower.level = 0;
+            tower.set_pos(pos);
+            removeClass(tower, "hide");
+
+            tower.register = function () {
+                towers.push(tower);
+            }
+            var base_trans="translate(-50%, -50%)";
+            tower.rotate=function(angle){
+                csl.log("rrot")
+                style.transform=base_trans+" rotate("+angle+"deg)";               
+            }
             
             tower.querySelector(".fill").onmouseout = function () {
-                var children=tower.childNodes;
-                for(var i in children){
-                    if(children[i].className){
-                       removeClass(children[i],"active") 
+                var children = tower.childNodes;
+                for (var i in children) {
+                    if (children[i].className) {
+                        removeClass(children[i], "active")
                     }
-                    
                 }
-            
             }
             tower.querySelector(".fill").onmouseover = function () {
-                var children=tower.childNodes;
-                for(var i in children){
-                    if(children[i].className){
-                       addClass(children[i],"active") 
+                var children = tower.childNodes;
+                for (var i in children) {
+                    if (children[i].className) {
+                        addClass(children[i], "active")
                     }
-                    
                 }
-            
+            }
+            tower.step = function () {
+                
+                emys.r_forEach(
+                    function (e) {
+                        
+                        var dis=cal_dis(e.pos, tower.pos);
+                        
+                        if (dis< tower_rage[tower.kind][tower.level]) {
+                            var angle=m.atan2(tower.pos[1]-e.pos[1],tower.pos[0]-e.pos[0]);
+                            tower.rotate(angle*180/m.PI+90); 
+                        }
+//                        console.log(cal_dis(e.pos, tower.pos));
+                    }
+                )
             }
             return tower;
         }
@@ -326,11 +358,11 @@ window.onload = function () {
             emy.className = "emy";
             var style = emy.style;
             emy.set_pos = function (pos) {
-                var array = get_grid_pos(pos);
-                obj_add(style, {
-                    left: array[0],
-                    top: array[1]
-                })
+                emy.pos = pos;
+                var p = get_grid_pos(pos);
+                p[0] -= emys_width[kind] / 2;
+                p[1] -= emys_height[kind] / 2;
+                style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
             }
             emy.register = function () {
                 emys.push(emy);
@@ -343,16 +375,8 @@ window.onload = function () {
             var pos;
             var dir;
             var is_continue = true;
-            var speed = 1.15; //gird per sec
-            function goto(x, y) {
-                x -= emys_width[kind] / 2;
-                y -= emys_height[kind] / 2;
-                //                    csl.log(x,y);
-                emy.style.transform = "translate(" + x + "px," + y + "px)";
-                //                    emy.style.left=x+"px";
-                //                    emy.style.top=y+"px";
+            var speed = 0.05; //gird per sec
 
-            }
             var x = 0;
             var y = 0;
             var path_len = 0;
@@ -361,7 +385,7 @@ window.onload = function () {
                 dirs
             }
 
-
+            emy.pos = clone(map_start);
             emy.step = function () { //called 60 times per sec 
 
                 if (!dir) //uninited
@@ -369,7 +393,7 @@ window.onload = function () {
                     dir = dirs[0];
                     pos = map_start;
                     emy.set_pos(maps_start[level]);
-
+                    return;
                 }
                 if (!is_continue) {
                     return
@@ -387,6 +411,7 @@ window.onload = function () {
                 spread_dir(function (dx, dy) {
                     point_add(pos_now, [dx, dy])
                 }, path_len - path_len_i, dirs[path_len_i])
+                emy.pos = pos_now;
                 emy.set_pos(pos_now);
 
             }
@@ -394,11 +419,11 @@ window.onload = function () {
         }
 
         function put_tower(kind, x, y) {
-            var tower = tower_create(kind);
+            var tower = tower_create(kind, [x, y]);
 
 
             tower.register()
-            tower.set_pos([x, y]);
+
             mn.appendChild(tower);
 
         }
@@ -412,12 +437,25 @@ window.onload = function () {
 
         }
         put_emy(0);
-        put_tower(0, 5, 1);
+        setInterval(
+            function(){
+                put_emy(0);
+            },1000
+        )
+        put_tower(0, 5, 3);
     }
     enter_level(0);
+    var sys_tick_cnt = 0;
 
     function step() {
-
+        sys_tick_cnt++;
+//        if (!(sys_tick_cnt % 6)) {
+            towers.forEach(
+                function (e) {
+                    e.step();
+                }
+            )
+//        } 
         emys.forEach(
             function (e) {
                 e.step();

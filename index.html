@@ -2,6 +2,7 @@
 
 <head style="height:100%;">
     <title>TATD</title>
+    <script src="script.js"></script>
     <style>
         #stage {
             width: 1000px;
@@ -197,6 +198,18 @@
             background-color: antiquewhite;
             transform: translate(-50%, -50%);
         }
+        /*
+        .tower {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0);
+            border: orange solid;
+            border-width: 0px 4px 6px 4px;
+            border-radius: 100px;
+            transform: translate(-50%, -50%);
+        }
+*/
     </style>
 </head>
 
@@ -228,283 +241,112 @@
             </div>
         </div>
     </div>
+    <style>
+        .tower {
+            position: absolute;
+            height: 50px;
+            width: 50px;
+            overflow: visible;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-sizing: border-box;
+        }
+        
+        .tower>svg {
+            height: 50px;
+            width: 50px;
+            z-index: 1000;
+            position: relative;
+        }
+        
+        .tower[kind="1"] .shape {
+            height: 50px;
+            width: 50px;
+            border: 7px rgba(51, 122, 182, 0.6) solid;
+            border-bottom-color: rgba(0, 0, 0, 0);
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+        
+        .tower[kind="1"] .shape .core {
+            /*
+            width: 10px;
+            height: 10px;
+*/
+            
+            background-color: #66ccff;
+            top: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 7px solid rgba(0, 0, 0, 0);
+            border-radius: 50%;
+            height: 0px;
+            width: 0px;
+        }
+        
+        .tower[kind="1"] .shape .core .horn {
+            width: 0px;
+            height: 0px;
+            border: solid rgba(0, 0, 0, 0);
+            border-width: 5px 20px;
+            border-left-color: steelblue;
+            transform: translate(0, -50%) rotate(270deg);
+            /*            rotate(90deg);*/
+            
+            transform-origin: 0% 38%;
+            position: absolute;
+            top: 0px;
+            box-sizing: border-box;
+        }
+        
+        .tower[kind="1"] .shape .core .horn>div {}
+        
+        .tower>.fill {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top:0;
+        }
+        
+        .tower>.range {
+            transform: translate(-50%, -50%);
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            
+            
+            border: 2px steelblue solid;
+            border-radius: 50%;
+            box-sizing: border-box;
+            transition: 0.3s ease-out;
+            width: 0px;
+            height: 0px;
+            background-color: rgba(51, 122, 182, 0.1);
+            opacity: 0;
+        }
+        .tower>.range.active{
+            width: 150px;
+            height: 150px;
+            opacity: 1;
+        }
+    </style>
+    <div class="tower" id="tower_to_copy" style="" kind="1">
+        <div class="range">
+        </div>
+        
+       
+        <div class="shape">
 
+            <div class="core"></div>
+        </div>
+        <div class="fill">            
+        </div>
+
+    </div>
 
 </body>
 <script>
-    window.onload = function () {
-        //        var $=HTMLSelectElement;
-        var level = 0;
-        var doc = document;
-        var csl = console;
-        var emys = [];
-        var emy_tests=doc.getElementsByClassName("emy_test");
-//        csl.log(emy_tests);
-        var emys_height=[];
-        var emys_width=[];
-        for(var i =0;i<emy_tests.length;i++){
-            emys_height.push(emy_tests[i].offsetHeight)
-            emys_width.push(emy_tests[i].offsetWidth)
-        }
-//        csl.log(emys_height);
-        
-        var maps = [
-            [
-                "111111111111111",
-                "111111111111111",
-                "000000000000001",
-                "111111111111101",
-                "100000000000001",
-                "101111111111111",
-                "101111111111111",
-                "100000000000000",
-                "111111111111111",
-                "111111111111111",
-            ],
-        ]
-        var maps_start = [
-            [0, 2],
-        ]
-        var maps_end = [
-            [14, 7],
-        ]
-        var row_sum = 10;
-        var column_sum = 15;
-        csl.log(maps)
-        var mn = doc.querySelector("#mn");
-        var grids = [];
-        function obj_add(target,src){
-            for (var i in src) {
-                target[i] = src[i];
-            }
-        }
-//        Object.prototype.add = function (to_add) {
-//            
-//        }
-
-        function get_bit(num, pos) {
-            return Math.floor(num / Math.pow(2, pos)) % 2;
-        }
-        var toi = parseInt;
-
-        function put() {
-            csl.log.apply(csl, arguments);
-        }
-
-        //        console.log(get_bit(7, 1));
-
-        function get_pos_value(map, x, y) {
-            //            console.log(map, x, y)
-            return parseInt(map[y][x]);
-        }
-
-        for (var i = 0; i < row_sum * column_sum; i++) {
-            var x = toi(i / column_sum);
-            var y = i % column_sum;
-            if (!grids[y]) {
-                grids[y] = [];
-            }
-            var node = doc.createElement("div");
-            grids[y][x] = node;
-
-            node.className = "grid";
-            mn.appendChild(node);
-        }
-        //        put(grids);
-        var start_grid = doc.querySelector(".grid");
-        //        put( );
-        function enter_level(level) {
-            load_map(level);
-            var map = maps[level];
-            map_start = maps_start[level];
-            map_end = maps_end[level];
-
-            function load_map(level) {
-                for (var row = 0; row < row_sum; row++) {
-                    var row_value = parseInt(maps[level][row], 2);
-                    for (var column = 0; column < column_sum; column++) {
-                        //                    grids[column][row].lang = get_bit(row_value, column_sum - column - 1) ? "wall" : "road";
-                        grids[column][row].lang = get_pos_value(maps[level], column, row) ? "wall" : "road";
-                    }
-                }
-                grids[maps_start[level][0]][maps_start[level][1]].lang = "start";
-                grids[maps_end[level][0]][maps_end[level][1]].lang = "end";
-
-            }
-
-            function get_grid(x, y) {
-                return get_bit(map[y], x);
-            }
-
-            function dirs_create() { //this function can be replaced by direct array;
-                var dirs = []; //0:up,1:right,2:down,3:left
-                var cnt = 0;
-
-                function handle_grid(start, end, pre) {
-
-                    function get_next(start, pre) {
-                        var state = false;
-                        var dir;
-
-                        function search(x, y) {
-                            if (pre) {
-                                if (x == pre[0] && y == pre[1])
-                                    return;
-                            }
-                            if (!get_pos_value(map, x, y)) {
-                                state = true;
-                            }
-                            return [false, x, y]
-                        }
-                        if (start[0] != 0) {
-                            var result = search(start[0] - 1, start[1]);
-                            if (state) {
-                                result[0] = 3; //left
-                                return result;
-                            }
-                        }
-                        if (start[1] != 0) {
-                            var result = search(start[0], start[1] - 1);
-                            if (state) {
-                                result[0] = 0; //up
-                                return result;
-                            }
-                        }
-                        if (start[0] != column_sum) {
-                            var result = search(start[0] + 1, start[1]);
-                            if (state) {
-                                result[0] = 1; //right
-                                return result;
-                            }
-                        }
-                        if (start[1] != row_sum) {
-                            var result = search(start[0], start[1] + 1);
-                            if (state) {
-                                result[0] = 2; //down
-                                return result;
-                            }
-                        }
-                    }
-                    var next = get_next(start, pre);
-                    dirs.push(next[0]);
-                    var pre = start;
-                    start = [next[1], next[2]];
-                    console.log(start)
-                    cnt++;
-                    if (cnt == 100)
-                        return;
-                    if (start[0] == end[0] && start[1] == end[1]) {
-                        return;
-                    } else {
-                        handle_grid(start, end, pre);
-                    }
-
-                }
-                handle_grid(map_start, map_end)
-                put(dirs);
-                return dirs;
-            }
-            var dirs = dirs_create();
-
-            function start() {
-
-            }
-
-
-
-            function get_grid_pos(pos) {
-                var h = start_grid.offsetHeight;
-                var w = start_grid.offsetWidth;
-                return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
-
-
-            }
-
-
-            var emy_create = function (kind) {
-                var emy = doc.createElement("div");
-                emy.className = "emy";
-                
-                var style = emy.style;
-                emy.set_pos = function (pos) {
-                    var array = get_grid_pos(pos);
-                    obj_add(style,{
-                        "left": array[0],
-                        "top": array[1]
-                    })
-                }
-                emy.register = function () {
-                    emys.push(emy);
-                    
-                }
-                var pos;
-                var dir;
-                var speed=10;//pixel per sec
-                function goto(x,y){
-                    x-=emys_width[kind]/2;
-                    y-=emys_height[kind]/2;
-//                    csl.log(x,y);
-                    emy.style.transform="translate("+x+"px,"+y+"px)";
-//                    emy.style.left=x+"px";
-//                    emy.style.top=y+"px";
-
-                }
-                var x=0;
-                var y=0;
-                emy.step=function(){//called 60 times per sec 
-                    
-//                csl.log(height,width) 
-                    if(!dir)//uninited
-                    { 
-                        dir=dirs[0];
-                        pos=map_start;
-                        emy.set_pos(maps_start[level]);
-                    }
-                    goto(x,y++);     
-                    
-                }
-                return emy;
-            } 
-
-            function put_emy(kind) {
-                var emy = emy_create(kind);
-
-                
-                emy.register()
-                mn.appendChild(emy);
-
-            }
-            put_emy(0);
-
-        }
-        enter_level(0);
-
-
-
-
-
-
-
-        csl.log(emys)
-        var cnt=1;
-        function step() {
-//            csl.log(cnt++);
-            for(var i in emys){
-               
-//                csl.log(emys[i].step)
-                emys[i].step();
-            }
-
-
-
-
-            requestAnimationFrame(step);
-        }
-
-        requestAnimationFrame(step);
-
-
-    }
 </script>
 
 </html>

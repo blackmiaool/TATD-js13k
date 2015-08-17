@@ -233,7 +233,7 @@
                     <button class="top-btn">&times;1</button><button class="top-btn">&times;2</button><button class="top-btn">&times;4</button>
                 </span>
                 <div class="start">
-                    <button class="top-btn">Start</button>
+                    <button class="top-btn" id="start">Start</button>
                 </div>
                 <div class="src">
                     TATD for <a href="http://2015.js13kgames.com/" target="_Blank">js13kgames</a> by <a href="https://github.com/blackmiaool" target="_Blank">blackmiaool</a>
@@ -332,7 +332,8 @@
             opacity: 1;
         } 
         .hide{
-            display: none;
+/*            display: none;*/
+            visibility: hidden;
         }
         .bullet[kind="1"]{
             background-color: #66ccff;
@@ -342,6 +343,8 @@
             border-radius: 50%;
             height: 0px;
             width: 0px;
+            left:0px;
+            top:0px;
         }
     </style>
     <div class="tower hide" id="tower_to_copy" style="" kind="1">

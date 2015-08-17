@@ -1,15 +1,32 @@
 window.onload = function () {
+    g = {};
     var level = 0;
     var doc = document;
     var csl = console;
     var emys = [];
+    var buls = [];
     var emy_tests = doc.getElementsByClassName("emy_test");
+    var bul_test = doc.getElementsByClassName("bullet");
+
+    var fps=60;
     var emys_height = [];
     var emys_width = [];
     for (var i = 0; i < emy_tests.length; i++) {
         emys_height.push(emy_tests[i].offsetHeight)
         emys_width.push(emy_tests[i].offsetWidth)
     }
+
+    var buls_height = [];
+    var buls_width = [];
+    for (var i = 0; i < bul_test.length; i++) {
+        buls_height.push(bul_test[i].offsetHeight)
+        buls_width.push(bul_test[i].offsetWidth)
+    }
+    csl.log(buls_height, buls_width)
+
+
+
+
     Array.prototype.last = function () {
         return this[this.length - 1];
     }
@@ -21,8 +38,11 @@ window.onload = function () {
         }
     }
     Array.prototype.r_forEach = function (f) {
-        for (var i = this.length - 1; i >= 0; i--) {
-            f(this[i]);
+        //        for (var i = this.length - 1; i >= 0; i--) {
+        //            if (f(this[i])) return;
+        //        }
+        for (var i = 0; i < this.length; i++) {
+            if (f(this[i])) return;
         }
     }
     Array.prototype.average = function () {
@@ -299,22 +319,59 @@ window.onload = function () {
             var h = start_grid.offsetHeight;
             var w = start_grid.offsetWidth;
             return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
-
-
         }
+        Bul = function (kind, pos, target) {
+            var d = $("#bullet_to_copy").cloneNode(true);
+            this.d = d;
+            this.d.id = undefined;
+            removeClass(d, "hide")
+                //            var style = d.style;
+            this.style = d.style;
+            this.kind = kind;
+            this.set_pos(clone(pos));
+            this.target = target;
+            this.speed=10;
+        }
+        Bul.prototype.set_pos = function (pos) {
 
-        var bullet_create = function (kind, pos) {
-            var bullet = $("#bullet_to_copy").cloneNode(true);
-            bullet.id = undefined;
-            var style = bullet.style;
-            bullet.kind = kind;
-            bullet.set_pos = function (pos) {
-                bullet.pos = pos;
-                var p = get_grid_pos(pos);
-                p[0] -= emys_width[kind] / 2;
-                p[1] -= emys_height[kind] / 2;
-                style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+            this.pos = pos;
+            var p = get_grid_pos(pos);
+            p[0] -= buls_width[this.kind - 1] / 2;
+            p[1] -= buls_height[this.kind - 1] / 2;
+            this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+//            csl.log(pos, "translate(" + p[0] + "px," + p[1] + "px)");
+        }
+        Bul.prototype.register = function () {
+            buls.push(this)
+        }
+        Bul.prototype.unregister=function(){
+            buls.remove(this);
+            mn.removeChild(this.d)
+        }
+        Bul.prototype.cal_pos=function(src,target,speed){
+            var dx=target[0]-src[0];
+            var dy=target[1]-src[1];
+//            var sum=m.abs(dx)+m.abs(dy);
+            var dis=cal_dis(src,target);
+            if(dis<=speed)
+                return false;
+            var sum=dis;
+            src[0]+=(target[0]-src[0])/sum*speed;
+            src[1]+=(target[1]-src[1])/sum*speed;            
+            return src;
+        }
+        Bul.prototype.step = function () {
+            var pos=this.cal_pos(this.pos,this.target.pos,this.speed/fps);
+            if(!pos)
+            {
+                this.unregister();
             }
+            else
+                this.set_pos(pos);
+        }
+        var bullet_create = function (kind, pos,target) {
+            return new Bul(kind, pos,target);
+
         }
         var tower_create = function (kind, pos) {
             //                var tower = doc.createElement("div");
@@ -363,9 +420,9 @@ window.onload = function () {
                 angle_filter1.pop();
                 angle_filter2.unshift(x)
                 angle_filter2.pop();
-                console.log(angle_filter1.average(), angle_filter2.average())
-                    //                var angle = m.atan2(angle_filter1.average(), angle_filter2.average())
-                    //                console.log(angle);
+                //                console.log(angle_filter1.average(), angle_filter2.average())
+                //                var angle = m.atan2(angle_filter1.average(), angle_filter2.average())
+                //                console.log(angle);
                 var angle = m.atan2(y, x);
                 style.transform = base_trans + " rotate(" + (angle * 180 / m.PI + 90) + "deg)";
             }
@@ -386,87 +443,92 @@ window.onload = function () {
                     }
                 }
             }
+            tower.prepare = 0;
+            var prepare_max = 30;
             tower.step = function () {
+                if (!tower.ready) {
+                    tower.prepare++;
+                    if (tower.prepare > prepare_max) {
+                        tower.ready = true;
+                        csl.log("ready")
+                    }
+                }
 
                 emys.r_forEach(
                     function (e) {
-
+//                        csl.log(e);
                         var dis = cal_dis(e.pos, tower.pos);
-
                         if (dis < tower_rage[tower.kind][tower.level]) {
-                            //                            var angle=m.atan2(tower.pos[1]-e.pos[1],tower.pos[0]-e.pos[0]);
-                            //                            tower.rotate(angle*180/m.PI+90); 
                             tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
+//                            csl.log(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
+                            if (tower.ready) {
+                                var bul = bullet_create(1, tower.pos, e);
+                                bul.register()
+                                mn.appendChild(bul.d);
+                                tower.ready = false;
+                                tower.prepare = 0;
+
+                            }
+                            return true;
                         }
-                        //                        console.log(cal_dis(e.pos, tower.pos));
                     }
                 )
             }
             return tower;
         }
-        var emy_create = function (kind) {
-            var emy = doc.createElement("div");
-            emy.className = "emy";
-            var style = emy.style;
-            emy.set_pos = function (pos) {
-                emy.pos = pos;
-                var p = get_grid_pos(pos);
-                p[0] -= emys_width[kind] / 2;
-                p[1] -= emys_height[kind] / 2;
-                style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+
+        function Emy(kind) {
+            var d = doc.createElement("div");
+            this.d = d;
+            d.className = "emy";
+            this.style = d.style;
+            this.is_continue = true;
+            this.speed = 0.13;
+            this.path_len = 0;
+            this.pos = clone(map_start);
+            this.initted = false;
+            this.kind = kind;
+        }
+        Emy.prototype.set_pos = function (pos) {
+            this.pos = pos;
+            var p = get_grid_pos(pos);
+            p[0] -= emys_width[this.kind] / 2;
+            p[1] -= emys_height[this.kind] / 2;
+            this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+        }
+        Emy.prototype.register = function () {
+            emys.push(this);
+        }
+        Emy.prototype.unregister = function () {
+            emys.remove(this);
+            this.d.parentNode.removeChild(this.d)
+
+        }
+        Emy.prototype.step = function () {
+            if (!this.initted) //uninited
+            {
+                this.initted = true;
+                this.set_pos(maps_start[level]);
+                return;
             }
-            emy.register = function () {
-                emys.push(emy);
-
+            if (!this.is_continue) {
+                return
             }
-            emy.unregister = function () {
-                emys.remove(emy);
-                emy.parentNode.removeChild(emy);
+            this.path_len += this.speed;
+            var path_len_i = Math.floor(this.path_len)
+            if (path_len_i >= dirs.length) {
+                this.unregister();
+                this.is_continue = false;
             }
-            var pos;
-            var dir;
-            var is_continue = true;
-            var speed = 0.03; //gird per sec
-
-            var x = 0;
-            var y = 0;
-            var path_len = 0;
-
-            function cal_pos() {
-                dirs
-            }
-
-            emy.pos = clone(map_start);
-            emy.step = function () { //called 60 times per sec 
-
-                if (!dir) //uninited
-                {
-                    dir = dirs[0];
-                    pos = map_start;
-                    emy.set_pos(maps_start[level]);
-                    return;
-                }
-                if (!is_continue) {
-                    return
-                }
-                path_len += speed;
-                //                    console.log(path_len);
-                var path_len_i = Math.floor(path_len)
-                if (path_len_i >= dirs.length) {
-                    emy.unregister();
-                    is_continue = false;
-                    console.log("end");
-                }
-
-                var pos_now = clone(paths[path_len_i]);
-                spread_dir(function (dx, dy) {
-                    point_add(pos_now, [dx, dy])
-                }, path_len - path_len_i, dirs[path_len_i])
-                emy.pos = pos_now;
-                emy.set_pos(pos_now);
-
-            }
-            return emy;
+            var pos_now = clone(paths[path_len_i]);
+            spread_dir(function (dx, dy) {
+                point_add(pos_now, [dx, dy])
+            }, this.path_len - path_len_i, dirs[path_len_i])
+            this.pos = pos_now;
+            this.set_pos(pos_now);
+        }
+        emy_create = function (kind) {
+            return new Emy(kind);
         }
 
         function put_tower(kind, x, y) {
@@ -484,7 +546,7 @@ window.onload = function () {
 
 
             emy.register()
-            mn.appendChild(emy);
+            mn.appendChild(emy.d);
 
         }
         put_emy(0);
@@ -498,20 +560,22 @@ window.onload = function () {
     enter_level(0);
     var sys_tick_cnt = 0;
 
+    function obj_step(e) {
+        e.step();
+    }
+    var playing=true;
+    start.onclick=function(){
+        playing=!playing;
+    }
     function step() {
-        sys_tick_cnt++;
-        //        if (!(sys_tick_cnt % 10)) {
-        towers.forEach(
-                function (e) {
-                    e.step();
-                }
-            )
-            //        } 
-        emys.forEach(
-            function (e) {
-                e.step();
-            }
-        )
+        if(playing){
+           sys_tick_cnt++;
+        towers.forEach(obj_step)
+        emys.forEach(obj_step)
+        buls.forEach(obj_step); 
+        }
+        
+
         requestAnimationFrame(step);
     }
 

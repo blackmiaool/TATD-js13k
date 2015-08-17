@@ -25,6 +25,17 @@ window.onload = function () {
             f(this[i]);
         }
     }
+    Array.prototype.average = function () {
+        var sum = 0;
+        this.forEach(
+            function (d) {
+                sum += d;
+            }
+        )
+        if (this.length)
+            sum /= this.length;
+        return sum;
+    }
 
     function hasClass(obj, cls) {
         return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
@@ -292,7 +303,19 @@ window.onload = function () {
 
         }
 
-
+        var bullet_create = function (kind, pos) {
+            var bullet = $("#bullet_to_copy").cloneNode(true);
+            bullet.id = undefined;
+            var style = bullet.style;
+            bullet.kind = kind;
+            bullet.set_pos = function (pos) {
+                bullet.pos = pos;
+                var p = get_grid_pos(pos);
+                p[0] -= emys_width[kind] / 2;
+                p[1] -= emys_height[kind] / 2;
+                style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+            }
+        }
         var tower_create = function (kind, pos) {
             //                var tower = doc.createElement("div");
             var tower = $("#tower_to_copy").cloneNode(true);
@@ -314,12 +337,39 @@ window.onload = function () {
             tower.register = function () {
                 towers.push(tower);
             }
-            var base_trans="translate(-50%, -50%)";
-            tower.rotate=function(angle){
-                csl.log("rrot")
-                style.transform=base_trans+" rotate("+angle+"deg)";               
+            var base_trans = "translate(-50%, -50%)";
+            var angle_filter = [];
+            var angle_filter1 = [];
+            var angle_filter2 = [];
+            for (var i = 0; i < 10; i++) {
+                angle_filter1[i] = 1;
+                angle_filter2[i] = 1;
             }
-            
+            for (var i = 0; i < 2; i++) {
+                angle_filter[i] = 0;
+            }
+            tower.rotate = function (angle) {
+                console.log(angle)
+                angle_filter.unshift(angle)
+                angle_filter.pop();
+
+                //                csl.log("rrot")
+                console.log(angle_filter.average());
+                style.transform = base_trans + " rotate(" + angle_filter.average() + "deg)";
+            }
+            tower.f_rotate = function (y, x) {
+                //                console.log(x,y)
+                angle_filter1.unshift(y)
+                angle_filter1.pop();
+                angle_filter2.unshift(x)
+                angle_filter2.pop();
+                console.log(angle_filter1.average(), angle_filter2.average())
+                    //                var angle = m.atan2(angle_filter1.average(), angle_filter2.average())
+                    //                console.log(angle);
+                var angle = m.atan2(y, x);
+                style.transform = base_trans + " rotate(" + (angle * 180 / m.PI + 90) + "deg)";
+            }
+
             tower.querySelector(".fill").onmouseout = function () {
                 var children = tower.childNodes;
                 for (var i in children) {
@@ -337,17 +387,18 @@ window.onload = function () {
                 }
             }
             tower.step = function () {
-                
+
                 emys.r_forEach(
                     function (e) {
-                        
-                        var dis=cal_dis(e.pos, tower.pos);
-                        
-                        if (dis< tower_rage[tower.kind][tower.level]) {
-                            var angle=m.atan2(tower.pos[1]-e.pos[1],tower.pos[0]-e.pos[0]);
-                            tower.rotate(angle*180/m.PI+90); 
+
+                        var dis = cal_dis(e.pos, tower.pos);
+
+                        if (dis < tower_rage[tower.kind][tower.level]) {
+                            //                            var angle=m.atan2(tower.pos[1]-e.pos[1],tower.pos[0]-e.pos[0]);
+                            //                            tower.rotate(angle*180/m.PI+90); 
+                            tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                         }
-//                        console.log(cal_dis(e.pos, tower.pos));
+                        //                        console.log(cal_dis(e.pos, tower.pos));
                     }
                 )
             }
@@ -375,7 +426,7 @@ window.onload = function () {
             var pos;
             var dir;
             var is_continue = true;
-            var speed = 0.05; //gird per sec
+            var speed = 0.03; //gird per sec
 
             var x = 0;
             var y = 0;
@@ -438,9 +489,9 @@ window.onload = function () {
         }
         put_emy(0);
         setInterval(
-            function(){
+            function () {
                 put_emy(0);
-            },1000
+            }, 1000
         )
         put_tower(0, 5, 3);
     }
@@ -449,13 +500,13 @@ window.onload = function () {
 
     function step() {
         sys_tick_cnt++;
-//        if (!(sys_tick_cnt % 6)) {
-            towers.forEach(
+        //        if (!(sys_tick_cnt % 10)) {
+        towers.forEach(
                 function (e) {
                     e.step();
                 }
             )
-//        } 
+            //        } 
         emys.forEach(
             function (e) {
                 e.step();

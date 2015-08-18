@@ -197,6 +197,7 @@
             top: 0px;
             background-color: antiquewhite;
             transform: translate(-50%, -50%);
+            text-align: center;
         }
         /*
         .tower {
@@ -224,9 +225,7 @@
         </div>
         <div id="right-panel">
             <div id="mn">
-                <div class="emy emy_test" style="visibility:hidden;">
 
-                </div>
             </div>
             <div class="ftr">
                 <span class="speed">
@@ -250,7 +249,7 @@
             transform: translate(-50%, -50%);
             z-index: 10;
             box-sizing: border-box;
-/*            transition: 0.3s linear;*/
+            /*            transition: 0.3s linear;*/
         }
         
         .tower>svg {
@@ -307,7 +306,7 @@
             height: 100%;
             width: 100%;
             position: absolute;
-            top:0;
+            top: 0;
         }
         
         .tower>.range {
@@ -315,8 +314,6 @@
             left: 50%;
             top: 50%;
             position: absolute;
-            
-            
             border: 2px steelblue solid;
             border-radius: 50%;
             box-sizing: border-box;
@@ -326,16 +323,20 @@
             background-color: rgba(51, 122, 182, 0.1);
             opacity: 0;
         }
-        .tower>.range.active{
+        
+        .tower>.range.active {
             width: 150px;
             height: 150px;
             opacity: 1;
-        } 
-        .hide{
-/*            display: none;*/
+        }
+        
+        .hide {
+            /*            display: none;*/
+            
             visibility: hidden;
         }
-        .bullet[kind="1"]{
+        
+        .bullet[kind="1"] {
             background-color: #66ccff;
             position: absolute;
             transform: translate(-50%, -50%);
@@ -343,25 +344,51 @@
             border-radius: 50%;
             height: 0px;
             width: 0px;
-            left:0px;
-            top:0px;
+            left: 0px;
+            top: 0px;
+        }
+        
+        .blood {
+            width: 25px;
+            height: 5px;
+            border: 1px green solid;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            overflow: hidden;
+        }
+        .blood>.fill{
+            position: absolute;
+            right: 50%;
+            width: 100%;
+            height: 100%;
+            background-color: red;
+            box-sizing: content-box;
+            top:1px;
+            
         }
     </style>
+    <div class="emy emy_tpl hide" kind="0">
+        <div class="blood">
+            <div class="fill"></div>
+        </div>
+    </div>
     <div class="tower hide" id="tower_to_copy" style="" kind="1">
         <div class="range">
         </div>
-        
-       
+
+
         <div class="shape">
 
             <div class="core"></div>
         </div>
-        <div class="fill">            
+        <div class="fill">
         </div>
 
     </div>
     <div class="bullet hide" id="bullet_to_copy" kind="1">
-        
+
     </div>
 
 </body>

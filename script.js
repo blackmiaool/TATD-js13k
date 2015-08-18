@@ -5,7 +5,7 @@ window.onload = function () {
     var csl = console;
     var emys = [];
     var buls = [];
-    var emy_tests = doc.getElementsByClassName("emy_test");
+    var emy_tests = doc.getElementsByClassName("emy_tpl");
     var bul_test = doc.getElementsByClassName("bullet");
 
     var fps=60;
@@ -24,6 +24,11 @@ window.onload = function () {
     }
     csl.log(buls_height, buls_width)
 
+    var data={};
+    data.emy_blood=[
+        100,200,300
+    ]
+    
 
 
 
@@ -450,7 +455,7 @@ window.onload = function () {
                     tower.prepare++;
                     if (tower.prepare > prepare_max) {
                         tower.ready = true;
-                        csl.log("ready")
+//                        csl.log("ready")
                     }
                 }
 
@@ -478,18 +483,20 @@ window.onload = function () {
         }
 
         function Emy(kind) {
-            var d = doc.createElement("div");
+            var d = emy_tests[kind].cloneNode(true);
             this.d = d;
             d.className = "emy";
             this.style = d.style;
+            removeClass(d,"hide");
             this.is_continue = true;
-            this.speed = 0.13;
+            this.speed = 0.03;
             this.path_len = 0;
             this.pos = clone(map_start);
             this.initted = false;
             this.kind = kind;
         }
         Emy.prototype.set_pos = function (pos) {
+            
             this.pos = pos;
             var p = get_grid_pos(pos);
             p[0] -= emys_width[this.kind] / 2;
@@ -553,7 +560,7 @@ window.onload = function () {
         setInterval(
             function () {
                 put_emy(0);
-            }, 1000
+            }, 2000
         )
         put_tower(0, 5, 3);
     }

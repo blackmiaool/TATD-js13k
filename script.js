@@ -24,10 +24,12 @@ window.onload = function () {
     }
     csl.log(buls_height, buls_width)
 
-    var data={};
-    data.emy_blood=[
+     var emy_blood=[
         100,200,300
     ]
+     var bullet_damage=[
+         30,50,90
+     ]
     
 
 
@@ -318,13 +320,37 @@ window.onload = function () {
 
         }
 
-
+        
 
         function get_grid_pos(pos) {
             var h = start_grid.offsetHeight;
             var w = start_grid.offsetWidth;
             return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
         }
+        
+        
+        
+        
+        miao_obj=function(name,kind,pos,other){
+            var d=$("#"+name+"_to_copy").cloneNode(true);
+            this.d=d;
+            this.d.id="";
+            removeClass(d,"hide");
+            this.style=d.style;
+            this.kind=kind;
+            this.name=name;
+            this.set_pos(clone(pos));
+            this.init();
+        } 
+        
+        miao_obj.prototype.set_pos=function(pos){
+            
+        }
+        
+        
+        
+        
+        
         Bul = function (kind, pos, target) {
             var d = $("#bullet_to_copy").cloneNode(true);
             this.d = d;
@@ -341,8 +367,8 @@ window.onload = function () {
 
             this.pos = pos;
             var p = get_grid_pos(pos);
-            p[0] -= buls_width[this.kind - 1] / 2;
-            p[1] -= buls_height[this.kind - 1] / 2;
+            p[0] -= buls_width[this.kind ] / 2;
+            p[1] -= buls_height[this.kind ] / 2;
             this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
 //            csl.log(pos, "translate(" + p[0] + "px," + p[1] + "px)");
         }
@@ -369,6 +395,7 @@ window.onload = function () {
             var pos=this.cal_pos(this.pos,this.target.pos,this.speed/fps);
             if(!pos)
             {
+                this.target.suffer(this.kind);
                 this.unregister();
             }
             else
@@ -467,7 +494,7 @@ window.onload = function () {
                             tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
 //                            csl.log(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                             if (tower.ready) {
-                                var bul = bullet_create(1, tower.pos, e);
+                                var bul = bullet_create(0, tower.pos, e);
                                 bul.register()
                                 mn.appendChild(bul.d);
                                 tower.ready = false;
@@ -494,6 +521,22 @@ window.onload = function () {
             this.pos = clone(map_start);
             this.initted = false;
             this.kind = kind;
+            this.blood=emy_blood[kind];
+            this.blood_max=emy_blood[kind];
+            this.bf=d.querySelector(".fill");
+            this.dead=false;
+        }
+        Emy.prototype.destroy=function(){
+            this.unregister();
+        }
+        Emy.prototype.suffer=function(kind){
+            this.blood-=bullet_damage[kind];
+            this.bf.style.right=(1-this.blood/this.blood_max)*100+"%";
+            if(this.blood<=0&&!this.dead){
+                this.destroy();
+                this.dead=true;
+            }
+            //set blood
         }
         Emy.prototype.set_pos = function (pos) {
             
@@ -508,6 +551,7 @@ window.onload = function () {
         }
         Emy.prototype.unregister = function () {
             emys.remove(this);
+            
             this.d.parentNode.removeChild(this.d)
 
         }
@@ -563,6 +607,8 @@ window.onload = function () {
             }, 2000
         )
         put_tower(0, 5, 3);
+        put_tower(0, 7, 3);
+        put_tower(0, 6, 3);
     }
     enter_level(0);
     var sys_tick_cnt = 0;

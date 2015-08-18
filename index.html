@@ -259,7 +259,7 @@
             position: relative;
         }
         
-        .tower[kind="1"] .shape {
+        .tower[kind="0"] .shape {
             height: 50px;
             width: 50px;
             border: 7px rgba(51, 122, 182, 0.6) solid;
@@ -268,7 +268,7 @@
             box-sizing: border-box;
         }
         
-        .tower[kind="1"] .shape .core {
+        .tower[kind="0"] .shape .core {
             /*
             width: 10px;
             height: 10px;
@@ -285,7 +285,7 @@
             width: 0px;
         }
         
-        .tower[kind="1"] .shape .core .horn {
+        .tower[kind="0"] .shape .core .horn {
             width: 0px;
             height: 0px;
             border: solid rgba(0, 0, 0, 0);
@@ -300,7 +300,7 @@
             box-sizing: border-box;
         }
         
-        .tower[kind="1"] .shape .core .horn>div {}
+        .tower[kind="0"] .shape .core .horn>div {}
         
         .tower>.fill {
             height: 100%;
@@ -336,7 +336,7 @@
             visibility: hidden;
         }
         
-        .bullet[kind="0"] {
+        .bul[kind="0"] {
             background-color: #66ccff;
             position: absolute;
             transform: translate(-50%, -50%);
@@ -369,12 +369,12 @@
             
         }
     </style>
-    <div class="emy emy_tpl hide" kind="0">
+    <div class="emy emy_tpl hide" id="emy_to_copy" kind="0">
         <div class="blood">
             <div class="fill"></div>
         </div>
     </div>
-    <div class="tower hide" id="tower_to_copy" style="" kind="1">
+    <div class="tower hide" id="tower_to_copy"  kind="0">
         <div class="range">
         </div>
 
@@ -387,7 +387,7 @@
         </div>
 
     </div>
-    <div class="bullet hide" id="bullet_to_copy" kind="0">
+    <div class="bul hide" id="bul_to_copy" kind="0">
 
     </div>
 

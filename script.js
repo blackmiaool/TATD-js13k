@@ -5,8 +5,9 @@ window.onload = function () {
     var csl = console;
     var emys = [];
     var buls = [];
+    var towers = [];
     var emy_tests = doc.getElementsByClassName("emy_tpl");
-    var bul_test = doc.getElementsByClassName("bullet");
+    var bul_test = doc.getElementsByClassName("bul");
 
     var fps=60;
     var emys_height = [];
@@ -22,9 +23,24 @@ window.onload = function () {
         buls_height.push(bul_test[i].offsetHeight)
         buls_width.push(bul_test[i].offsetWidth)
     }
-    csl.log(buls_height, buls_width)
+    var std_size={
+        bul:[],
+        tower:[],
+        emy:[]
+    }
+    var names=["bul","tower","emy"];
+    names.forEach(
+        function(name,index){
+            var d=doc.querySelectorAll("#"+name+"_to_copy");
+            csl.log(d)
+            names.forEach.call(d,function(dom){
+                   std_size[name].push([dom.offsetWidth,dom.offsetHeight]); 
+                })
+        }
+    )
+    csl.log(std_size)
 
-     var emy_blood=[
+    var emy_blood=[
         100,200,300
     ]
      var bullet_damage=[
@@ -118,7 +134,7 @@ window.onload = function () {
     //    csl.log(maps)
     var mn = doc.querySelector("#mn");
     var grids = [];
-    var towers = [];
+    
 
     function point_add(src, d) {
         src[0] += d[0];
@@ -340,19 +356,36 @@ window.onload = function () {
             this.kind=kind;
             this.name=name;
             this.set_pos(clone(pos));
-            this.init();
+            this.init.apply(this,arguments);
         } 
         
         miao_obj.prototype.set_pos=function(pos){
+            this.pos = pos;
+            var p = get_grid_pos(pos);
+            p[0]-=std_size[this.name][this.kind][0]/2;
+            p[1]-=std_size[this.name][this.kind][1]/2;
+//            p[0] -= buls_width[this.kind ] / 2;
+//            p[1] -= buls_height[this.kind ] / 2;
+            
+            this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
+        }
+        
+        miao_obj.prototype.register=function(){
+            
+        }
+        miao_obj.prototype.unregister=function(){
             
         }
         
-        
-        
-        
+//        Bul2={};
+//        Bul2.prototype=new miao_obj("bul");
+//        Bul2.prototype.init=function(name,kind,pos,target){
+//            this.target=target;
+//        }
+//        
         
         Bul = function (kind, pos, target) {
-            var d = $("#bullet_to_copy").cloneNode(true);
+            var d = $("#bul_to_copy").cloneNode(true);
             this.d = d;
             this.d.id = undefined;
             removeClass(d, "hide")

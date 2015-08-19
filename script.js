@@ -1,39 +1,23 @@
 window.onload = function () {
     g = {};
     var level = 0;
+    var fps = 60;
+    var names = ["bul", "tower", "emy"];
     var doc = document;
     var csl = console;
+
     var miao_objs = {
         emy: [],
         bul: [],
         tower: [],
     }
-    var emys = [];
-    var buls = [];
-    var towers = [];
-    var emy_tests = doc.getElementsByClassName("emy_tpl");
-    var bul_test = doc.getElementsByClassName("bul");
 
-    var fps = 60;
-    var emys_height = [];
-    var emys_width = [];
-    for (var i = 0; i < emy_tests.length; i++) {
-        emys_height.push(emy_tests[i].offsetHeight)
-        emys_width.push(emy_tests[i].offsetWidth)
-    }
-
-    var buls_height = [];
-    var buls_width = [];
-    for (var i = 0; i < bul_test.length; i++) {
-        buls_height.push(bul_test[i].offsetHeight)
-        buls_width.push(bul_test[i].offsetWidth)
-    }
     var std_size = {
         bul: [],
         tower: [],
         emy: []
     }
-    var names = ["bul", "tower", "emy"];
+
     names.forEach(
         function (name, index) {
             var d = doc.querySelectorAll("#" + name + "_to_copy");
@@ -51,12 +35,17 @@ window.onload = function () {
     var bullet_damage = [
          10, 50, 90
      ]
-    var bul_speed = [
-        5, 10, 15
+
+    var speed = {
+        bul: [5, 10, 15],
+        tower: [],
+        emy: [0.03, 0.05],
+    }
+
+
+    var tower_rage = [
+        [2.5, 3, 3.5],
     ]
-
-
-
     Array.prototype.last = function () {
         return this[this.length - 1];
     }
@@ -68,9 +57,6 @@ window.onload = function () {
         }
     }
     Array.prototype.r_forEach = function (f) {
-        //        for (var i = this.length - 1; i >= 0; i--) {
-        //            if (f(this[i])) return;
-        //        }
         for (var i = 0; i < this.length; i++) {
             if (f(this[i])) return;
         }
@@ -127,9 +113,7 @@ window.onload = function () {
                 "111111111111111",
             ],
         ]
-    var tower_rage = [
-        [2.5, 3, 3.5],
-    ]
+
     var maps_start = [
             [0, 2],
         ]
@@ -167,18 +151,12 @@ window.onload = function () {
             target[i] = src[i];
         }
     }
-    //        Object.prototype.add = function (to_add) {
-    //            
-    //        }
 
     function get_bit(num, pos) {
         return Math.floor(num / Math.pow(2, pos)) % 2;
     }
     var toi = parseInt;
 
-
-
-    //        console.log(get_bit(7, 1));
 
     function get_pos_value(map, x, y) {
         //            console.log(map, x, y)
@@ -360,6 +338,8 @@ window.onload = function () {
             this.kind = kind;
             this.d = d;
             this.d.id = "";
+            if (speed[this.name])
+                this.speed = speed[this.name][kind];
             removeClass(this.d, "hide")
             this.style = d.style;
             this.set_pos(pos);
@@ -385,7 +365,6 @@ window.onload = function () {
         Bul = function (kind, pos, target) {
             this.name = "bul"
             this.target = target;
-            this.speed = bul_speed[kind];
             this.init.apply(this, arguments)
         };
         Bul.prototype = new miao_obj();
@@ -412,8 +391,14 @@ window.onload = function () {
         Tower = function (kind, pos) {
             this.name = "tower";
             this.init.apply(this, arguments);
-            this.level = 0;
-            this.base_trans = "translate(-50%, -50%)";
+
+            obj_add(this, {
+                level: 0,
+                base_trans: "translate(-50%, -50%)",
+                prepare: 0,
+                prepare_max: 30,
+            })
+
             var tower = this;
             this.d.querySelector(".fill").onmouseout = function () {
                 var children = tower.d.childNodes;
@@ -423,7 +408,6 @@ window.onload = function () {
                     }
                 }
             }
-
             this.d.querySelector(".fill").onmouseover = function () {
                 var children = tower.d.childNodes;
                 for (var i in children) {
@@ -432,8 +416,7 @@ window.onload = function () {
                     }
                 }
             }
-            this.prepare = 0;
-            this.prepare_max = 30;
+
         }
         Tower.prototype = new miao_obj();
         Tower.prototype.set_pos = function (pos) {
@@ -463,7 +446,7 @@ window.onload = function () {
                 }
             }
             var tower = this;
-            emys.r_forEach(
+            miao_objs.emy.r_forEach(
                 function (e) {
                     var dis = cal_dis(e.pos, tower.pos);
                     if (dis < tower_rage[tower.kind][tower.level]) {
@@ -494,23 +477,22 @@ window.onload = function () {
             return new Tower(kind, [x, y]);
         }
 
-        function Emy(kind) {
-            var d = emy_tests[kind].cloneNode(true);
-            this.d = d;
-            d.className = "emy";
-            this.style = d.style;
-            removeClass(d, "hide");
-            this.is_continue = true;
-            this.speed = 0.03;
-            this.path_len = 0;
-            this.pos = clone(map_start);
-            this.initted = false;
-            this.kind = kind;
-            this.blood = emy_blood[kind];
-            this.blood_max = emy_blood[kind];
-            this.bf = d.querySelector(".fill");
-            this.dead = false;
+
+
+        var Emy = function (kind, pos) {
+            this.name = "emy";
+            this.init.apply(this, arguments);
+            obj_add(this, {
+                is_continue: true,
+                path_len: 0,
+                initted: false,
+                blood: emy_blood[kind],
+                blood_max: emy_blood[kind],
+                bf: this.d.querySelector(".fill"),
+                dead: false,
+            })
         }
+        Emy.prototype = new miao_obj();
         Emy.prototype.destroy = function () {
             this.unregister();
         }
@@ -521,24 +503,6 @@ window.onload = function () {
                 this.destroy();
                 this.dead = true;
             }
-            //set blood
-        }
-        Emy.prototype.set_pos = function (pos) {
-
-            this.pos = pos;
-            var p = get_grid_pos(pos);
-            p[0] -= emys_width[this.kind] / 2;
-            p[1] -= emys_height[this.kind] / 2;
-            this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
-        }
-        Emy.prototype.register = function () {
-            emys.push(this);
-        }
-        Emy.prototype.unregister = function () {
-            emys.remove(this);
-
-            this.d.parentNode.removeChild(this.d)
-
         }
         Emy.prototype.step = function () {
             if (!this.initted) //uninited
@@ -563,30 +527,26 @@ window.onload = function () {
             this.pos = pos_now;
             this.set_pos(pos_now);
         }
-        emy_create = function (kind) {
-            return new Emy(kind);
+        emy_create = function (kind, pos) {
+            return new Emy(kind, pos);
         }
 
 
 
-        function put_emy(kind) {
-            var emy = emy_create(kind);
-
-
-            emy.register()
-            mn.appendChild(emy.d);
-
-        }
-        put_emy(0);
-        setInterval(
-            function () {
-                put_emy(0);
-            }, 2000
-        )
+       
+//        put_emy(0, map_start);
+//        setInterval(
+//            function () {
+//                
+//            }, 2000
+//        )
         tower_create(0, 5, 3);
         tower_create(0, 7, 3);
         tower_create(0, 6, 3);
     }
+     function put_emy(kind, pos) {
+            var emy = emy_create(kind, pos);
+        }
     enter_level(0);
     var sys_tick_cnt = 0;
 
@@ -598,19 +558,17 @@ window.onload = function () {
         playing = !playing;
     }
 
-    function step() {
+    function step() { 
         if (playing) {
-            sys_tick_cnt++;
+            
+            if(!(sys_tick_cnt%120)){
+                put_emy(0, map_start);
+            }
             for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);
             }
-
-            towers.forEach(obj_step)
-            emys.forEach(obj_step)
-            buls.forEach(obj_step);
+            sys_tick_cnt++;
         }
-
-
         requestAnimationFrame(step);
     }
 

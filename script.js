@@ -49,9 +49,11 @@ window.onload = function () {
         100, 200, 300
     ]
     var bullet_damage = [
-         30, 50, 90
+         10, 50, 90
      ]
-
+    var bul_speed = [
+        5, 10, 15
+    ]
 
 
 
@@ -353,25 +355,25 @@ window.onload = function () {
 
 
         miao_obj = function () {}
-        miao_obj.prototype.init=function(kind, pos, other){          
+        miao_obj.prototype.init = function (kind, pos, other) {
             var d = $("#" + this.name + "_to_copy").cloneNode(true);
-            this.kind = kind; 
+            this.kind = kind;
             this.d = d;
             this.d.id = "";
-            removeClass(this.d,"hide")
+            removeClass(this.d, "hide")
             this.style = d.style;
             this.set_pos(pos);
             this.register();
         }
         miao_obj.prototype.set_pos = function (pos) {
             this.pos = clone(pos);
-            var p = get_grid_pos(pos);     
+            var p = get_grid_pos(pos);
             p[0] -= std_size[this.name][this.kind][0] / 2;
             p[1] -= std_size[this.name][this.kind][1] / 2;
             this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
         }
 
-        miao_obj.prototype.register = function () {        
+        miao_obj.prototype.register = function () {
             miao_objs[this.name].push(this);
             mn.appendChild(this.d)
         }
@@ -381,10 +383,10 @@ window.onload = function () {
         }
 
         Bul = function (kind, pos, target) {
-            this.name="bul"                                           
+            this.name = "bul"
             this.target = target;
-            this.speed = 10;
-            this.init.apply(this,arguments)                        
+            this.speed = bul_speed[kind];
+            this.init.apply(this, arguments)
         };
         Bul.prototype = new miao_obj();
         Bul.prototype.cal_pos = function (src, target, speed) {
@@ -403,116 +405,93 @@ window.onload = function () {
             if (!pos) {
                 this.target.suffer(this.kind);
                 this.unregister();
-            } else{
+            } else {
                 this.set_pos(pos);
-            }                
+            }
         }
-//        Tower=function()
-        
-        var bullet_create = function (kind, pos, target) {
-            return new Bul(kind, pos, target);
-
-        }
-        var tower_create = function (kind, pos) {
-            //                var tower = doc.createElement("div");
-            var tower = $("#tower_to_copy").cloneNode(true);
-            tower.id = undefined;
-            var style = tower.style;
-            tower.kind = kind;
-            tower.set_pos = function (pos) {
-                tower.pos = pos;
-                var array = get_grid_pos(pos);
-                obj_add(style, {
-                    left: array[0],
-                    top: array[1]
-                })
-            }
-            tower.level = 0;
-            tower.set_pos(pos);
-            removeClass(tower, "hide");
-
-            tower.register = function () {
-                towers.push(tower);
-            }
-            var base_trans = "translate(-50%, -50%)";
-            var angle_filter = [];
-            var angle_filter1 = [];
-            var angle_filter2 = [];
-            for (var i = 0; i < 10; i++) {
-                angle_filter1[i] = 1;
-                angle_filter2[i] = 1;
-            }
-            for (var i = 0; i < 2; i++) {
-                angle_filter[i] = 0;
-            }
-            tower.rotate = function (angle) {
-                console.log(angle)
-                angle_filter.unshift(angle)
-                angle_filter.pop();
-
-                //                csl.log("rrot")
-                console.log(angle_filter.average());
-                style.transform = base_trans + " rotate(" + angle_filter.average() + "deg)";
-            }
-            tower.f_rotate = function (y, x) {
-                //                console.log(x,y)
-                angle_filter1.unshift(y)
-                angle_filter1.pop();
-                angle_filter2.unshift(x)
-                angle_filter2.pop();
-                //                console.log(angle_filter1.average(), angle_filter2.average())
-                //                var angle = m.atan2(angle_filter1.average(), angle_filter2.average())
-                //                console.log(angle);
-                var angle = m.atan2(y, x);
-                style.transform = base_trans + " rotate(" + (angle * 180 / m.PI + 90) + "deg)";
-            }
-
-            tower.querySelector(".fill").onmouseout = function () {
-                var children = tower.childNodes;
+        Tower = function (kind, pos) {
+            this.name = "tower";
+            this.init.apply(this, arguments);
+            this.level = 0;
+            this.base_trans = "translate(-50%, -50%)";
+            var tower = this;
+            this.d.querySelector(".fill").onmouseout = function () {
+                var children = tower.d.childNodes;
                 for (var i in children) {
                     if (children[i].className) {
                         removeClass(children[i], "active")
                     }
                 }
             }
-            tower.querySelector(".fill").onmouseover = function () {
-                var children = tower.childNodes;
+
+            this.d.querySelector(".fill").onmouseover = function () {
+                var children = tower.d.childNodes;
                 for (var i in children) {
                     if (children[i].className) {
                         addClass(children[i], "active")
                     }
                 }
             }
-            tower.prepare = 0;
-            var prepare_max = 30;
-            tower.step = function () {
-                if (!tower.ready) {
-                    tower.prepare++;
-                    if (tower.prepare > prepare_max) {
-                        tower.ready = true;
-                        //                        csl.log("ready")
+            this.prepare = 0;
+            this.prepare_max = 30;
+        }
+        Tower.prototype = new miao_obj();
+        Tower.prototype.set_pos = function (pos) {
+            console.log("setpos", pos)
+            this.pos = clone(pos);
+            var array = get_grid_pos(pos);
+            obj_add(this.style, {
+                left: array[0],
+                top: array[1]
+            })
+        }
+        Tower.prototype.rotate = function () {
+            console.log(angle)
+            this.style.transform = this.base_trans + " rotate(" + angle + "deg)";
+        }
+        Tower.prototype.f_rotate = function (y, x) {
+            var angle = m.atan2(y, x);
+            this.style.transform = this.base_trans + " rotate(" + (angle * 180 / m.PI + 90) + "deg)";
+
+        }
+        Tower.prototype.step = function () {
+            if (!this.ready) {
+                this.prepare++;
+                if (this.prepare > this.prepare_max) {
+                    this.ready = true;
+                    //                        csl.log("ready")
+                }
+            }
+            var tower = this;
+            emys.r_forEach(
+                function (e) {
+                    var dis = cal_dis(e.pos, tower.pos);
+                    if (dis < tower_rage[tower.kind][tower.level]) {
+                        tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
+                        if (tower.ready) {
+                            var bul = new Bul(0, tower.pos, e);
+                            tower.ready = false;
+                            tower.prepare = 0;
+                        }
+                        return true;
                     }
                 }
+            )
+        }
 
-                emys.r_forEach(
-                    function (e) {
-                        //                        csl.log(e);
-                        var dis = cal_dis(e.pos, tower.pos);
-                        if (dis < tower_rage[tower.kind][tower.level]) {
-                            tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
-                                //                            csl.log(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
-                            if (tower.ready) {
-                                var bul =new Bul(0, tower.pos, e);              
-                                tower.ready = false;
-                                tower.prepare = 0;
 
-                            }
-                            return true;
-                        }
-                    }
-                )
-            }
-            return tower;
+
+
+
+
+
+        function bullet_create(kind, pos, target) {
+            return new Bul(kind, pos, target);
+
+        }
+
+        function tower_create(kind, x, y) {
+            return new Tower(kind, [x, y]);
         }
 
         function Emy(kind) {
@@ -588,15 +567,7 @@ window.onload = function () {
             return new Emy(kind);
         }
 
-        function put_tower(kind, x, y) {
-            var tower = tower_create(kind, [x, y]);
 
-
-            tower.register()
-
-            mn.appendChild(tower);
-
-        }
 
         function put_emy(kind) {
             var emy = emy_create(kind);
@@ -612,9 +583,9 @@ window.onload = function () {
                 put_emy(0);
             }, 2000
         )
-        put_tower(0, 5, 3);
-        put_tower(0, 7, 3);
-        put_tower(0, 6, 3);
+        tower_create(0, 5, 3);
+        tower_create(0, 7, 3);
+        tower_create(0, 6, 3);
     }
     enter_level(0);
     var sys_tick_cnt = 0;
@@ -630,9 +601,9 @@ window.onload = function () {
     function step() {
         if (playing) {
             sys_tick_cnt++;
-            for(var i in miao_objs){
+            for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);
-            }            
+            }
 
             towers.forEach(obj_step)
             emys.forEach(obj_step)

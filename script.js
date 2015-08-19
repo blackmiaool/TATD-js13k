@@ -3,13 +3,18 @@ window.onload = function () {
     var level = 0;
     var doc = document;
     var csl = console;
+    var miao_objs = {
+        emy: [],
+        bul: [],
+        tower: [],
+    }
     var emys = [];
     var buls = [];
     var towers = [];
     var emy_tests = doc.getElementsByClassName("emy_tpl");
     var bul_test = doc.getElementsByClassName("bul");
 
-    var fps=60;
+    var fps = 60;
     var emys_height = [];
     var emys_width = [];
     for (var i = 0; i < emy_tests.length; i++) {
@@ -23,30 +28,30 @@ window.onload = function () {
         buls_height.push(bul_test[i].offsetHeight)
         buls_width.push(bul_test[i].offsetWidth)
     }
-    var std_size={
-        bul:[],
-        tower:[],
-        emy:[]
+    var std_size = {
+        bul: [],
+        tower: [],
+        emy: []
     }
-    var names=["bul","tower","emy"];
+    var names = ["bul", "tower", "emy"];
     names.forEach(
-        function(name,index){
-            var d=doc.querySelectorAll("#"+name+"_to_copy");
+        function (name, index) {
+            var d = doc.querySelectorAll("#" + name + "_to_copy");
             csl.log(d)
-            names.forEach.call(d,function(dom){
-                   std_size[name].push([dom.offsetWidth,dom.offsetHeight]); 
-                })
+            names.forEach.call(d, function (dom) {
+                std_size[name].push([dom.offsetWidth, dom.offsetHeight]);
+            })
         }
     )
     csl.log(std_size)
 
-    var emy_blood=[
-        100,200,300
+    var emy_blood = [
+        100, 200, 300
     ]
-     var bullet_damage=[
-         30,50,90
+    var bullet_damage = [
+         30, 50, 90
      ]
-    
+
 
 
 
@@ -134,7 +139,7 @@ window.onload = function () {
     //    csl.log(maps)
     var mn = doc.querySelector("#mn");
     var grids = [];
-    
+
 
     function point_add(src, d) {
         src[0] += d[0];
@@ -156,13 +161,13 @@ window.onload = function () {
     }
 
     function obj_add(target, src) {
-            for (var i in src) {
-                target[i] = src[i];
-            }
+        for (var i in src) {
+            target[i] = src[i];
         }
-        //        Object.prototype.add = function (to_add) {
-        //            
-        //        }
+    }
+    //        Object.prototype.add = function (to_add) {
+    //            
+    //        }
 
     function get_bit(num, pos) {
         return Math.floor(num / Math.pow(2, pos)) % 2;
@@ -336,106 +341,76 @@ window.onload = function () {
 
         }
 
-        
+
 
         function get_grid_pos(pos) {
             var h = start_grid.offsetHeight;
             var w = start_grid.offsetWidth;
             return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
         }
-        
-        
-        
-        
-        miao_obj=function(name,kind,pos,other){
-            var d=$("#"+name+"_to_copy").cloneNode(true);
-            this.d=d;
-            this.d.id="";
-            removeClass(d,"hide");
-            this.style=d.style;
-            this.kind=kind;
-            this.name=name;
-            this.set_pos(clone(pos));
-            this.init.apply(this,arguments);
-        } 
-        
-        miao_obj.prototype.set_pos=function(pos){
-            this.pos = pos;
-            var p = get_grid_pos(pos);
-            p[0]-=std_size[this.name][this.kind][0]/2;
-            p[1]-=std_size[this.name][this.kind][1]/2;
-//            p[0] -= buls_width[this.kind ] / 2;
-//            p[1] -= buls_height[this.kind ] / 2;
-            
-            this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
-        }
-        
-        miao_obj.prototype.register=function(){
-            
-        }
-        miao_obj.prototype.unregister=function(){
-            
-        }
-        
-//        Bul2={};
-//        Bul2.prototype=new miao_obj("bul");
-//        Bul2.prototype.init=function(name,kind,pos,target){
-//            this.target=target;
-//        }
-//        
-        
-        Bul = function (kind, pos, target) {
-            var d = $("#bul_to_copy").cloneNode(true);
-            this.d = d;
-            this.d.id = undefined;
-            removeClass(d, "hide")
-                //            var style = d.style;
-            this.style = d.style;
-            this.kind = kind;
-            this.set_pos(clone(pos));
-            this.target = target;
-            this.speed=10;
-        }
-        Bul.prototype.set_pos = function (pos) {
 
-            this.pos = pos;
-            var p = get_grid_pos(pos);
-            p[0] -= buls_width[this.kind ] / 2;
-            p[1] -= buls_height[this.kind ] / 2;
+
+
+
+        miao_obj = function () {}
+        miao_obj.prototype.init=function(kind, pos, other){          
+            var d = $("#" + this.name + "_to_copy").cloneNode(true);
+            this.kind = kind; 
+            this.d = d;
+            this.d.id = "";
+            removeClass(this.d,"hide")
+            this.style = d.style;
+            this.set_pos(pos);
+            this.register();
+        }
+        miao_obj.prototype.set_pos = function (pos) {
+            this.pos = clone(pos);
+            var p = get_grid_pos(pos);     
+            p[0] -= std_size[this.name][this.kind][0] / 2;
+            p[1] -= std_size[this.name][this.kind][1] / 2;
             this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
-//            csl.log(pos, "translate(" + p[0] + "px," + p[1] + "px)");
         }
-        Bul.prototype.register = function () {
-            buls.push(this)
+
+        miao_obj.prototype.register = function () {        
+            miao_objs[this.name].push(this);
+            mn.appendChild(this.d)
         }
-        Bul.prototype.unregister=function(){
-            buls.remove(this);
+        miao_obj.prototype.unregister = function () {
+            miao_objs[this.name].remove(this);
             mn.removeChild(this.d)
         }
-        Bul.prototype.cal_pos=function(src,target,speed){
-            var dx=target[0]-src[0];
-            var dy=target[1]-src[1];
-//            var sum=m.abs(dx)+m.abs(dy);
-            var dis=cal_dis(src,target);
-            if(dis<=speed)
+
+        Bul = function (kind, pos, target) {
+            this.name="bul"                                           
+            this.target = target;
+            this.speed = 10;
+            this.init.apply(this,arguments)                        
+        };
+        Bul.prototype = new miao_obj();
+        Bul.prototype.cal_pos = function (src, target, speed) {
+            var dx = target[0] - src[0];
+            var dy = target[1] - src[1];
+            var dis = cal_dis(src, target);
+            if (dis <= speed)
                 return false;
-            var sum=dis;
-            src[0]+=(target[0]-src[0])/sum*speed;
-            src[1]+=(target[1]-src[1])/sum*speed;            
+            var sum = dis;
+            src[0] += (target[0] - src[0]) / sum * speed;
+            src[1] += (target[1] - src[1]) / sum * speed;
             return src;
         }
         Bul.prototype.step = function () {
-            var pos=this.cal_pos(this.pos,this.target.pos,this.speed/fps);
-            if(!pos)
-            {
+            var pos = this.cal_pos(this.pos, this.target.pos, this.speed / fps);
+            if (!pos) {
                 this.target.suffer(this.kind);
                 this.unregister();
-            }
-            else
+            } else{
                 this.set_pos(pos);
+            }                
         }
-        var bullet_create = function (kind, pos,target) {
-            return new Bul(kind, pos,target);
+//        Tower=function()
+        
+        var bullet_create = function (kind, pos, target) {
+            return new Bul(kind, pos, target);
 
         }
         var tower_create = function (kind, pos) {
@@ -515,21 +490,19 @@ window.onload = function () {
                     tower.prepare++;
                     if (tower.prepare > prepare_max) {
                         tower.ready = true;
-//                        csl.log("ready")
+                        //                        csl.log("ready")
                     }
                 }
 
                 emys.r_forEach(
                     function (e) {
-//                        csl.log(e);
+                        //                        csl.log(e);
                         var dis = cal_dis(e.pos, tower.pos);
                         if (dis < tower_rage[tower.kind][tower.level]) {
                             tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
-//                            csl.log(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
+                                //                            csl.log(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                             if (tower.ready) {
-                                var bul = bullet_create(0, tower.pos, e);
-                                bul.register()
-                                mn.appendChild(bul.d);
+                                var bul =new Bul(0, tower.pos, e);              
                                 tower.ready = false;
                                 tower.prepare = 0;
 
@@ -547,32 +520,32 @@ window.onload = function () {
             this.d = d;
             d.className = "emy";
             this.style = d.style;
-            removeClass(d,"hide");
+            removeClass(d, "hide");
             this.is_continue = true;
             this.speed = 0.03;
             this.path_len = 0;
             this.pos = clone(map_start);
             this.initted = false;
             this.kind = kind;
-            this.blood=emy_blood[kind];
-            this.blood_max=emy_blood[kind];
-            this.bf=d.querySelector(".fill");
-            this.dead=false;
+            this.blood = emy_blood[kind];
+            this.blood_max = emy_blood[kind];
+            this.bf = d.querySelector(".fill");
+            this.dead = false;
         }
-        Emy.prototype.destroy=function(){
+        Emy.prototype.destroy = function () {
             this.unregister();
         }
-        Emy.prototype.suffer=function(kind){
-            this.blood-=bullet_damage[kind];
-            this.bf.style.right=(1-this.blood/this.blood_max)*100+"%";
-            if(this.blood<=0&&!this.dead){
+        Emy.prototype.suffer = function (kind) {
+            this.blood -= bullet_damage[kind];
+            this.bf.style.right = (1 - this.blood / this.blood_max) * 100 + "%";
+            if (this.blood <= 0 && !this.dead) {
                 this.destroy();
-                this.dead=true;
+                this.dead = true;
             }
             //set blood
         }
         Emy.prototype.set_pos = function (pos) {
-            
+
             this.pos = pos;
             var p = get_grid_pos(pos);
             p[0] -= emys_width[this.kind] / 2;
@@ -584,7 +557,7 @@ window.onload = function () {
         }
         Emy.prototype.unregister = function () {
             emys.remove(this);
-            
+
             this.d.parentNode.removeChild(this.d)
 
         }
@@ -649,18 +622,23 @@ window.onload = function () {
     function obj_step(e) {
         e.step();
     }
-    var playing=true;
-    start.onclick=function(){
-        playing=!playing;
+    var playing = true;
+    start.onclick = function () {
+        playing = !playing;
     }
+
     function step() {
-        if(playing){
-           sys_tick_cnt++;
-        towers.forEach(obj_step)
-        emys.forEach(obj_step)
-        buls.forEach(obj_step); 
+        if (playing) {
+            sys_tick_cnt++;
+            for(var i in miao_objs){
+                miao_objs[i].forEach(obj_step);
+            }            
+
+            towers.forEach(obj_step)
+            emys.forEach(obj_step)
+            buls.forEach(obj_step);
         }
-        
+
 
         requestAnimationFrame(step);
     }

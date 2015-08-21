@@ -159,8 +159,8 @@
             border-right: 1px rgba(0,0,0,0) solid;
             border-bottom: 1px rgba(0,0,0,0) solid;
 */
+            /*            border: 3px rgba(0, 0, 0, 0) solid;*/
             
-/*            border: 3px rgba(0, 0, 0, 0) solid;*/
             text-align: center;
             position: relative;
         }
@@ -185,7 +185,7 @@
         
         .grid[lang=start] {
             background-color: #222;
-/*            background-color: lightsteelblue;*/
+            /*            background-color: lightsteelblue;*/
         }
         
         .grid[lang=end] {
@@ -204,7 +204,17 @@
             transition: opacity 0.5s;
             opacity: 1;
         }
-      
+        
+        .emy-panel {
+            height: 130px;
+            margin: 15px;
+            background-color: rgba(255, 255, 255, 0.15);
+            position:relative;
+        }
+        .emy-panel .emy{
+            top:50%;
+            left: 20%;
+        }
     </style>
 </head>
 
@@ -215,7 +225,25 @@
             <label id="title">LV1&nbsp;-&nbsp;TA</label>
         </div>
         <div id="left-panel">
-
+            <div class="emy-panel">
+                <div class="emy  " id="emy_to_copy" kind="0">
+                    <div class="blood">
+                        <div class="fill"></div>
+                    </div>
+                </div>
+                <div class="abt">
+                    <div class="bar">
+                        <label>Health</label><span></span>
+                    </div>
+                    <div class="bar">
+                        <label>Speed</label><span></span>
+                    </div>
+                    <div class="bar">
+                        <label></label><span></span>
+                    </div>
+                    
+                </div>
+            </div>
         </div>
         <div id="right-panel">
             <div id="mn">
@@ -268,9 +296,10 @@
             width: 10px;
             height: 10px;
 */
-/*            box-sizing: border-box;*/
-/*            width: 10px;*/
-/*            height: 10px;*/
+            /*            box-sizing: border-box;*/
+            /*            width: 10px;*/
+            /*            height: 10px;*/
+            
             background-color: #66ccff;
             top: 50%;
             position: absolute;
@@ -278,7 +307,7 @@
             transform: translate(-50%, -50%);
             display: inline-block;
             border: 6px solid rgba(102, 204, 255, 0);
-            border-radius: 50%;     
+            border-radius: 50%;
         }
         
         .tower[kind="0"] .shape .core .horn {
@@ -328,12 +357,14 @@
         
         .hide {
             /*            display: none;*/
+            
             visibility: hidden;
         }
         
-        .trans{
+        .trans {
             opacity: 0;
         }
+        
         .bul[kind="0"] {
             background-color: #66ccff;
             position: absolute;
@@ -367,7 +398,8 @@
             box-sizing: content-box;
             top: 1px;
         }
-        .endp{
+        
+        .endp {
             -webkit-perspective: 250;
             perspective: 200;
             width: 100%;
@@ -375,11 +407,12 @@
             position: absolute;
             left: 0px;
             right: 0px;
-            top:0px;
+            top: 0px;
         }
-        .endp>.fill{
+        
+        .endp>.fill {
             position: relative;
-            top:-15px;
+            top: -15px;
             height: 0px;
             width: 0px;
             border-width: 40px 11px;
@@ -387,51 +420,51 @@
             border-color: rgba(0, 0, 0, 0);
             border-top-color: steelblue;
             border-bottom-width: 0px;
-            animation: rotate 2s linear infinite;  
+            animation: rotate 2s linear infinite;
             margin: 0px;
             display: inline-block;
             opacity: 0.7;
         }
-        .div-fill{
-            
-        }
-        .startp{                    
+        
+        .div-fill {}
+        
+        .startp {
             width: 100%;
-            text-align: center;                      
+            text-align: center;
             box-sizing: border-box;
         }
-        .startp>.fill{
+        
+        .startp>.fill {
             position: absolute;
             left: 0px;
             right: 0px;
-            top:0px;
+            top: 0px;
             bottom: 0px;
-            border:25px  solid steelblue;
+            border: 25px solid steelblue;
             opacity: 0.5;
-            transition: all 0.5s ;
+            transition: all 0.5s;
         }
-        .startp.out>.fill{
+        
+        .startp.out>.fill {
             border-width: 13px;
             opacity: 0.8;
         }
         
         @keyframes rotate {
             0% {
-                top:-10px;
-/*                -webkit-transform: rotateX(0deg);*/
-/*                transform: rotateY(0deg);*/
+                top: -10px;
+                /*                -webkit-transform: rotateX(0deg);*/
+                /*                transform: rotateY(0deg);*/
             }
-          
             50% {
-                top:-20px;
-/*                -webkit-transform: rotateX(180deg);*/
-/*                transform: rotateY(180deg);*/
+                top: -20px;
+                /*                -webkit-transform: rotateX(180deg);*/
+                /*                transform: rotateY(180deg);*/
             }
-           
             100% {
-                top:-10px;
-/*                -webkit-transform: rotateX(360deg);*/
-/*                transform: rotateY(360deg);*/
+                top: -10px;
+                /*                -webkit-transform: rotateX(360deg);*/
+                /*                transform: rotateY(360deg);*/
             }
         }
     </style>
@@ -454,7 +487,7 @@
 
     </div>
     <div class="bul hide" id="bul_to_copy" kind="0">
-    
+
     </div>
     <div class="endp" id="endp_to_copy">
         <div class="fill">

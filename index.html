@@ -4,6 +4,11 @@
     <title>TATD</title>
     <script src="script.js"></script>
     <style>
+        body {
+            font-family: Arial, Verdana, Sans-serif;
+            user-select:none;
+        }
+        
         #stage {
             width: 1000px;
             height: 600px;
@@ -13,13 +18,14 @@
             position: absolute;
             transform: translate(-50%, -50%);
             border: 10px solid #222;
+            perspective: 2000px;
         }
         
         #stage>div {
             position: relative;
         }
         
-        #left-panel {
+        #left_panel {
             width: 250px;
             height: 90%;
             float: left;
@@ -28,20 +34,27 @@
             box-sizing: border-box;
         }
         
-        #right-panel {
+        #right_panel {
             margin-left: 250px;
             height: 90%;
             background-color: #333;
             box-sizing: content-box;
+            position: relative;
+/*            perspective: 2000px;*/
         }
-        
-        #right-panel .ftr {
+        #my_panel{
+            transition: transform 1s ;
+            
+        }
+        #right_panel .ftr {
             height: 40px;
             width: 100%;
             background: #111;
             position: absolute;
             bottom: 0px;
             text-align: center;
+            transition: transform 1s ;
+            
             /*            display: inline-block;*/
         }
         
@@ -57,7 +70,6 @@
         .ftr .speed button {
             width: 33%;
             /*            height: 100%;*/
-            
             margin: 0px;
             /*            box-sizing: border-box;*/
         }
@@ -70,7 +82,7 @@
         
         .start {
             display: inline-block;
-            width: 33%;
+            width: 23%;
             position: absolute;
             left: 30%;
             height: 100%;
@@ -79,7 +91,6 @@
         .start button {
             width: 100%;
             /*            height: 38px;*/
-            
             margin: 0px;
             box-sizing: border-box;
         }
@@ -139,7 +150,7 @@
         }
         
         #mn {
-            background-color: white;
+            background-color: #333;
             height: 100%;
             padding-bottom: 40px;
             box-sizing: border-box;
@@ -150,7 +161,6 @@
             height: 50px;
             width: 50px;
             /*            border:1px black solid;*/
-            
             display: inline-block;
             -webkit-transition: 0.1s linear;
             -o-transition: 0.1s linear;
@@ -160,7 +170,6 @@
             border-bottom: 1px rgba(0,0,0,0) solid;
 */
             /*            border: 3px rgba(0, 0, 0, 0) solid;*/
-            
             text-align: center;
             position: relative;
         }
@@ -203,18 +212,75 @@
             text-align: center;
             transition: opacity 0.5s;
             opacity: 1;
+            z-index: 1;
         }
         
         .emy-panel {
-            height: 130px;
+            /*            height: 100px;*/
             margin: 15px;
             background-color: rgba(255, 255, 255, 0.15);
-            position:relative;
+            position: relative;
+            padding-top: 10px;
+            /*            cursor: pointer;*/
         }
-        .emy-panel .emy{
-            top:50%;
+        
+        .emy-panel * {
+            cursor: pointer;
+        }
+        
+        .emy-panel .emy {
+            top: 50%;
             left: 20%;
         }
+        
+        .emy-panel .abt {
+            position: absolute;
+            left: 40%;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+        
+        .emy-panel .abt .bar {
+            margin: 25px;
+            line-height: 0px;
+            position: relative;
+            margin-left: 0px;
+            color: white;
+        }
+        
+        .emy-panel .abt .bar span {
+            color: white;
+            background-color: steelblue;
+            width: 30px;
+            height: 10px;
+            display: inline-block;
+            line-height: 100%;
+            vertical-align: middle;
+            position: absolute;
+            left: 55px;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+        
+        .emy-panel p {
+            text-indent: 2em;
+            /*            position: absolute;*/
+            /*            top: 0px;*/
+            margin-top: 10px;
+            color: white;
+        }
+        
+        .emy-panel .top {
+            height: 70px;
+            position: relative;
+        }
+        
+        .emy-panel .bottom {
+            /*            height: 70px;*/
+            overflow: auto;
+            position: relative;
+        }
+
     </style>
 </head>
 
@@ -224,281 +290,305 @@
         <div id="head">
             <label id="title">LV1&nbsp;-&nbsp;TA</label>
         </div>
-        <div id="left-panel">
-            <div class="emy-panel">
-                <div class="emy  " id="emy_to_copy" kind="0">
-                    <div class="blood">
-                        <div class="fill"></div>
-                    </div>
-                </div>
-                <div class="abt">
-                    <div class="bar">
-                        <label>Health</label><span></span>
-                    </div>
-                    <div class="bar">
-                        <label>Speed</label><span></span>
-                    </div>
-                    <div class="bar">
-                        <label></label><span></span>
-                    </div>
-                    
-                </div>
-            </div>
+        <div id="my_panel">
+        <div id="left_panel">
+
+
         </div>
-        <div id="right-panel">
+        <div id="right_panel">
             <div id="mn">
 
             </div>
             <div class="ftr">
                 <span class="speed">
-                    <button class="top-btn">&times;1</button><button class="top-btn">&times;2</button><button class="top-btn">&times;4</button>
+                    <button class="top-btn" id="speedfor1">&times;1</button><button class="top-btn" id="speedfor2">&times;2</button><button class="top-btn" id="speedfor4">&times;4</button>
                 </span>
                 <div class="start">
                     <button class="top-btn" id="start">Start</button>
                 </div>
-                <div class="src">
-                    TATD for <a href="http://2015.js13kgames.com/" target="_Blank">js13kgames</a> by <a href="https://github.com/blackmiaool" target="_Blank">blackmiaool</a>
+                <div class="start" style="left:initial;right:30%;width:10%">
+                 
+                        <button class="top-btn" id="test_btn">Test</button>
+                   </div>
+                    <div class="src">
+                        TATD for <a href="http://2015.js13kgames.com/" target="_Blank">js13kgames</a> by <a href="https://github.com/blackmiaool" target="_Blank">blackmiaool</a>
+                    </div>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
-    <style>
-        .tower {
-            position: absolute;
-            height: 50px;
-            width: 50px;
-            overflow: visible;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            box-sizing: border-box;
-            /*            transition: 0.3s linear;*/
-        }
-        
-        .tower>svg {
-            height: 50px;
-            width: 50px;
-            z-index: 1000;
-            position: relative;
-        }
-        
-        .tower[kind="0"] .shape {
-            height: 50px;
-            width: 50px;
-            border: 7px rgba(51, 122, 182, 0.6) solid;
-            border-bottom-color: rgba(0, 0, 0, 0);
-            border-radius: 50%;
-            box-sizing: border-box;
-            display: inline-block;
-        }
-        
-        .tower[kind="0"] .shape .core {
-            /*
+        <style>
+            .tower {
+                position: absolute;
+                height: 50px;
+                width: 50px;
+                overflow: visible;
+                transform: translate(-50%, -50%);
+                z-index: 10;
+                box-sizing: border-box;
+                /*            transition: 0.3s linear;*/
+            }
+            
+            .tower>svg {
+                height: 50px;
+                width: 50px;
+                z-index: 1000;
+                position: relative;
+            }
+            
+            .tower[kind="0"] .shape {
+                height: 50px;
+                width: 50px;
+                border: 7px rgba(51, 122, 182, 0.6) solid;
+                border-bottom-color: rgba(0, 0, 0, 0);
+                border-radius: 50%;
+                box-sizing: border-box;
+                display: inline-block;
+            }
+            
+            .tower[kind="0"] .shape .core {
+                /*
             width: 10px;
             height: 10px;
 */
-            /*            box-sizing: border-box;*/
-            /*            width: 10px;*/
-            /*            height: 10px;*/
+                /*            box-sizing: border-box;*/
+                /*            width: 10px;*/
+                /*            height: 10px;*/
+                background-color: #66ccff;
+                top: 50%;
+                position: absolute;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: inline-block;
+                border: 6px solid rgba(102, 204, 255, 0);
+                border-radius: 50%;
+            }
             
-            background-color: #66ccff;
-            top: 50%;
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: inline-block;
-            border: 6px solid rgba(102, 204, 255, 0);
-            border-radius: 50%;
-        }
-        
-        .tower[kind="0"] .shape .core .horn {
-            width: 0px;
-            height: 0px;
-            border: solid rgba(0, 0, 0, 0);
-            border-width: 5px 20px;
-            border-left-color: steelblue;
-            transform: translate(0, -50%) rotate(270deg);
-            /*            rotate(90deg);*/
+            .tower[kind="0"] .shape .core .horn {
+                width: 0px;
+                height: 0px;
+                border: solid rgba(0, 0, 0, 0);
+                border-width: 5px 20px;
+                border-left-color: steelblue;
+                transform: translate(0, -50%) rotate(270deg);
+                /*            rotate(90deg);*/
+                transform-origin: 0% 38%;
+                position: absolute;
+                top: 0px;
+                box-sizing: border-box;
+            }
             
-            transform-origin: 0% 38%;
-            position: absolute;
-            top: 0px;
-            box-sizing: border-box;
-        }
-        
-        .tower[kind="0"] .shape .core .horn>div {}
-        
-        .tower>.fill {
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-        }
-        
-        .tower>.range {
-            transform: translate(-50%, -50%);
-            left: 50%;
-            top: 50%;
-            position: absolute;
-            border: 2px steelblue solid;
-            border-radius: 50%;
-            box-sizing: border-box;
-            transition: 0.3s ease-out;
-            width: 0px;
-            height: 0px;
-            background-color: rgba(51, 122, 182, 0.1);
-            opacity: 0;
-        }
-        
-        .tower>.range.active {
-            width: 150px;
-            height: 150px;
-            opacity: 1;
-        }
-        
-        .hide {
-            /*            display: none;*/
+            .tower[kind="0"] .shape .core .horn>div {}
             
-            visibility: hidden;
-        }
-        
-        .trans {
-            opacity: 0;
-        }
-        
-        .bul[kind="0"] {
-            background-color: #66ccff;
-            position: absolute;
-            transform: translate(-50%, -50%);
-            border: 4px solid rgba(0, 0, 0, 0);
-            border-radius: 50%;
-            height: 0px;
-            width: 0px;
-            left: 0px;
-            top: 0px;
-            transition: opacity 0.3s;
-        }
-        
-        .blood {
-            width: 25px;
-            height: 5px;
-            border: 1px green solid;
-            transform: translate(-50%, -50%);
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            overflow: hidden;
-        }
-        
-        .blood>.fill {
-            position: absolute;
-            right: 0%;
-            width: 100%;
-            height: 100%;
-            background-color: red;
-            box-sizing: content-box;
-            top: 1px;
-        }
-        
-        .endp {
-            -webkit-perspective: 250;
-            perspective: 200;
-            width: 100%;
-            text-align: center;
-            position: absolute;
-            left: 0px;
-            right: 0px;
-            top: 0px;
-        }
-        
-        .endp>.fill {
-            position: relative;
-            top: -15px;
-            height: 0px;
-            width: 0px;
-            border-width: 40px 11px;
-            border-style: solid;
-            border-color: rgba(0, 0, 0, 0);
-            border-top-color: steelblue;
-            border-bottom-width: 0px;
-            animation: rotate 2s linear infinite;
-            margin: 0px;
-            display: inline-block;
-            opacity: 0.7;
-        }
-        
-        .div-fill {}
-        
-        .startp {
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        
-        .startp>.fill {
-            position: absolute;
-            left: 0px;
-            right: 0px;
-            top: 0px;
-            bottom: 0px;
-            border: 25px solid steelblue;
-            opacity: 0.5;
-            transition: all 0.5s;
-        }
-        
-        .startp.out>.fill {
-            border-width: 13px;
-            opacity: 0.8;
-        }
-        
-        @keyframes rotate {
-            0% {
+            .tower>.fill {
+                height: 100%;
+                width: 100%;
+                position: absolute;
+                top: 0;
+            }
+            
+            .tower>.range {
+                transform: translate(-50%, -50%);
+                left: 50%;
+                top: 50%;
+                position: absolute;
+                border: 2px steelblue solid;
+                border-radius: 50%;
+                box-sizing: border-box;
+                transition: 0.3s ease-out;
+                width: 0px;
+                height: 0px;
+                background-color: rgba(51, 122, 182, 0.1);
+                opacity: 0;
+            }
+            
+            .tower>.range.active {
+                width: 150px;
+                height: 150px;
+                opacity: 1;
+            }
+            
+            .hide {
+                /*            display: none;*/
+                visibility: hidden;
+            }
+            
+            .trans {
+                opacity: 0;
+            }
+            
+            .bul {
+                z-index: 1;
+            }
+            
+            .bul[kind="0"] {
+                background-color: #66ccff;
+                position: absolute;
+                transform: translate(-50%, -50%);
+                border: 4px solid rgba(0, 0, 0, 0);
+                border-radius: 50%;
+                height: 0px;
+                width: 0px;
+                left: 0px;
+                top: 0px;
+                transition: opacity 0.3s;
+            }
+            
+            .blood {
+                width: 25px;
+                height: 5px;
+                border: 1px green solid;
+                transform: translate(-50%, -50%);
+                position: absolute;
                 top: -10px;
-                /*                -webkit-transform: rotateX(0deg);*/
-                /*                transform: rotateY(0deg);*/
+                left: 50%;
+                overflow: hidden;
             }
-            50% {
-                top: -20px;
-                /*                -webkit-transform: rotateX(180deg);*/
-                /*                transform: rotateY(180deg);*/
+            
+            .blood>.fill {
+                position: absolute;
+                right: 0%;
+                width: 100%;
+                height: 100%;
+                background-color: red;
+                box-sizing: content-box;
+                top: 1px;
             }
-            100% {
-                top: -10px;
-                /*                -webkit-transform: rotateX(360deg);*/
-                /*                transform: rotateY(360deg);*/
+            
+            .endp {
+                -webkit-perspective: 250;
+                perspective: 200;
+                width: 100%;
+                text-align: center;
+                position: absolute;
+                left: 0px;
+                right: 0px;
+                top: 0px;
             }
-        }
-    </style>
-    <div class="emy hide trans" id="emy_to_copy" kind="0">
-        <div class="blood">
-            <div class="fill"></div>
+            
+            .endp>.fill {
+                position: relative;
+                top: -15px;
+                height: 0px;
+                width: 0px;
+                border-width: 40px 11px;
+                border-style: solid;
+                border-color: rgba(0, 0, 0, 0);
+                border-top-color: steelblue;
+                border-bottom-width: 0px;
+                animation: rotate 2s linear infinite;
+                margin: 0px;
+                display: inline-block;
+                opacity: 0.2;
+                transition: transform 3s ease-in;
+                
+            }
+            .endp>.fill.rotate{
+                transform: rotateY(1440deg);
+            }
+            
+            .div-fill {}
+            
+            .startp {
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            
+            .startp>.fill {
+                position: absolute;
+                left: 0px;
+                right: 0px;
+                top: 0px;
+                bottom: 0px;
+                border: 25px solid steelblue;
+                opacity: 0.5;
+                transition: all 0.5s;
+            }
+            
+            .startp.out>.fill {
+                border-width: 13px;
+                opacity: 0.8;
+            }
+            
+            @keyframes rotate {
+                0% {
+                    top: -10px;
+                    /*                -webkit-transform: rotateX(0deg);*/
+                    /*                transform: rotateY(0deg);*/
+                }
+                50% {
+                    top: -20px;
+                    /*                -webkit-transform: rotateX(180deg);*/
+                    /*                transform: rotateY(180deg);*/
+                }
+                100% {
+                    top: -10px;
+                    /*                -webkit-transform: rotateX(360deg);*/
+                    /*                transform: rotateY(360deg);*/
+                }
+            }
+        </style>
+        <div class="emy hide trans" id="emy_to_copy" kind="0">
+            <div class="blood">
+                <div class="fill"></div>
+            </div>
         </div>
-    </div>
-    <div class="tower hide" id="tower_to_copy" kind="0">
-        <div class="range">
-        </div>
+        <div class="tower hide" id="tower_to_copy" kind="0">
+            <div class="range">
+            </div>
 
 
-        <div class="shape">
+            <div class="shape">
 
-            <div class="core"></div>
-        </div>
-        <div class="fill">
-        </div>
+                <div class="core"></div>
+            </div>
+            <div class="fill">
+            </div>
 
-    </div>
-    <div class="bul hide" id="bul_to_copy" kind="0">
+        </div>
+        <div class="emy-panel hide" id="emy-panel_to_copy">
+            <div class="top">
 
-    </div>
-    <div class="endp" id="endp_to_copy">
-        <div class="fill">
+                <!--
+            <div class="emy">
+
+            </div>
+-->
+
+                <div class="abt">
+                    <div class="bar">
+                        <label>HP</label><span></span>
+                    </div>
+                    <div class="bar">
+                        <label>Move</label><span></span>
+                    </div>
+                    <div class="bar">
+                        <label>Str</label>
+                        <span></span>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="bottom">
+                <p>
+                    Basic warrior.
+                </p>
+            </div>
         </div>
-    </div>
-    <div class="startp" id="startp_to_copy">
-        <div class="fill">
+        <div class="bul hide" id="bul_to_copy" kind="0">
+
         </div>
-    </div>
+        <div class="endp" id="endp_to_copy">
+            <div class="fill">
+            </div>
+        </div>
+        <div class="startp" id="startp_to_copy">
+            <div class="fill">
+            </div>
+        </div>
 </body>
-<script>
-</script>
+
 
 </html>

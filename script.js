@@ -58,8 +58,8 @@ window.onload = function () {
     var emys = [[100, 10, "None", "Basic warrior.", function () {
         var a = 1;
     }], ];
-    //rage,power,callback
-    var towers = [[2.5, 10, function () {
+    //rage,power,des,callback
+    var towers = [[2.5, 10,"Basic tower." ,function () {
 
     }]];
 
@@ -580,14 +580,34 @@ window.onload = function () {
         )
 
     }
-
-
+    function clone_tpl(dom){
+        dom=dom.cloneNode(true);
+        removeClass(dom,"hide");
+        removeClass(dom,"trans");
+        dom.id="";
+        return dom;
+    }
+    var catching_thing;
+    mn.onmousemove=function(para){
+        console.log(para)
+        console.log(mn.style)
+        if(typeof(catching_thing)!="undefined"){
+            console.log("m")
+            catching_thing.style.left=para.x;
+            catching_thing.style.top=para.y;
+        }
+    }
+    function put_tower(kind){
+         catching_thing=clone_tpl($("#tower_to_copy[kind='"+kind+"']"));
+        catching_thing.style["pointer-events"]="none";
+        $("body").appendChild(catching_thing);
+    }
 
 
     var maps_hp = [100, 120]
     var Map = function (level) {
         var m = this;
-        this.side = "ta";
+        this.side = "td";
         this.load_map(level);
         this.reversing = false;
         map = maps[level];
@@ -631,7 +651,7 @@ window.onload = function () {
         var m = this;
         this.remove_things();
         left_panel.innerHTML = "";
-        var tpl = $("#emy-panel_to_copy")
+        var tpl = $("#emy_panel_to_copy")
         emys.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
@@ -643,6 +663,7 @@ window.onload = function () {
             var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
             removeClass(emy, "hide trans")
             console.log(emy)
+            emy.id=""
             console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
@@ -652,15 +673,15 @@ window.onload = function () {
 
     }
     Map.prototype.remove_things = function () {
-        console.log("remove_things")
+        //        console.log("remove_things")
         names.forEach(
             function (name) {
-                console.log("name ", name)
-                console.log(miao_objs[name])
+                //                console.log("name ", name)
+                //                console.log(miao_objs[name])
                 var len = miao_objs[name].length;
                 for (var i = len - 1; i >= 0; i--) {
                     var obj = miao_objs[name][i];
-                    console.log(obj)
+                    //                    console.log(obj)
                     if (obj.destroy) {
                         obj.destroy()
                     } else {
@@ -677,28 +698,50 @@ window.onload = function () {
 
 
         left_panel.innerHTML = "";
-        //        var tpl = $("#emy-panel_to_copy")
-        //        towers.forEach(function (v, k) { 
-        //            var d = tpl.cloneNode(true);
-        //            removeClass(d, "hide")
-        //            d.onclick = function () {
-        //                console.log("ss")
-        //                put_emy(k, m.map_start)
-        //            }
-        //
-        //            var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
-        //            removeClass(emy, "hide trans")
-        //            console.log(emy)
-        //            console.log(d, d.querySelector(".emy"))
-        //            left_panel.appendChild(d);
-        //            //                d.replaceChild(emy, d.querySelector(".top>.emy"));
-        //            d.querySelector(".top").appendChild(emy)
-        //
-        //        })
+        var tpl = $("#tower_panel_to_copy")
+        towers.forEach(function (v, k) {
+            var d = tpl.cloneNode(true);
+            removeClass(d, "hide")
+            d.onclick = function () {
+                console.log("ss")
+                put_tower(k, m.map_start)
+            }
+
+            var tower = $("#tower_to_copy[kind='" + k + "']").cloneNode(true);
+            removeClass(tower, "hide")
+            removeClass(tower,"trans")
+            console.log(tower)
+            tower.id=""
+            left_panel.appendChild(d);
+            d.querySelector(".top").appendChild(tower)
+            d.querySelector(".bottom p").innerHTML=v[2];
+
+        })
     }
 
     function reverse(dom) {
-        dom.style.transform += "rotateY(180deg)";
+        console.log(dom)
+        var rotate = "rotateY(180deg)";
+        console.log(dom.style.transform.lastIndexOf(rotate))
+        if (dom.style.transform.lastIndexOf(rotate) > -1) {
+            console.log("replace", dom.style.transform)
+            var temp = dom.style.transform;
+            var sps = temp.split(" ")
+            if (sps.length > 1)
+                temp = sps[0]
+            else
+                temp = ""
+                //            temp.replace(/rot/g,"s")
+            console.log("temp", temp)
+            dom.style.transform = temp;
+
+        } else {
+            console.log("+=", " " + dom.style.transform)
+            dom.style.transform += rotate;
+        }
+        console.log("finish", dom.style.transform)
+            //        dom.style.transform.replace("rotateY(180deg)","");
+            //        dom.style.transform += "rotateY(180deg)";
     }
     Map.prototype.half_level_finish = function (state) {
         var m = this;
@@ -708,8 +751,13 @@ window.onload = function () {
         else
             this.reversing = true;
         var endp = $(".endp>.fill")
-        endp.style.transition = "transform " + dg(3.5, 0.1) + "s ease-in";
-        addClass(endp, "rotate")
+        endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-in";
+        if (state == "ta") {
+            addClass(endp, "rotate")
+        } else {
+            removeClass(endp, "rotate")
+        }
+
         setTimeout(
             function () {
                 m.reversing = false;
@@ -721,7 +769,7 @@ window.onload = function () {
                 reverse(my_panel);
                 reverse(my_panel.querySelector(".ftr"))
 
-                endp.style.transition = "transform " + dg(3.5, 0.1) + "s ease-out";
+                endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-out";
                 removeClass(endp, "rotate")
             }, dg(3000, 0)
         )

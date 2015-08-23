@@ -177,15 +177,16 @@
         .grid[lang=wall]:hover {
             border-color: steelblue;
             cursor: pointer;
+            border:3px steelblue solid;
         }
         
         .grid[lang=wall] {
             background-color: #444;
             /*            border: */
-            /*
-            border-right:1px #555 solid;
-            border-bottom:1px #555 solid;
-*/
+            
+            border:1px #555 solid;
+            
+
         }
         
         .grid[lang=road] {
@@ -228,10 +229,11 @@
             cursor: pointer;
         }
         
-        .emy-panel .emy {
+        .emy-panel .emy,.emy-panel .tower {
             top: 50%;
             left: 20%;
         }
+     
         
         .emy-panel .abt {
             position: absolute;
@@ -551,7 +553,32 @@
         </div>
 
     </div>
-    <div class="emy-panel hide" id="emy-panel_to_copy">
+    <div class="emy-panel hide" id="tower_panel_to_copy">
+        <div class="top">
+
+
+            <div class="abt">
+                <div class="bar">
+                    <label>Str</label><span></span>
+                </div>
+                <div class="bar">
+                    <label>Rage</label><span></span>
+                </div>
+                <div class="bar">
+                    <label>Speed</label>
+                    <span></span>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="bottom">
+            <p>
+                Basic warrior.
+            </p>
+        </div>
+    </div>
+    <div class="emy-panel hide" id="emy_panel_to_copy">
         <div class="top">
 
             <!--

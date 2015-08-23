@@ -34,6 +34,7 @@ window.onload = function () {
         bul: [],
         tower: [],
     }
+    var mouseisinmn=false;
     var start_grid;
     var end_grid;
     var dirs;
@@ -142,7 +143,9 @@ window.onload = function () {
     var $ = function (tag) {
         return doc.querySelector(tag);
     }
-
+    var $$=function(tag){
+        return doc.querySelectorAll(tag);
+    }
     var maps = [
             [
                 "111111111111111",
@@ -210,6 +213,7 @@ window.onload = function () {
     }
     //        put(grids);
     just_a_grid = $(".grid");
+    csl.log(just_a_grid)
     //        put( );
 
     //    function set_start_grid(){
@@ -332,13 +336,22 @@ window.onload = function () {
 
     function get_grid_pos(pos) {
 
-        var h = just_a_grid.offsetHeight;
-        var w = just_a_grid.offsetWidth;
+        var h = just_a_grid.clientHeight ;
+        var w = just_a_grid.clientWidth;
 
         return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
     }
 
-
+    function  hasChild(parent,child){
+        while(child.parentElement){
+            
+//            console.log(child.parentNode)
+            if(child.parentNode==parent)
+                return true;
+            child=child.parentElement;
+        }
+        return false;
+    }
 
     miao_obj = function () {}
     miao_obj.prototype.init = function (kind, pos, other) {
@@ -589,8 +602,8 @@ window.onload = function () {
     }
     var catching_thing;
     mn.onmousemove=function(para){
-        console.log(para)
-        console.log(mn.style)
+//        console.log(para)
+//        console.log(mn.style)
         if(typeof(catching_thing)!="undefined"){
             console.log("m")
             catching_thing.style.left=para.x;
@@ -600,10 +613,38 @@ window.onload = function () {
     function put_tower(kind){
          catching_thing=clone_tpl($("#tower_to_copy[kind='"+kind+"']"));
         catching_thing.style["pointer-events"]="none";
+        addClass(catching_thing,"catching");
+        addClass($("body"),"catchthing");
+//        addClass(catching_thing,"hide");
         $("body").appendChild(catching_thing);
     }
+    
+    mn.onmouseover=function(){
+        if(mouseisinmn){//trigger something
+            
+        }
+        else
+        {
+            mouseisinmn=true;
+            console.log("enter");
+            addClass(mn,"active")
+            addClass($("body"),"active")
+            removeClass($("body"),"inactive");
+        }
+           
 
+    }
+    mn.onmouseout=function(para){
+        if(!hasChild(mn,para.toElement)){//really out
+            mouseisinmn=false;
+            console.log("leave");
+            removeClass(mn,"active")
+            removeClass($("body"),"active")
+            addClass($("body"),"inactive")
+            
+        }
 
+    }
     var maps_hp = [100, 120]
     var Map = function (level) {
         var m = this;

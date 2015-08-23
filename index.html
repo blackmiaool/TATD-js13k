@@ -174,21 +174,27 @@
             position: relative;
         }
         
-        .grid[lang=wall]:hover {
-            border-color: steelblue;
-            cursor: pointer;
-            border:3px steelblue solid;
-        }
+        
         
         .grid[lang=wall] {
             background-color: #444;
             /*            border: */
             
-            border:1px #555 solid;
+            
             
 
         }
-        
+        body.inactive .catching{
+            display: none;
+        }
+        #mn.active .grid[lang=wall] {
+            border:1px #555 solid;
+        }
+        #mn.active .grid[lang=wall]:hover {
+            border-color: steelblue;
+            cursor: pointer;
+            border:3px steelblue solid;
+        }
         .grid[lang=road] {
             background-color: #222;
         }

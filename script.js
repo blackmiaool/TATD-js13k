@@ -1,6 +1,25 @@
 window.onload = function () {
 
     g = {};
+    var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
+    dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
+    dbg_btn.onclick = function () {
+        dbg = !dbg;
+        localStorage.setItem("dbg", dbg ? "true" : "false");
+        console.log("dbg=", dbg)
+        dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg"
+    }
+
+
+    function dg(a, b) {
+        if (!dbg)
+            return a;
+        else
+            return b;
+    }
+    if (dbg) {
+        my_panel.style.transition = "transform 0s"
+    }
     var level = 0;
     var fps = 60;
     var names = ["bul", "tower", "emy"];
@@ -39,9 +58,9 @@ window.onload = function () {
     var emys = [[100, 10, "None", "Basic warrior.", function () {
         var a = 1;
     }], ];
-//rage,power,callback
-    var towers=[[2.5,10,function(){
-        
+    //rage,power,callback
+    var towers = [[2.5, 10, function () {
+
     }]];
 
 
@@ -312,6 +331,7 @@ window.onload = function () {
 
 
     function get_grid_pos(pos) {
+
         var h = just_a_grid.offsetHeight;
         var w = just_a_grid.offsetWidth;
 
@@ -330,6 +350,7 @@ window.onload = function () {
             this.speed = speed[this.name][kind];
         removeClass(this.d, "hide")
         this.style = d.style;
+
         this.set_pos(pos);
         this.register();
     }
@@ -411,7 +432,7 @@ window.onload = function () {
     }
     Tower.prototype = new miao_obj();
     Tower.prototype.set_pos = function (pos) {
-        console.log("setpos", pos)
+
         this.pos = clone(pos);
         var array = get_grid_pos(pos);
         obj_add(this.style, {
@@ -466,6 +487,7 @@ window.onload = function () {
 
     var Emy = function (kind, pos) {
         this.name = "emy";
+
         this.init.apply(this, arguments);
         obj_add(this, {
             is_continue: true,
@@ -565,6 +587,7 @@ window.onload = function () {
     var maps_hp = [100, 120]
     var Map = function (level) {
         var m = this;
+        this.side = "ta";
         this.load_map(level);
         this.reversing = false;
         map = maps[level];
@@ -582,10 +605,14 @@ window.onload = function () {
                 }, 1, d);
             }
         );
-        this.ta_init();
-        
+        if (this.side == "ta")
+            this.ta_enter();
+        else {
+            this.td_enter();
+        }
 
-        
+
+
 
         tower_create(0, 5, 3);
         tower_create(0, 7, 3);
@@ -600,14 +627,16 @@ window.onload = function () {
     Map.prototype.suffer = function (emy) {
         this.set_hp(this.hp - emy.str);
     }
-    Map.prototype.ta_init=function(){
-        left_panel.innerHTML="";
+    Map.prototype.ta_enter = function () {
+        var m = this;
+        this.remove_things();
+        left_panel.innerHTML = "";
         var tpl = $("#emy-panel_to_copy")
         emys.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
-                console.log("ss")
+
                 put_emy(k, m.map_start)
             }
 
@@ -620,65 +649,102 @@ window.onload = function () {
             d.querySelector(".top").appendChild(emy)
 
         })
-        
+
     }
-    Map.prototype.td_init=function(){
-        left_panel.innerHTML="";
-        var tpl = $("#emy-panel_to_copy")
-        towers.forEach(function (v, k) { 
-            var d = tpl.cloneNode(true);
-            removeClass(d, "hide")
-            d.onclick = function () {
-                console.log("ss")
-                put_emy(k, m.map_start)
+    Map.prototype.remove_things = function () {
+        console.log("remove_things")
+        names.forEach(
+            function (name) {
+                console.log("name ", name)
+                console.log(miao_objs[name])
+                var len = miao_objs[name].length;
+                for (var i = len - 1; i >= 0; i--) {
+                    var obj = miao_objs[name][i];
+                    console.log(obj)
+                    if (obj.destroy) {
+                        obj.destroy()
+                    } else {
+
+                        obj.unregister();
+                    }
+                }
             }
+        )
+    }
+    Map.prototype.td_enter = function () {
+        var m = this;
+        this.remove_things();
 
-            var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
-            removeClass(emy, "hide trans")
-            console.log(emy)
-            console.log(d, d.querySelector(".emy"))
-            left_panel.appendChild(d);
-            //                d.replaceChild(emy, d.querySelector(".top>.emy"));
-            d.querySelector(".top").appendChild(emy)
 
-        })
+        left_panel.innerHTML = "";
+        //        var tpl = $("#emy-panel_to_copy")
+        //        towers.forEach(function (v, k) { 
+        //            var d = tpl.cloneNode(true);
+        //            removeClass(d, "hide")
+        //            d.onclick = function () {
+        //                console.log("ss")
+        //                put_emy(k, m.map_start)
+        //            }
+        //
+        //            var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
+        //            removeClass(emy, "hide trans")
+        //            console.log(emy)
+        //            console.log(d, d.querySelector(".emy"))
+        //            left_panel.appendChild(d);
+        //            //                d.replaceChild(emy, d.querySelector(".top>.emy"));
+        //            d.querySelector(".top").appendChild(emy)
+        //
+        //        })
+    }
+
+    function reverse(dom) {
+        dom.style.transform += "rotateY(180deg)";
+    }
+    Map.prototype.half_level_finish = function (state) {
+        var m = this;
+
+        if (this.reversing)
+            return;
+        else
+            this.reversing = true;
+        var endp = $(".endp>.fill")
+        endp.style.transition = "transform " + dg(3.5, 0.1) + "s ease-in";
+        addClass(endp, "rotate")
+        setTimeout(
+            function () {
+                m.reversing = false;
+            }, dg(4000, 0)
+        )
+        setTimeout(
+            function () {
+
+                reverse(my_panel);
+                reverse(my_panel.querySelector(".ftr"))
+
+                endp.style.transition = "transform " + dg(3.5, 0.1) + "s ease-out";
+                removeClass(endp, "rotate")
+            }, dg(3000, 0)
+        )
+
+        setTimeout(
+            function () {
+                reverse(left_panel);
+                if (m.side == "ta") {
+                    m.side = "td";
+                    m.td_enter();
+                } else {
+                    m.side = "ta";
+                    m.ta_enter();
+                }
+            }, dg(3300, 0)
+        )
     }
     Map.prototype.ta_finish = function () {
-        var map = this;
-        if (this.reversing)
-            return;
-        else
-            this.reversing = true;
-        addClass($(".endp>.fill"),"rotate")
-        setTimeout(
-            function () {
-                map.reversing = false;
-            }, 4000
-        )
-        setTimeout(
-            function () {
-                my_panel.style.transform += "rotateY(180deg)";
-                my_panel.querySelector(".ftr").style.transform += "rotateY(180deg)";
-            }, 3000
-        )
+        this.half_level_finish("ta");
 
-        setTimeout(
-            function () {
-                map.td_init();
-            }, 3500
-        )
     }
     Map.prototype.td_finish = function () {
-        var map = this;
-        if (this.reversing)
-            return;
-        else
-            this.reversing = true;
-        setTimeout(
-            function () {
-                map.reversing = false;
-            }, 1000
-        )
+        this.half_level_finish("td");
     }
     Map.prototype.load_map = function (level) {
         for (var row = 0; row < row_sum; row++) {

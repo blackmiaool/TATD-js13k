@@ -34,7 +34,7 @@ window.onload = function () {
         bul: [],
         tower: [],
     }
-    var mouseisinmn=false;
+    var mouseisinmn = false;
     var start_grid;
     var end_grid;
     var dirs;
@@ -60,7 +60,7 @@ window.onload = function () {
         var a = 1;
     }], ];
     //rage,power,des,callback
-    var towers = [[2.5, 10,"Basic tower." ,function () {
+    var towers = [[2.5, 10, "Basic tower.", function () {
 
     }]];
 
@@ -143,9 +143,10 @@ window.onload = function () {
     var $ = function (tag) {
         return doc.querySelector(tag);
     }
-    var $$=function(tag){
+    var $$ = function (tag) {
         return doc.querySelectorAll(tag);
     }
+    body = $("body")
     var maps = [
             [
                 "111111111111111",
@@ -200,21 +201,23 @@ window.onload = function () {
     }
 
     for (var i = 0; i < row_sum * column_sum; i++) {
-        var x = parseInt(i / column_sum);
-        var y = i % column_sum;
-        if (!grids[y]) {
-            grids[y] = [];
+        var y = parseInt(i / column_sum);
+        var x = i % column_sum;
+        if (!grids[x]) {
+            grids[x] = [];
         }
         var node = doc.createElement("div");
-        grids[y][x] = node;
+        grids[x][y] = node;
 
         node.className = "grid";
+        node.dataset.x=x;
+        node.dataset.y=y;
         mn.appendChild(node);
     }
     //        put(grids);
     just_a_grid = $(".grid");
     csl.log(just_a_grid)
-    //        put( );
+        //        put( );
 
     //    function set_start_grid(){
     //        
@@ -335,20 +338,22 @@ window.onload = function () {
 
 
     function get_grid_pos(pos) {
-
-        var h = just_a_grid.clientHeight ;
-        var w = just_a_grid.clientWidth;
-
+//        csl.log(just_a_grid)
+//        var h = just_a_grid.clientHeight;
+//        var w = just_a_grid.clientWidth;
+        var h=50,w=50;
         return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
     }
 
-    function  hasChild(parent,child){
-        while(child.parentElement){
-            
-//            console.log(child.parentNode)
-            if(child.parentNode==parent)
+    function hasChild(parent, child) {
+        if (!child)
+            return
+        while (child.parentElement) {
+
+            //            console.log(child.parentNode)
+            if (child.parentNode == parent)
                 return true;
-            child=child.parentElement;
+            child = child.parentElement;
         }
         return false;
     }
@@ -593,56 +598,79 @@ window.onload = function () {
         )
 
     }
-    function clone_tpl(dom){
-        dom=dom.cloneNode(true);
-        removeClass(dom,"hide");
-        removeClass(dom,"trans");
-        dom.id="";
+
+    function clone_tpl(dom) {
+        dom = dom.cloneNode(true);
+        removeClass(dom, "hide");
+        removeClass(dom, "trans");
+        dom.id = "";
         return dom;
     }
     var catching_thing;
-    mn.onmousemove=function(para){
-//        console.log(para)
-//        console.log(mn.style)
-        if(typeof(catching_thing)!="undefined"){
-            console.log("m")
-            catching_thing.style.left=para.x;
-            catching_thing.style.top=para.y;
+    mn.onmousemove = function (para) {
+        //        console.log(para)
+        //        console.log(mn.style)
+        if (is_catching()) {
+//            console.log("m")
+            catching_thing.style.left = para.x;
+            catching_thing.style.top = para.y;
         }
     }
-    function put_tower(kind){
-         catching_thing=clone_tpl($("#tower_to_copy[kind='"+kind+"']"));
-        catching_thing.style["pointer-events"]="none";
-        addClass(catching_thing,"catching");
-        addClass($("body"),"catchthing");
-//        addClass(catching_thing,"hide");
-        $("body").appendChild(catching_thing);
+    function is_catching(){
+        return (typeof (catching_thing) != "undefined");
     }
-    
-    mn.onmouseover=function(){
-        if(mouseisinmn){//trigger something
-            
+    function put_tower(kind) {
+        catching_thing = clone_tpl($("#tower_to_copy[kind='" + kind + "']"));
+        catching_thing.style["pointer-events"] = "none";
+        addClass(catching_thing, "catching");
+        addClass(body, "catching");
+        //        addClass(catching_thing,"hide");
+        body.appendChild(catching_thing);
+        addClass($("body"), "inactive")
+    }
+    body.oncontextmenu = function () {
+        if (is_catching()) {
+            console.log("ww")
+            catching_thing.parentNode.removeChild(catching_thing);
+            catching_thing = undefined;
+            removeClass(body, "catching");
+            return false;
         }
-        else
-        {
-            mouseisinmn=true;
+    }
+//    body.onmousedown = function () {
+//
+//    }
+    mn.onmouseover = function () {
+        if (mouseisinmn) { //trigger something
+
+        } else {
+            mouseisinmn = true;
             console.log("enter");
-            addClass(mn,"active")
-            addClass($("body"),"active")
-            removeClass($("body"),"inactive");
+            addClass(mn, "active")
+            addClass(body, "active")
+            removeClass(body, "inactive");
         }
-           
+
 
     }
-    mn.onmouseout=function(para){
-        if(!hasChild(mn,para.toElement)){//really out
-            mouseisinmn=false;
+    mn.onmouseout = function (para) {
+        if (!hasChild(mn, para.toElement)) { //really out
+            mouseisinmn = false;
             console.log("leave");
-            removeClass(mn,"active")
-            removeClass($("body"),"active")
-            addClass($("body"),"inactive")
-            
+            removeClass(mn, "active")
+            removeClass(body, "active")
+            addClass(body, "inactive")
+
         }
+
+    }
+    mn.onclick=function(event){
+        if(catching_thing&&event.target.lang=="wall"){
+            tower_create(0,parseInt(event.target.dataset.x),parseInt(event.target.dataset.y))
+            csl.log(parseInt(event.target.dataset.x),parseInt(event.target.dataset.y))
+        }
+
+        
 
     }
     var maps_hp = [100, 120]
@@ -704,7 +732,7 @@ window.onload = function () {
             var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
             removeClass(emy, "hide trans")
             console.log(emy)
-            emy.id=""
+            emy.id = ""
             console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
@@ -750,12 +778,12 @@ window.onload = function () {
 
             var tower = $("#tower_to_copy[kind='" + k + "']").cloneNode(true);
             removeClass(tower, "hide")
-            removeClass(tower,"trans")
+            removeClass(tower, "trans")
             console.log(tower)
-            tower.id=""
+            tower.id = ""
             left_panel.appendChild(d);
             d.querySelector(".top").appendChild(tower)
-            d.querySelector(".bottom p").innerHTML=v[2];
+            d.querySelector(".bottom p").innerHTML = v[2];
 
         })
     }

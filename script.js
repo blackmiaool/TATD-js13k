@@ -666,7 +666,7 @@ window.onload = function () {
     }
     mn.onclick=function(event){
         if(catching_thing&&event.target.lang=="wall"){
-            tower_create(0,parseInt(event.target.dataset.x),parseInt(event.target.dataset.y))
+            tower_create(catching_thing.kind,parseInt(event.target.dataset.x),parseInt(event.target.dataset.y))
             csl.log(parseInt(event.target.dataset.x),parseInt(event.target.dataset.y))
         }
 

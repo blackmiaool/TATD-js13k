@@ -70,6 +70,7 @@
         .ftr .speed button {
             width: 33%;
             /*            height: 100%;*/
+            
             margin: 0px;
             /*            box-sizing: border-box;*/
         }
@@ -91,6 +92,7 @@
         .start button {
             width: 100%;
             /*            height: 38px;*/
+            
             margin: 0px;
             box-sizing: border-box;
         }
@@ -137,6 +139,7 @@
             border-bottom: 4px #bbb solid;
             text-align: center;
             box-sizing: border-box;
+            perspective: 500px;
         }
         
         #head>#title {
@@ -145,8 +148,13 @@
             top: 50%;
             left: 50%;
             position: absolute;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) rotateX(0deg);
             font-family: Arial, Verdana, Sans-serif;
+            transition: transform 1s;
+        }
+        
+        #head>#title.td {
+            transform: translate(-50%, -50%) rotateX(360deg);
         }
         
         #mn {
@@ -161,6 +169,7 @@
             height: 50px;
             width: 50px;
             /*            border:1px black solid;*/
+            
             display: inline-block;
             -webkit-transition: 0.1s linear;
             -o-transition: 0.1s linear;
@@ -170,31 +179,30 @@
             border-bottom: 1px rgba(0,0,0,0) solid;
 */
             /*            border: 3px rgba(0, 0, 0, 0) solid;*/
+            
             text-align: center;
             position: relative;
         }
         
-        
-        
         .grid[lang=wall] {
             background-color: #444;
             /*            border: */
-            
-            
-            
-
         }
-        body.inactive .catching{
+        
+        body.inactive .catching {
             display: none;
         }
+        
         body.catching #mn.active .grid[lang=wall] {
-            border:1px #555 solid;
+            border: 1px #555 solid;
         }
+        
         body.catching #mn.active .grid[lang=wall]:hover {
             border-color: steelblue;
             cursor: pointer;
-            border:3px steelblue solid;
+            border: 3px steelblue solid;
         }
+        
         .grid[lang=road] {
             background-color: #222;
         }
@@ -224,6 +232,7 @@
         
         .emy-panel {
             /*            height: 100px;*/
+            
             margin: 15px;
             background-color: rgba(255, 255, 255, 0.15);
             position: relative;
@@ -235,11 +244,11 @@
             cursor: pointer;
         }
         
-        .emy-panel .emy,.emy-panel .tower {
+        .emy-panel .emy,
+        .emy-panel .tower {
             top: 50%;
             left: 20%;
         }
-     
         
         .emy-panel .abt {
             position: absolute;
@@ -274,6 +283,7 @@
             text-indent: 2em;
             /*            position: absolute;*/
             /*            top: 0px;*/
+            
             margin-top: 10px;
             color: white;
         }
@@ -285,6 +295,7 @@
         
         .emy-panel .bottom {
             /*            height: 70px;*/
+            
             overflow: auto;
             position: relative;
         }
@@ -325,6 +336,7 @@
             /*            box-sizing: border-box;*/
             /*            width: 10px;*/
             /*            height: 10px;*/
+            
             background-color: #66ccff;
             top: 50%;
             position: absolute;
@@ -343,6 +355,7 @@
             border-left-color: steelblue;
             transform: translate(0, -50%) rotate(270deg);
             /*            rotate(90deg);*/
+            
             transform-origin: 0% 38%;
             position: absolute;
             top: 0px;
@@ -381,6 +394,7 @@
         
         .hide {
             /*            display: none;*/
+            
             visibility: hidden;
         }
         
@@ -498,6 +512,12 @@
                 /*                -webkit-transform: rotateX(360deg);*/
                 /*                transform: rotateY(360deg);*/
             }
+        }
+        
+        #progress {
+            color: white;
+            position: relative;
+            bottom: 13px;
         }
     </style>
 </head>
@@ -620,6 +640,7 @@
     <div class="endp" id="endp_to_copy">
         <div class="fill">
         </div>
+        <label id="progress">0/10</label>
     </div>
     <div class="startp" id="startp_to_copy">
         <div class="fill">

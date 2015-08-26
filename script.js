@@ -147,6 +147,30 @@ window.onload = function () {
         return doc.querySelectorAll(tag);
     }
     body = $("body")
+    btn1.onclick = function () {
+        addClass(title, "td");
+        setTimeout(
+            function () {
+                title.innerHTML = "LV1&nbsp;-&nbsp;TD";
+            }, 250
+        )
+
+    }
+    btn2.onclick=function(){
+        var output_str="";
+        miao_objs.tower.forEach(
+            function(t){
+                output_str+="[";
+                output_str+=t.d.dataset.x;
+                output_str+=",";
+                output_str+=t.d.dataset.y;
+                output_str+=",";
+                output_str+=t.d.dataset.kind;
+                output_str+="],";
+            }
+        )
+        csl.log(output_str)
+    }
     var maps = [
             [
                 "111111111111111",
@@ -161,7 +185,11 @@ window.onload = function () {
                 "111111111111111",
             ],
         ]
-
+    var tower_preset=[
+        [
+            [6,1,0],[8,1,0],[12,3,0],[12,6,0],
+        ],
+    ]
 
 
 
@@ -210,8 +238,8 @@ window.onload = function () {
         grids[x][y] = node;
 
         node.className = "grid";
-        node.dataset.x=x;
-        node.dataset.y=y;
+        node.dataset.x = x;
+        node.dataset.y = y;
         mn.appendChild(node);
     }
     //        put(grids);
@@ -338,10 +366,11 @@ window.onload = function () {
 
 
     function get_grid_pos(pos) {
-//        csl.log(just_a_grid)
-//        var h = just_a_grid.clientHeight;
-//        var w = just_a_grid.clientWidth;
-        var h=50,w=50;
+        //        csl.log(just_a_grid)
+        //        var h = just_a_grid.clientHeight;
+        //        var w = just_a_grid.clientWidth;
+        var h = 50,
+            w = 50;
         return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
     }
 
@@ -438,6 +467,10 @@ window.onload = function () {
                 }
             }
         }
+//        console.log(pos)
+        this.d.dataset.x=pos[0];
+        this.d.dataset.y=pos[1];
+        this.d.dataset.kind=kind;
         this.d.querySelector(".fill").onmouseover = function () {
             var children = tower.d.childNodes;
             for (var i in children) {
@@ -497,7 +530,7 @@ window.onload = function () {
 
     }
 
-    function tower_create(kind, x, y) {
+    function put_tower(kind, x, y) {
         return new Tower(kind, [x, y]);
     }
 
@@ -611,17 +644,20 @@ window.onload = function () {
         //        console.log(para)
         //        console.log(mn.style)
         if (is_catching()) {
-//            console.log("m")
+            //            console.log("m")
             catching_thing.style.left = para.x;
             catching_thing.style.top = para.y;
         }
     }
-    function is_catching(){
+
+    function is_catching() {
         return (typeof (catching_thing) != "undefined");
     }
-    function put_tower(kind) {
+
+    function catch_tower(kind) {
         catching_thing = clone_tpl($("#tower_to_copy[kind='" + kind + "']"));
         catching_thing.style["pointer-events"] = "none";
+        catching_thing.kind=kind;
         addClass(catching_thing, "catching");
         addClass(body, "catching");
         //        addClass(catching_thing,"hide");
@@ -629,23 +665,23 @@ window.onload = function () {
         addClass($("body"), "inactive")
     }
     body.oncontextmenu = function () {
-        if (is_catching()) {
-            console.log("ww")
-            catching_thing.parentNode.removeChild(catching_thing);
-            catching_thing = undefined;
-            removeClass(body, "catching");
-            return false;
+            if (is_catching()) {
+                console.log("ww")
+                catching_thing.parentNode.removeChild(catching_thing);
+                catching_thing = undefined;
+                removeClass(body, "catching");
+                return false;
+            }
         }
-    }
-//    body.onmousedown = function () {
-//
-//    }
+        //    body.onmousedown = function () {
+        //
+        //    }
     mn.onmouseover = function () {
         if (mouseisinmn) { //trigger something
 
         } else {
             mouseisinmn = true;
-            console.log("enter");
+//            console.log("enter");
             addClass(mn, "active")
             addClass(body, "active")
             removeClass(body, "inactive");
@@ -656,7 +692,7 @@ window.onload = function () {
     mn.onmouseout = function (para) {
         if (!hasChild(mn, para.toElement)) { //really out
             mouseisinmn = false;
-            console.log("leave");
+//            console.log("leave");
             removeClass(mn, "active")
             removeClass(body, "active")
             addClass(body, "inactive")
@@ -664,22 +700,31 @@ window.onload = function () {
         }
 
     }
-    mn.onclick=function(event){
-        if(catching_thing&&event.target.lang=="wall"){
-            tower_create(catching_thing.kind,parseInt(event.target.dataset.x),parseInt(event.target.dataset.y))
-            csl.log(parseInt(event.target.dataset.x),parseInt(event.target.dataset.y))
+    mn.onclick = function (event) {
+        if (catching_thing && event.target.lang == "wall") {
+            put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
+            csl.log(parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
         }
 
-        
+
 
     }
     var maps_hp = [100, 120]
     var Map = function (level) {
         var m = this;
-        this.side = "td";
+        this.side = "ta";
+        if (this.side == "td") {
+            addClass(title, "td");
+            setTimeout(
+                function () {
+                    title.innerHTML = "LV1&nbsp;-&nbsp;TD";
+                }, 300
+            )
+        }
         this.load_map(level);
         this.reversing = false;
         map = maps[level];
+        this.level=level;
         this.hp = maps_hp[level];
         this.hp_max = this.hp;
         this.map_start = maps_start[level];
@@ -703,9 +748,7 @@ window.onload = function () {
 
 
 
-        tower_create(0, 5, 3);
-        tower_create(0, 7, 3);
-        tower_create(0, 6, 3);
+        
     }
     Map.prototype.set_hp = function (hp) {
         this.hp = hp;
@@ -739,7 +782,14 @@ window.onload = function () {
             d.querySelector(".top").appendChild(emy)
 
         })
-
+       
+        tower_preset[this.level].forEach(
+            function(t){
+                csl.log(t);
+                put_tower(t[2],t[0],t[1])
+            }
+        )
+        
     }
     Map.prototype.remove_things = function () {
         //        console.log("remove_things")
@@ -773,7 +823,7 @@ window.onload = function () {
             removeClass(d, "hide")
             d.onclick = function () {
                 console.log("ss")
-                put_tower(k, m.map_start)
+                catch_tower(k, m.map_start)
             }
 
             var tower = $("#tower_to_copy[kind='" + k + "']").cloneNode(true);
@@ -849,9 +899,22 @@ window.onload = function () {
                 if (m.side == "ta") {
                     m.side = "td";
                     m.td_enter();
+                    addClass(title, "td");
+                    setTimeout(
+                        function () {
+                            title.innerHTML = "LV1&nbsp;-&nbsp;TD";
+                        }, 250
+                    )
                 } else {
                     m.side = "ta";
                     m.ta_enter();
+
+                    removeClass(title, "td");
+                    setTimeout(
+                        function () {
+                            title.innerHTML = "LV1&nbsp;-&nbsp;TA";
+                        }, 250
+                    )
                 }
             }, dg(3300, 0)
         )

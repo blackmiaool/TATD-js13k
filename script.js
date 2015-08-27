@@ -171,6 +171,29 @@ window.onload = function () {
         )
         csl.log(output_str)
     }
+    btn3.onclick=function(){
+        var seq=current_map.emy_seq;
+        csl.log(seq,seq.length)
+        var index=0;
+        var kind_next;
+        function output_emy(){
+            put_emy(kind_next,current_map.map_start)
+            index++;
+            if(index<seq.length)
+            {
+                kind_next=seq[index][1];
+                setTimeout(
+                    output_emy,seq[index][0]
+                )
+            }
+        }
+        if(seq.length){
+            kind_next=seq[0][1];
+            output_emy();
+        }
+        
+//        put_emy(0, current_map.map_start);
+    }
     var maps = [
             [
                 "111111111111111",
@@ -721,6 +744,7 @@ window.onload = function () {
                 }, 300
             )
         }
+        this.emy_seq=[];
         this.load_map(level);
         this.reversing = false;
         map = maps[level];
@@ -751,10 +775,18 @@ window.onload = function () {
         
     }
     Map.prototype.set_hp = function (hp) {
-        this.hp = hp;
+        csl.log(hp)
+        if(hp>-1)
+            this.hp = hp;
         if (this.hp <= 0)
+        {
+            this.hp=0;
             this.ta_finish();
+        }
+        console.log(this.hp)
+        
         $(".endp>.fill").style.opacity = 0.2 + 0.8 * (this.hp_max - this.hp) / this.hp_max;
+        progress.innerHTML=this.hp+"/"+this.hp_max;
     }
     Map.prototype.suffer = function (emy) {
         this.set_hp(this.hp - emy.str);
@@ -764,12 +796,21 @@ window.onload = function () {
         this.remove_things();
         left_panel.innerHTML = "";
         var tpl = $("#emy_panel_to_copy")
+        this.hp=this.hp_max;
+        this.set_hp();
         emys.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
 
                 put_emy(k, m.map_start)
+                var time_now=(new Date()).getTime()
+                if(m.emy_seq.length==0)
+                {
+                    m.pre_time=time_now;
+                }
+                m.emy_seq.push([time_now-m.pre_time,k]);
+                m.pre_time=time_now;
             }
 
             var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
@@ -791,6 +832,35 @@ window.onload = function () {
         )
         
     }
+    Map.prototype.td_enter = function () {
+        var m = this;
+        this.remove_things();
+
+
+        left_panel.innerHTML = "";
+        var tpl = $("#tower_panel_to_copy")
+        this.hp=this.hp_max;
+        this.set_hp();
+        
+        towers.forEach(function (v, k) {
+            var d = tpl.cloneNode(true);
+            removeClass(d, "hide")
+            d.onclick = function () {
+                console.log("ss")
+                catch_tower(k, m.map_start)
+            }
+
+            var tower = $("#tower_to_copy[kind='" + k + "']").cloneNode(true);
+            removeClass(tower, "hide")
+            removeClass(tower, "trans")
+            console.log(tower)
+            tower.id = ""
+            left_panel.appendChild(d);
+            d.querySelector(".top").appendChild(tower)
+            d.querySelector(".bottom p").innerHTML = v[2];
+
+        })
+    }
     Map.prototype.remove_things = function () {
         //        console.log("remove_things")
         names.forEach(
@@ -811,36 +881,11 @@ window.onload = function () {
             }
         )
     }
-    Map.prototype.td_enter = function () {
-        var m = this;
-        this.remove_things();
-
-
-        left_panel.innerHTML = "";
-        var tpl = $("#tower_panel_to_copy")
-        towers.forEach(function (v, k) {
-            var d = tpl.cloneNode(true);
-            removeClass(d, "hide")
-            d.onclick = function () {
-                console.log("ss")
-                catch_tower(k, m.map_start)
-            }
-
-            var tower = $("#tower_to_copy[kind='" + k + "']").cloneNode(true);
-            removeClass(tower, "hide")
-            removeClass(tower, "trans")
-            console.log(tower)
-            tower.id = ""
-            left_panel.appendChild(d);
-            d.querySelector(".top").appendChild(tower)
-            d.querySelector(".bottom p").innerHTML = v[2];
-
-        })
-    }
+    
 
     function reverse(dom) {
         console.log(dom)
-        var rotate = "rotateY(180deg)";
+        var rotate = "scaleX(-1)";
         console.log(dom.style.transform.lastIndexOf(rotate))
         if (dom.style.transform.lastIndexOf(rotate) > -1) {
             console.log("replace", dom.style.transform)
@@ -884,7 +929,7 @@ window.onload = function () {
         )
         setTimeout(
             function () {
-
+                reverse(endp_to_copy)
                 reverse(my_panel);
                 reverse(my_panel.querySelector(".ftr"))
 
@@ -939,7 +984,7 @@ window.onload = function () {
         this.start_grid.appendChild($("#startp_to_copy"))
         this.end_grid = grids[maps_end[level][0]][maps_end[level][1]];
         this.end_grid.lang = "end";
-        this.end_grid.appendChild($("#endp_to_copy"))
+        this.end_grid.appendChild(endp_to_copy);
 
     }
     Map.prototype.destroy = function () {}
@@ -983,7 +1028,7 @@ window.onload = function () {
         if (playing) {
 
             if (!(sys_tick_cnt % 120)) {
-                //                put_emy(0, map_start);
+
             }
             for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);

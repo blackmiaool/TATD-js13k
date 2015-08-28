@@ -9,7 +9,7 @@ window.onload = function () {
         console.log("dbg=", dbg)
         dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg"
     }
-
+    
 
     function dg(a, b) {
         if (!dbg)
@@ -26,7 +26,7 @@ window.onload = function () {
     var doc = document;
     var m = Math;
     var csl = console;
-    var sys_tick_cnt = 0;
+    var sys_tick = 0;
     var playing = true;
     var current_map;
     var miao_objs = {
@@ -40,7 +40,7 @@ window.onload = function () {
     var dirs;
     var paths = [];
     var map;
-
+    var sys_play_state="ready";//ready running pause
     var std_size = {
         bul: [],
         tower: [],
@@ -171,6 +171,10 @@ window.onload = function () {
         )
         csl.log(output_str)
     }
+    var sys_cb_queue=[];
+    function sys_setTimeout(func,ticks){
+        sys_cb_queue.push([func,sys_tick+ticks]);
+    }
     btn3.onclick=function(){
         var seq=current_map.emy_seq;
         csl.log(seq,seq.length)
@@ -182,7 +186,7 @@ window.onload = function () {
             if(index<seq.length)
             {
                 kind_next=seq[index][1];
-                setTimeout(
+                sys_setTimeout(
                     output_emy,seq[index][0]
                 )
             }
@@ -804,7 +808,7 @@ window.onload = function () {
             d.onclick = function () {
 
                 put_emy(k, m.map_start)
-                var time_now=(new Date()).getTime()
+                var time_now=sys_tick;
                 if(m.emy_seq.length==0)
                 {
                     m.pre_time=time_now;
@@ -1002,8 +1006,9 @@ window.onload = function () {
     function obj_step(e) {
         e.step();
     }
-
+        
     start.onclick = function () {
+        
         playing = !playing;
     }
 
@@ -1026,14 +1031,22 @@ window.onload = function () {
 
     function step() {
         if (playing) {
-
-            if (!(sys_tick_cnt % 120)) {
-
+            sys_cb_queue.forEach(
+                function(cb,i){
+                    if(sys_tick>=cb[1])
+                    {
+                        cb[0]();
+                        sys_cb_queue.splice(i,1);
+                    }
+                }
+            )
+            if (!(sys_tick % 120)) {
+                
             }
             for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);
             }
-            sys_tick_cnt++;
+            sys_tick+=global_speed;
         }
         requestAnimationFrame(step);
     }

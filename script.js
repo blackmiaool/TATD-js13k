@@ -224,7 +224,9 @@ window.onload = function () {
 
         //        put_emy(0, current_map.map_start);
     }
-
+    btn4.onclick=function(){
+        current_map.ta_finish();
+    }
 
 
 
@@ -1104,10 +1106,20 @@ window.onload = function () {
     speedfor4.onclick = function () {
         set_global_speed(4)
     }
-
-    test_btn.onclick = function () {
-        current_map.ta_finish();
+    function show(d){
+        removeClass(d,"displaynone");
+        
     }
+    function hide(d){
+        addClass(d,"displaynone");
+    }
+    btn_stop.onclick=function(){
+        show_panel("level_stoped");
+    }
+   function show_panel(name){
+       show(body_mask);
+       show($("#"+name))
+   }
 
     function step() {
         if (sys_play_state == "Pause") {

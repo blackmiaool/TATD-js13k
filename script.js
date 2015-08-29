@@ -65,7 +65,7 @@ window.onload = function () {
             ],
         ]
     var maps_hp = [20, 120]
-    var maps_power = [20, 120]
+    var maps_power = [40, 120]
     var tower_preset = [
         [
             [6, 1, 0], [8, 1, 0], [12, 3, 0], [12, 6, 0],
@@ -83,7 +83,7 @@ window.onload = function () {
     //rage,power,des,callback,cost
     var towers = [[2.5, 10, "Basic tower.", function () {
 
-    },10]];
+    }, 10]];
 
 
 
@@ -737,24 +737,24 @@ window.onload = function () {
     }
     mn.onclick = function (event) {
         if (catching_thing && event.target.lang == "wall") {
-            if(current_map.left_tower_points>=towers[catching_thing.kind][4]){
-                current_map.left_tower_points-=towers[catching_thing.kind][4];
+            if (current_map.left_tower_points >= towers[catching_thing.kind][4]) {
+                current_map.left_tower_points -= towers[catching_thing.kind][4];
                 current_map.tower_points_update();
                 put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
-            }else{
-                addClass(tower_points,"zoom");
-                setTimeout(function(){
-                    removeClass(tower_points,"zoom");
-                },100)
+            } else {
+                addClass(tower_points_label, "zoom");
+                setTimeout(function () {
+                    removeClass(tower_points_label, "zoom");
+                }, 100)
             }
-            
-//            csl.log(parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
+
+            //            csl.log(parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
         }
 
 
 
     }
-    
+
     var Map = function (level) {
         var m = this;
         this.side = "ta";
@@ -853,27 +853,34 @@ window.onload = function () {
         )
 
     }
-    Map.prototype.tower_points_update=function(){
-        tower_points_value.innerHTML=this.left_tower_points;
+    Map.prototype.tower_points_update = function () {
+        tower_points_value.innerHTML = this.left_tower_points;
     }
-    Map.prototype.side_init=function(){
-        if(this.side=="ta"){
-            
-        }else{
-            this.left_tower_points=maps_power[this.level];
-            tower_points_value.innerHTML=this.left_tower_points;
+    Map.prototype.side_init = function () {
+        if (this.side == "ta") {
+
+        } else {
+            this.left_tower_points = maps_power[this.level];
+            tower_points_value.innerHTML = this.left_tower_points;
         }
+    }
+
+    function get_tower_points() {
+
     }
     Map.prototype.td_enter = function () {
         var m = this;
         set_sys_play_state("Start");
         this.remove_things();
 
-
         left_panel.innerHTML = "";
         var tpl = $("#tower_panel_to_copy")
         this.hp = this.hp_max;
         this.set_hp();
+        tower_points = tower_points_to_copy.cloneNode(true);
+        tower_points.id = "tower_points";
+        tower_points_value = tower_points.querySelector("#tower_points_value");
+        tower_points_label = tower_points.querySelector("#tower_points_label");
         left_panel.appendChild(tower_points);
         this.side_init();
         towers.forEach(function (v, k) {
@@ -972,51 +979,53 @@ window.onload = function () {
         endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-in";
         if (state == "ta") {
             addClass(endp, "rotate")
+
+            setTimeout(
+                function () {
+                    m.reversing = false;
+                }, dg(4000, 0)
+            )
+            setTimeout(
+                function () {
+                    reverse(endp_to_copy)
+                    my_panel.style.transform += " rotateY(180deg)"
+                    reverse(my_panel.querySelector(".ftr"))
+
+                    endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-out";
+                    removeClass(endp, "rotate")
+                }, dg(3000, 0)
+            )
+
+            setTimeout(
+                function () {
+                    reverse(left_panel);
+                    if (m.side == "ta") {
+                        m.side = "td";
+                        m.td_enter();
+                        addClass(title, "td");
+                        setTimeout(
+                            function () {
+                                title.innerHTML = "LV1&nbsp;-&nbsp;TD";
+                            }, 250
+                        )
+                    } else {
+                        m.side = "ta";
+                        m.ta_enter();
+
+                        removeClass(title, "td");
+                        setTimeout(
+                            function () {
+                                title.innerHTML = "LV1&nbsp;-&nbsp;TA";
+                            }, 250
+                        )
+                    }
+                }, dg(3300, 0)
+            )
         } else {
-            removeClass(endp, "rotate")
+            showPanel();
+//            removeClass(endp, "rotate")
         }
 
-        setTimeout(
-            function () {
-                m.reversing = false;
-            }, dg(4000, 0)
-        )
-        setTimeout(
-            function () {
-                reverse(endp_to_copy)
-                my_panel.style.transform+=" rotateY(180deg)"
-                reverse(my_panel.querySelector(".ftr"))
-
-                endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-out";
-                removeClass(endp, "rotate")
-            }, dg(3000, 0)
-        )
-
-        setTimeout(
-            function () {
-                reverse(left_panel);
-                if (m.side == "ta") {
-                    m.side = "td";
-                    m.td_enter();
-                    addClass(title, "td");
-                    setTimeout(
-                        function () {
-                            title.innerHTML = "LV1&nbsp;-&nbsp;TD";
-                        }, 250
-                    )
-                } else {
-                    m.side = "ta";
-                    m.ta_enter();
-
-                    removeClass(title, "td");
-                    setTimeout(
-                        function () {
-                            title.innerHTML = "LV1&nbsp;-&nbsp;TA";
-                        }, 250
-                    )
-                }
-            }, dg(3300, 0)
-        )
     }
     Map.prototype.ta_finish = function () {
         this.half_level_finish("ta");
@@ -1041,7 +1050,9 @@ window.onload = function () {
         this.end_grid.appendChild(endp_to_copy);
 
     }
-    Map.prototype.destroy = function () {}
+    Map.prototype.destroy = function () {
+
+    }
 
     function enter_level(level) {
         if (current_map)

@@ -8,9 +8,11 @@
             font-family: Arial, Verdana, Sans-serif;
             user-select: none;
         }
-        .zoom{
+        
+        .zoom {
             transform: scale(1.3);
         }
+        
         #stage {
             width: 1000px;
             height: 600px;
@@ -32,7 +34,6 @@
             height: 90%;
             float: left;
             background-color: #333;
-            
             box-sizing: border-box;
         }
         
@@ -42,7 +43,7 @@
             background-color: #333;
             box-sizing: content-box;
             position: relative;
-                        perspective: 2000px;
+            perspective: 2000px;
             border-left: 4px #bbb solid;
         }
         
@@ -73,7 +74,6 @@
         .ftr .speed button {
             width: 33%;
             /*            height: 100%;*/
-            
             margin: 0px;
             /*            box-sizing: border-box;*/
         }
@@ -95,7 +95,6 @@
         .start button {
             width: 100%;
             /*            height: 38px;*/
-            
             margin: 0px;
             box-sizing: border-box;
         }
@@ -173,7 +172,6 @@
             height: 50px;
             width: 50px;
             /*            border:1px black solid;*/
-            
             display: inline-block;
             -webkit-transition: 0.1s linear;
             -o-transition: 0.1s linear;
@@ -183,7 +181,6 @@
             border-bottom: 1px rgba(0,0,0,0) solid;
 */
             /*            border: 3px rgba(0, 0, 0, 0) solid;*/
-            
             text-align: center;
             position: relative;
         }
@@ -236,7 +233,6 @@
         
         .emy-panel {
             /*            height: 100px;*/
-            
             margin: 15px;
             background-color: rgba(255, 255, 255, 0.15);
             position: relative;
@@ -287,7 +283,6 @@
             text-indent: 2em;
             /*            position: absolute;*/
             /*            top: 0px;*/
-            
             margin-top: 10px;
             color: white;
         }
@@ -296,15 +291,17 @@
             height: 70px;
             position: relative;
         }
+        
         .emy-panel.tower-panel .top {
             height: 90px;
         }
-        .emy-panel.tower-panel:nth-child(2){
+        
+        .emy-panel.tower-panel:nth-child(2) {
             margin-top: 8px;
         }
+        
         .emy-panel .bottom {
             /*            height: 70px;*/
-            
             overflow: auto;
             position: relative;
         }
@@ -345,7 +342,6 @@
             /*            box-sizing: border-box;*/
             /*            width: 10px;*/
             /*            height: 10px;*/
-            
             background-color: #66ccff;
             top: 50%;
             position: absolute;
@@ -364,7 +360,6 @@
             border-left-color: steelblue;
             transform: translate(0, -50%) rotate(270deg);
             /*            rotate(90deg);*/
-            
             transform-origin: 0% 38%;
             position: absolute;
             top: 0px;
@@ -403,7 +398,6 @@
         
         .hide {
             /*            display: none;*/
-            
             visibility: hidden;
         }
         
@@ -588,7 +582,27 @@
         </div>
 
     </div>
-    <div id="tower_points" style="text-align:center;margin-top: 10px;color: white;transition:0.1s all;"><label for="">Left Points : <font id="tower_points_value"></font></label></div>
+    <style>
+        div#tower_points label {
+            transition: 0.1s all;
+        }
+        
+        div#tower_points label.zoom {
+            transform: scale(1.3);
+        }
+        
+        #body_mask {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            opacity: 0.43;
+            top: 0px;
+            z-index: 999;
+        }
+    </style>
+
+
     <div class="emy-panel tower-panel hide" id="tower_panel_to_copy">
         <div class="top">
 
@@ -660,6 +674,80 @@
         <div class="fill">
         </div>
     </div>
+    <div id="hide_div" style="display:none;">
+        <div id="tower_points_to_copy" style="text-align:center;margin-top: 10px;color: white;">
+            <label id="tower_points_label">Tower Points : <font id="tower_points_value"></font></label>
+        </div>
+    </div>
+    <div id="body_mask"></div>
+    <style>
+        #level_finish {
+            height: 300px;
+            width: 500px;
+            border: 10px solid #222;
+            background-color: #4A4D4E;
+            z-index: 1000;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        #level_finish>h1{
+            margin-bottom: 0px;
+        }
+        #next_level{
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translate(-50%, 0%);
+            width: 150px;
+            border-radius: 10px;
+        }
+        #next_level:hover{
+            background-color:#656565 ;
+        }
+        #scores{
+            margin-top: 5px;
+            
+           width: 300px;
+            text-align: center;
+            display: inline-block;
+        }
+        #scores>div{
+            margin: 15px;            
+            font-size: 20px;
+            overflow: auto;
+            display: block;
+        }
+        #scores>div>label:first-child{
+            float: left;
+        }
+        #scores>div>label:last-child{
+            float: right;
+        }
+    </style>
+    <div id="level_finish">
+        <h1>You Win!</h1>
+        <div id="scores">
+            <div>
+                <label>Warrior Cost :</label>
+                <label>53</label>
+            </div>
+            <div>
+                <label>Tower Points Cost :</label>
+                <label>40</label>
+            </div>
+            <div>
+                <label>Attack Time :</label>
+                <label>53s</label>
+            </div>
+        </div>
+        <button class="top-btn" id="next_level">Next Level</button>
+
+    </div>
+    <div id="level_failed"></div>
 </body>
 
 

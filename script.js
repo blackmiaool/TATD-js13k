@@ -9,7 +9,7 @@ window.onload = function () {
         console.log("dbg=", dbg)
         dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg"
     }
-    
+
 
     function dg(a, b) {
         if (!dbg)
@@ -40,7 +40,7 @@ window.onload = function () {
     var dirs;
     var paths = [];
     var map;
-    var sys_play_state="ready";//ready running pause
+    var sys_play_state; //ready running pause
     var std_size = {
         bul: [],
         tower: [],
@@ -50,6 +50,27 @@ window.onload = function () {
 
 
     var just_a_grid;
+    var maps = [
+            [
+                "111111111111111",
+                "111111111111111",
+                "000000000000001",
+                "111111111111101",
+                "100000000000001",
+                "101111111111111",
+                "101111111111111",
+                "100000000000000",
+                "111111111111111",
+                "111111111111111",
+            ],
+        ]
+    var maps_hp = [20, 120]
+    var maps_power = [20, 120]
+    var tower_preset = [
+        [
+            [6, 1, 0], [8, 1, 0], [12, 3, 0], [12, 6, 0],
+        ],
+    ]
     var speed = {
             bul: [5, 10, 15],
             tower: [],
@@ -59,10 +80,10 @@ window.onload = function () {
     var emys = [[100, 10, "None", "Basic warrior.", function () {
         var a = 1;
     }], ];
-    //rage,power,des,callback
+    //rage,power,des,callback,cost
     var towers = [[2.5, 10, "Basic tower.", function () {
 
-    }]];
+    },10]];
 
 
 
@@ -90,7 +111,11 @@ window.onload = function () {
     )
     csl.log(std_size)
 
-
+    function set_sys_play_state(state) {
+        sys_play_state = state;
+        start.innerHTML = sys_play_state;
+    }
+    set_sys_play_state("Pause")
     Array.prototype.last = function () {
         return this[this.length - 1];
     }
@@ -156,67 +181,50 @@ window.onload = function () {
         )
 
     }
-    btn2.onclick=function(){
-        var output_str="";
+    btn2.onclick = function () {
+        var output_str = "";
         miao_objs.tower.forEach(
-            function(t){
-                output_str+="[";
-                output_str+=t.d.dataset.x;
-                output_str+=",";
-                output_str+=t.d.dataset.y;
-                output_str+=",";
-                output_str+=t.d.dataset.kind;
-                output_str+="],";
+            function (t) {
+                output_str += "[";
+                output_str += t.d.dataset.x;
+                output_str += ",";
+                output_str += t.d.dataset.y;
+                output_str += ",";
+                output_str += t.d.dataset.kind;
+                output_str += "],";
             }
         )
         csl.log(output_str)
     }
-    var sys_cb_queue=[];
-    function sys_setTimeout(func,ticks){
-        sys_cb_queue.push([func,sys_tick+ticks]);
+    var sys_cb_queue = [];
+
+    function sys_setTimeout(func, ticks) {
+        sys_cb_queue.push([func, sys_tick + ticks]);
     }
-    btn3.onclick=function(){
-        var seq=current_map.emy_seq;
-        csl.log(seq,seq.length)
-        var index=0;
+    btn3.onclick = function () {
+        var seq = current_map.emy_seq;
+        csl.log(seq, seq.length)
+        var index = 0;
         var kind_next;
-        function output_emy(){
-            put_emy(kind_next,current_map.map_start)
+
+        function output_emy() {
+            put_emy(kind_next, current_map.map_start)
             index++;
-            if(index<seq.length)
-            {
-                kind_next=seq[index][1];
+            if (index < seq.length) {
+                kind_next = seq[index][1];
                 sys_setTimeout(
-                    output_emy,seq[index][0]
+                    output_emy, seq[index][0]
                 )
             }
         }
-        if(seq.length){
-            kind_next=seq[0][1];
+        if (seq.length) {
+            kind_next = seq[0][1];
             output_emy();
         }
-        
-//        put_emy(0, current_map.map_start);
+
+        //        put_emy(0, current_map.map_start);
     }
-    var maps = [
-            [
-                "111111111111111",
-                "111111111111111",
-                "000000000000001",
-                "111111111111101",
-                "100000000000001",
-                "101111111111111",
-                "101111111111111",
-                "100000000000000",
-                "111111111111111",
-                "111111111111111",
-            ],
-        ]
-    var tower_preset=[
-        [
-            [6,1,0],[8,1,0],[12,3,0],[12,6,0],
-        ],
-    ]
+
 
 
 
@@ -487,17 +495,17 @@ window.onload = function () {
 
         var tower = this;
         this.d.querySelector(".fill").onmouseout = function () {
-            var children = tower.d.childNodes;
-            for (var i in children) {
-                if (children[i].className) {
-                    removeClass(children[i], "active")
+                var children = tower.d.childNodes;
+                for (var i in children) {
+                    if (children[i].className) {
+                        removeClass(children[i], "active")
+                    }
                 }
             }
-        }
-//        console.log(pos)
-        this.d.dataset.x=pos[0];
-        this.d.dataset.y=pos[1];
-        this.d.dataset.kind=kind;
+            //        console.log(pos)
+        this.d.dataset.x = pos[0];
+        this.d.dataset.y = pos[1];
+        this.d.dataset.kind = kind;
         this.d.querySelector(".fill").onmouseover = function () {
             var children = tower.d.childNodes;
             for (var i in children) {
@@ -684,7 +692,7 @@ window.onload = function () {
     function catch_tower(kind) {
         catching_thing = clone_tpl($("#tower_to_copy[kind='" + kind + "']"));
         catching_thing.style["pointer-events"] = "none";
-        catching_thing.kind=kind;
+        catching_thing.kind = kind;
         addClass(catching_thing, "catching");
         addClass(body, "catching");
         //        addClass(catching_thing,"hide");
@@ -708,7 +716,7 @@ window.onload = function () {
 
         } else {
             mouseisinmn = true;
-//            console.log("enter");
+            //            console.log("enter");
             addClass(mn, "active")
             addClass(body, "active")
             removeClass(body, "inactive");
@@ -719,7 +727,7 @@ window.onload = function () {
     mn.onmouseout = function (para) {
         if (!hasChild(mn, para.toElement)) { //really out
             mouseisinmn = false;
-//            console.log("leave");
+            //            console.log("leave");
             removeClass(mn, "active")
             removeClass(body, "active")
             addClass(body, "inactive")
@@ -729,14 +737,24 @@ window.onload = function () {
     }
     mn.onclick = function (event) {
         if (catching_thing && event.target.lang == "wall") {
-            put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
-            csl.log(parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
+            if(current_map.left_tower_points>=towers[catching_thing.kind][4]){
+                current_map.left_tower_points-=towers[catching_thing.kind][4];
+                current_map.tower_points_update();
+                put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
+            }else{
+                addClass(tower_points,"zoom");
+                setTimeout(function(){
+                    removeClass(tower_points,"zoom");
+                },100)
+            }
+            
+//            csl.log(parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
         }
 
 
 
     }
-    var maps_hp = [100, 120]
+    
     var Map = function (level) {
         var m = this;
         this.side = "ta";
@@ -748,11 +766,11 @@ window.onload = function () {
                 }, 300
             )
         }
-        this.emy_seq=[];
+        this.emy_seq = [];
         this.load_map(level);
         this.reversing = false;
         map = maps[level];
-        this.level=level;
+        this.level = level;
         this.hp = maps_hp[level];
         this.hp_max = this.hp;
         this.map_start = maps_start[level];
@@ -776,31 +794,31 @@ window.onload = function () {
 
 
 
-        
+
     }
     Map.prototype.set_hp = function (hp) {
         csl.log(hp)
-        if(hp>-1)
+        if (hp > -1)
             this.hp = hp;
-        if (this.hp <= 0)
-        {
-            this.hp=0;
+        if (this.hp <= 0) {
+            this.hp = 0;
             this.ta_finish();
         }
         console.log(this.hp)
-        
+
         $(".endp>.fill").style.opacity = 0.2 + 0.8 * (this.hp_max - this.hp) / this.hp_max;
-        progress.innerHTML=this.hp+"/"+this.hp_max;
+        progress.innerHTML = this.hp + "/" + this.hp_max;
     }
     Map.prototype.suffer = function (emy) {
         this.set_hp(this.hp - emy.str);
     }
     Map.prototype.ta_enter = function () {
         var m = this;
+        set_sys_play_state("Pause");
         this.remove_things();
         left_panel.innerHTML = "";
         var tpl = $("#emy_panel_to_copy")
-        this.hp=this.hp_max;
+        this.hp = this.hp_max;
         this.set_hp();
         emys.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
@@ -808,13 +826,12 @@ window.onload = function () {
             d.onclick = function () {
 
                 put_emy(k, m.map_start)
-                var time_now=sys_tick;
-                if(m.emy_seq.length==0)
-                {
-                    m.pre_time=time_now;
+                var time_now = sys_tick;
+                if (m.emy_seq.length == 0) {
+                    m.pre_time = time_now;
                 }
-                m.emy_seq.push([time_now-m.pre_time,k]);
-                m.pre_time=time_now;
+                m.emy_seq.push([time_now - m.pre_time, k]);
+                m.pre_time = time_now;
             }
 
             var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
@@ -827,25 +844,38 @@ window.onload = function () {
             d.querySelector(".top").appendChild(emy)
 
         })
-       
+
         tower_preset[this.level].forEach(
-            function(t){
+            function (t) {
                 csl.log(t);
-                put_tower(t[2],t[0],t[1])
+                put_tower(t[2], t[0], t[1])
             }
         )
-        
+
+    }
+    Map.prototype.tower_points_update=function(){
+        tower_points_value.innerHTML=this.left_tower_points;
+    }
+    Map.prototype.side_init=function(){
+        if(this.side=="ta"){
+            
+        }else{
+            this.left_tower_points=maps_power[this.level];
+            tower_points_value.innerHTML=this.left_tower_points;
+        }
     }
     Map.prototype.td_enter = function () {
         var m = this;
+        set_sys_play_state("Start");
         this.remove_things();
 
 
         left_panel.innerHTML = "";
         var tpl = $("#tower_panel_to_copy")
-        this.hp=this.hp_max;
+        this.hp = this.hp_max;
         this.set_hp();
-        
+        left_panel.appendChild(tower_points);
+        this.side_init();
         towers.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
@@ -885,7 +915,27 @@ window.onload = function () {
             }
         )
     }
-    
+    Map.prototype.start = function () {
+        var seq = current_map.emy_seq;
+        csl.log(seq, seq.length)
+        var index = 0;
+        var kind_next;
+
+        function output_emy() {
+            put_emy(kind_next, current_map.map_start)
+            index++;
+            if (index < seq.length) {
+                kind_next = seq[index][1];
+                sys_setTimeout(
+                    output_emy, seq[index][0]
+                )
+            }
+        }
+        if (seq.length) {
+            kind_next = seq[0][1];
+            output_emy();
+        }
+    }
 
     function reverse(dom) {
         console.log(dom)
@@ -934,7 +984,7 @@ window.onload = function () {
         setTimeout(
             function () {
                 reverse(endp_to_copy)
-                reverse(my_panel);
+                my_panel.style.transform+=" rotateY(180deg)"
                 reverse(my_panel.querySelector(".ftr"))
 
                 endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-out";
@@ -1006,10 +1056,29 @@ window.onload = function () {
     function obj_step(e) {
         e.step();
     }
-        
+
     start.onclick = function () {
-        
-        playing = !playing;
+        switch (sys_play_state) {
+        case "Pause":
+            {
+                set_sys_play_state("Play");
+                break;
+            }
+        case "Start":
+            {
+                current_map.start();
+                set_sys_play_state("Pause");
+                break;
+            }
+        case "Play":
+            {
+
+                set_sys_play_state("Pause");
+                break;
+            }
+
+        }
+
     }
 
     function set_global_speed(times) {
@@ -1030,23 +1099,22 @@ window.onload = function () {
     }
 
     function step() {
-        if (playing) {
+        if (sys_play_state == "Pause") {
             sys_cb_queue.forEach(
-                function(cb,i){
-                    if(sys_tick>=cb[1])
-                    {
+                function (cb, i) {
+                    if (sys_tick >= cb[1]) {
                         cb[0]();
-                        sys_cb_queue.splice(i,1);
+                        sys_cb_queue.splice(i, 1);
                     }
                 }
             )
             if (!(sys_tick % 120)) {
-                
+
             }
             for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);
             }
-            sys_tick+=global_speed;
+            sys_tick += global_speed;
         }
         requestAnimationFrame(step);
     }

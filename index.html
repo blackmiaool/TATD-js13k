@@ -8,7 +8,9 @@
             font-family: Arial, Verdana, Sans-serif;
             user-select: none;
         }
-        
+        .zoom{
+            transform: scale(1.3);
+        }
         #stage {
             width: 1000px;
             height: 600px;
@@ -26,21 +28,22 @@
         }
         
         #left_panel {
-            width: 250px;
+            width: 246px;
             height: 90%;
             float: left;
             background-color: #333;
-            border-right: 4px #bbb solid;
+            
             box-sizing: border-box;
         }
         
         #right_panel {
-            margin-left: 250px;
+            margin-left: 246px;
             height: 90%;
             background-color: #333;
             box-sizing: content-box;
             position: relative;
-            /*            perspective: 2000px;*/
+                        perspective: 2000px;
+            border-left: 4px #bbb solid;
         }
         
         #my_panel {
@@ -112,6 +115,7 @@
             text-align: center;
             position: relative;
             bottom: -1px;
+            outline: none;
         }
         
         * {
@@ -292,7 +296,12 @@
             height: 70px;
             position: relative;
         }
-        
+        .emy-panel.tower-panel .top {
+            height: 90px;
+        }
+        .emy-panel.tower-panel:nth-child(2){
+            margin-top: 8px;
+        }
         .emy-panel .bottom {
             /*            height: 70px;*/
             
@@ -579,7 +588,8 @@
         </div>
 
     </div>
-    <div class="emy-panel hide" id="tower_panel_to_copy">
+    <div id="tower_points" style="text-align:center;margin-top: 10px;color: white;transition:0.1s all;"><label for="">Left Points : <font id="tower_points_value"></font></label></div>
+    <div class="emy-panel tower-panel hide" id="tower_panel_to_copy">
         <div class="top">
 
 
@@ -592,6 +602,10 @@
                 </div>
                 <div class="bar">
                     <label>Speed</label>
+                    <span></span>
+                </div>
+                <div class="bar">
+                    <label>Cost</label>
                     <span></span>
                 </div>
 

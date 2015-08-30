@@ -29,12 +29,14 @@ window.onload = function () {
     var sys_tick = 0;
     var playing = true;
     var current_map;
+    var current_level = 0;
     var miao_objs = {
         emy: [],
         bul: [],
         tower: [],
     }
     var mouseisinmn = false;
+    var emys_output_finish = false;
     var start_grid;
     var end_grid;
     var dirs;
@@ -68,7 +70,7 @@ window.onload = function () {
     var maps_power = [40, 120]
     var tower_preset = [
         [
-            [6, 1, 0], [8, 1, 0], [12, 3, 0], [12, 6, 0],
+            [6, 1, 0], [8, 1, 0], [12, 3, 0],
         ],
     ]
     var speed = {
@@ -109,7 +111,7 @@ window.onload = function () {
             })
         }
     )
-    csl.log(std_size)
+    csl.log("std_size", std_size)
 
     function set_sys_play_state(state) {
         sys_play_state = state;
@@ -173,13 +175,13 @@ window.onload = function () {
     }
     body = $("body")
     btn1.onclick = function () {
-        addClass(title, "td");
-        setTimeout(
-            function () {
-                title.innerHTML = "LV1&nbsp;-&nbsp;TD";
-            }, 250
-        )
-
+        //        addClass(title, "td");
+        //        setTimeout(
+        //            function () {
+        //                title.innerHTML = "LV1&nbsp;-&nbsp;TD";
+        //            }, 250
+        //        )
+        show_panel("level_failed")
     }
     btn2.onclick = function () {
         var output_str = "";
@@ -202,29 +204,9 @@ window.onload = function () {
         sys_cb_queue.push([func, sys_tick + ticks]);
     }
     btn3.onclick = function () {
-        var seq = current_map.emy_seq;
-        csl.log(seq, seq.length)
-        var index = 0;
-        var kind_next;
-
-        function output_emy() {
-            put_emy(kind_next, current_map.map_start)
-            index++;
-            if (index < seq.length) {
-                kind_next = seq[index][1];
-                sys_setTimeout(
-                    output_emy, seq[index][0]
-                )
-            }
-        }
-        if (seq.length) {
-            kind_next = seq[0][1];
-            output_emy();
-        }
-
-        //        put_emy(0, current_map.map_start);
+        current_map.start();
     }
-    btn4.onclick=function(){
+    btn4.onclick = function () {
         current_map.ta_finish();
     }
 
@@ -281,8 +263,8 @@ window.onload = function () {
     }
     //        put(grids);
     just_a_grid = $(".grid");
-    csl.log(just_a_grid)
-        //        put( );
+    //    csl.log(just_a_grid)
+    //        put( );
 
     //    function set_start_grid(){
     //        
@@ -610,7 +592,9 @@ window.onload = function () {
                 addClass(b.d, "trans")
             }
         )
+
         this.unregister();
+        current_map.step();
     }
     Emy.prototype.suffer = function (kind) {
         this.hp -= towers[kind][1];
@@ -760,15 +744,21 @@ window.onload = function () {
     var Map = function (level) {
         var m = this;
         this.side = "ta";
-        if (this.side == "td") {
+        this.level_state = "normal";
+        this.testside = "ta"
+        if (this.testside == "td") {
+            this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
             setTimeout(
                 function () {
-                    title.innerHTML = "LV1&nbsp;-&nbsp;TD";
+                    title.innerHTML = "LV" + (level + 1) + "&nbsp;-&nbsp;TD";
                 }, 300
             )
+            this.half_level_finish("ta")
+        } else {
+            this.emy_seq = [];
         }
-        this.emy_seq = [];
+
         this.load_map(level);
         this.reversing = false;
         map = maps[level];
@@ -787,7 +777,7 @@ window.onload = function () {
                 }, 1, d);
             }
         );
-        if (this.side == "ta")
+        if (this.testside == "ta")
             this.ta_enter();
         else {
             this.td_enter();
@@ -799,14 +789,16 @@ window.onload = function () {
 
     }
     Map.prototype.set_hp = function (hp) {
-        csl.log(hp)
+        //        csl.log(hp)
+
         if (hp > -1)
             this.hp = hp;
         if (this.hp <= 0) {
             this.hp = 0;
-            this.ta_finish();
+
+            this.half_level_finish(this.side);
         }
-        console.log(this.hp)
+        //        console.log(this.hp)
 
         $(".endp>.fill").style.opacity = 0.2 + 0.8 * (this.hp_max - this.hp) / this.hp_max;
         progress.innerHTML = this.hp + "/" + this.hp_max;
@@ -817,11 +809,12 @@ window.onload = function () {
     Map.prototype.ta_enter = function () {
         var m = this;
         set_sys_play_state("Pause");
+        emys_left.innerHTML=""
         this.remove_things();
         left_panel.innerHTML = "";
         var tpl = $("#emy_panel_to_copy")
         this.hp = this.hp_max;
-        this.set_hp();
+        this.set_hp(this.hp);
         emys.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
@@ -838,9 +831,9 @@ window.onload = function () {
 
             var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
             removeClass(emy, "hide trans")
-            console.log(emy)
+                //            console.log(emy)
             emy.id = ""
-            console.log(d, d.querySelector(".emy"))
+                //            console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
             d.querySelector(".top").appendChild(emy)
@@ -849,7 +842,7 @@ window.onload = function () {
 
         tower_preset[this.level].forEach(
             function (t) {
-                csl.log(t);
+                //                csl.log(t);
                 put_tower(t[2], t[0], t[1])
             }
         )
@@ -870,11 +863,17 @@ window.onload = function () {
     function get_tower_points() {
 
     }
+
     Map.prototype.td_enter = function () {
+        console.log("td enter")
         var m = this;
+        this.level_state = "normal";
+        emys_output_finish = false;
+        console.log(JSON.stringify(this.emy_seq));
         set_sys_play_state("Start");
         this.remove_things();
-
+        this.emy_seq_len = this.emy_seq.length;
+        emys_left.innerHTML = this.emy_seq.length + "/" + this.emy_seq_len;
         left_panel.innerHTML = "";
         var tpl = $("#tower_panel_to_copy")
         this.hp = this.hp_max;
@@ -896,7 +895,7 @@ window.onload = function () {
             var tower = $("#tower_to_copy[kind='" + k + "']").cloneNode(true);
             removeClass(tower, "hide")
             removeClass(tower, "trans")
-            console.log(tower)
+                //            console.log(tower)
             tower.id = ""
             left_panel.appendChild(d);
             d.querySelector(".top").appendChild(tower)
@@ -907,30 +906,32 @@ window.onload = function () {
     Map.prototype.remove_things = function () {
         //        console.log("remove_things")
         names.forEach(
-            function (name) {
-                //                console.log("name ", name)
-                //                console.log(miao_objs[name])
-                var len = miao_objs[name].length;
-                for (var i = len - 1; i >= 0; i--) {
-                    var obj = miao_objs[name][i];
-                    //                    console.log(obj)
-                    if (obj.destroy) {
-                        obj.destroy()
-                    } else {
+                function (name) {
+                    //                console.log("name ", name)
+                    //                console.log(miao_objs[name])
+                    var len = miao_objs[name].length;
+                    for (var i = len - 1; i >= 0; i--) {
+                        var obj = miao_objs[name][i];
+                        //                    console.log(obj)
+                        if (obj.destroy) {
+                            obj.destroy()
+                        } else {
 
-                        obj.unregister();
+                            obj.unregister();
+                        }
                     }
                 }
-            }
-        )
+            )
+            //        console.log(miao_objs)
     }
     Map.prototype.start = function () {
         var seq = current_map.emy_seq;
-        csl.log(seq, seq.length)
+        //        csl.log(seq, seq.length)
         var index = 0;
         var kind_next;
 
         function output_emy() {
+            emys_left.innerHTML = (current_map.emy_seq_len - index - 1) + "/" + current_map.emy_seq_len;
             put_emy(kind_next, current_map.map_start)
             index++;
             if (index < seq.length) {
@@ -938,6 +939,8 @@ window.onload = function () {
                 sys_setTimeout(
                     output_emy, seq[index][0]
                 )
+            } else {
+                emys_output_finish = true;
             }
         }
         if (seq.length) {
@@ -947,11 +950,11 @@ window.onload = function () {
     }
 
     function reverse(dom) {
-        console.log(dom)
+        //        console.log(dom)
         var rotate = "scaleX(-1)";
-        console.log(dom.style.transform.lastIndexOf(rotate))
+        //        console.log(dom.style.transform.lastIndexOf(rotate))
         if (dom.style.transform.lastIndexOf(rotate) > -1) {
-            console.log("replace", dom.style.transform)
+            //            console.log("replace", dom.style.transform)
             var temp = dom.style.transform;
             var sps = temp.split(" ")
             if (sps.length > 1)
@@ -959,16 +962,14 @@ window.onload = function () {
             else
                 temp = ""
                 //            temp.replace(/rot/g,"s")
-            console.log("temp", temp)
+                //            console.log("temp", temp)
             dom.style.transform = temp;
 
         } else {
-            console.log("+=", " " + dom.style.transform)
+            //            console.log("+=", " " + dom.style.transform)
             dom.style.transform += rotate;
         }
-        console.log("finish", dom.style.transform)
-            //        dom.style.transform.replace("rotateY(180deg)","");
-            //        dom.style.transform += "rotateY(180deg)";
+        //        console.log("finish", dom.style.transform)
     }
     Map.prototype.half_level_finish = function (state) {
         var m = this;
@@ -989,7 +990,8 @@ window.onload = function () {
             )
             setTimeout(
                 function () {
-                    reverse(endp_to_copy)
+                    reverse(startp_to_copy);
+                    reverse(endp_to_copy);
                     my_panel.style.transform += " rotateY(180deg)"
                     reverse(my_panel.querySelector(".ftr"))
 
@@ -1024,18 +1026,14 @@ window.onload = function () {
                 }, dg(3300, 0)
             )
         } else {
-            showPanel();
-//            removeClass(endp, "rotate")
+            console.log("tttttttt")
+                //            enter_level(this.level);
+            show_panel("level_failed");
+            this.level_state = "failed";
         }
 
     }
-    Map.prototype.ta_finish = function () {
-        this.half_level_finish("ta");
 
-    }
-    Map.prototype.td_finish = function () {
-        this.half_level_finish("td");
-    }
     Map.prototype.load_map = function (level) {
         for (var row = 0; row < row_sum; row++) {
             var row_value = parseInt(maps[level][row], 2);
@@ -1053,17 +1051,41 @@ window.onload = function () {
 
     }
     Map.prototype.destroy = function () {
+        console.log(this.side)
+        console.log(my_panel.style.transform)
+        if (this.side == "td") {
+            var m = this;
+            reverse(startp_to_copy);
+            reverse(endp_to_copy)
+            my_panel.style.transform += " rotateY(180deg)"
+            reverse(left_panel);
+            reverse(my_panel.querySelector(".ftr"))
+            addClass(title, "td");
+            title.innerHTML = "LV" + (this.level + 1) + "&nbsp;-&nbsp;TA";
+        }
+        this.remove_things();
+    }
+    Map.prototype.step = function () {
+        console.log("step", miao_objs.emy, miao_objs.emy.length, emys_output_finish)
+        if (miao_objs.emy.length == 0 && emys_output_finish&&this.side=="td") {
+            if (this.level_state == "normal") {
+                this.level_state = "success";
+                console.log("finish");
+                show_panel("level_finish")
+            }
 
+        }
     }
 
     function enter_level(level) {
-        if (current_map)
-            if (current_map)
-                current_map.destroy();
+        if (current_map) {
+            current_map.destroy();
+        }
+
         current_map = new Map(level)
     }
 
-    enter_level(0);
+    enter_level(current_level);
 
 
     function obj_step(e) {
@@ -1104,22 +1126,70 @@ window.onload = function () {
         set_global_speed(2)
     }
     speedfor4.onclick = function () {
-        set_global_speed(4)
+        set_global_speed(16)
     }
-    function show(d){
-        removeClass(d,"displaynone");
-        
+
+    function fadeout(d, time) {
+        d.style.transition = "opacity " + time + "ms";
+
+        addClass(d, "trans")
+        setTimeout(function () {
+            hide(d);
+        }, time)
     }
-    function hide(d){
-        addClass(d,"displaynone");
+
+    function fadein(d, time) {
+        console.log(d)
+        d.style.transition = "opacity " + time + "ms";
+        show(d);
+        setTimeout(
+            function () {
+                removeClass(d, "trans")
+            }, 100
+        )
+
     }
-    btn_stop.onclick=function(){
-        show_panel("level_stoped");
+
+    function show(d) {
+        removeClass(d, "displaynone");
+
     }
-   function show_panel(name){
-       show(body_mask);
-       show($("#"+name))
-   }
+
+    function hide(d) {
+        addClass(d, "displaynone");
+    }
+    btn_restart.onclick = function () {
+        if (current_map.side == "ta") {
+            hide($("#level_setting #btn_restart_defence"));
+        } else {
+            show($("#level_setting #btn_restart_defence"));
+        }
+        show_panel("level_setting");
+
+    }
+
+    function restart_whole_level() {
+        //        current_map.destroy();
+        enter_level(current_level);
+        hide_panel("level_setting")
+        hide_panel("level_failed")
+    }
+    btn_restart_attack.onclick = restart_whole_level;
+    btn_restart_whole_level.onclick = restart_whole_level;
+
+    function hide_panel(name) {
+        fadeout($("#" + name), 500);
+        fadeout(body_mask, 500)
+    }
+    btn_continue.onclick = function () {
+
+        hide_panel("level_setting");
+    }
+
+    function show_panel(name) {
+        fadein(body_mask, 500);
+        fadein($("#" + name), 500);
+    }
 
     function step() {
         if (sys_play_state == "Pause") {
@@ -1137,6 +1207,7 @@ window.onload = function () {
             for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);
             }
+            //            current_map.step();
             sys_tick += global_speed;
         }
         requestAnimationFrame(step);

@@ -745,7 +745,7 @@ window.onload = function () {
         var m = this;
         this.side = "ta";
         this.level_state = "normal";
-        this.testside = "ta"
+        this.testside = "td"
         if (this.testside == "td") {
             this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
@@ -1071,6 +1071,30 @@ window.onload = function () {
             if (this.level_state == "normal") {
                 this.level_state = "success";
                 console.log("finish");
+                function set_success_info(){
+                    for(var i =0;i<3;i++){
+                        var selector="#scores>div:nth-child("+(i+1)+")>label:nth-child("+2+")";
+                        console.log(i,selector,$(selector));
+                        $(selector).innerHTML=arguments[i];
+                    }
+                    
+                }
+                var time_cost=0;
+                this.emy_seq.forEach(
+                    function(i){
+                        time_cost+=i[0];
+                    }
+                )
+//                for(var i in this.emy_seq){
+//                    console.log(this.emy_seq[i],this.emy_seq[i][0])
+//                    
+//                    csl.log(time_cost)
+//                }
+//                csl.log(time_cost);
+                time_cost/=60;//s
+                time_cost*=1000;//ms
+                console.log(this.emy_seq)
+                set_success_info(this.emy_seq.length,3,parseInt(time_cost)+"ms")
                 show_panel("level_finish")
             }
 

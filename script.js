@@ -687,7 +687,7 @@ window.onload = function () {
     }
     body.oncontextmenu = function () {
             if (is_catching()) {
-                console.log("ww")
+          
                 catching_thing.parentNode.removeChild(catching_thing);
                 catching_thing = undefined;
                 removeClass(body, "catching");
@@ -865,11 +865,12 @@ window.onload = function () {
     }
 
     Map.prototype.td_enter = function () {
-        console.log("td enter")
+//        console.log("td enter")
         var m = this;
+        
         this.level_state = "normal";
         emys_output_finish = false;
-        console.log(JSON.stringify(this.emy_seq));
+//        console.log(JSON.stringify(this.emy_seq));
         set_sys_play_state("Start");
         this.remove_things();
         this.emy_seq_len = this.emy_seq.length;
@@ -888,7 +889,7 @@ window.onload = function () {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
-                console.log("ss")
+          
                 catch_tower(k, m.map_start)
             }
 
@@ -972,12 +973,13 @@ window.onload = function () {
         //        console.log("finish", dom.style.transform)
     }
     Map.prototype.half_level_finish = function (state) {
+        console.log(state);
         var m = this;
 
         if (this.reversing)
             return;
         else
-            this.reversing = true;
+            
         var endp = $(".endp>.fill")
         endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-in";
         if (state == "ta") {
@@ -1026,9 +1028,10 @@ window.onload = function () {
                 }, dg(3300, 0)
             )
         } else {
-            console.log("tttttttt")
+//            console.log("tttttttt")
                 //            enter_level(this.level);
             show_panel("level_failed");
+            
             this.level_state = "failed";
         }
 
@@ -1066,7 +1069,7 @@ window.onload = function () {
         this.remove_things();
     }
     Map.prototype.step = function () {
-        console.log("step", miao_objs.emy, miao_objs.emy.length, emys_output_finish)
+//        console.log("step", miao_objs.emy, miao_objs.emy.length, emys_output_finish)
         if (miao_objs.emy.length == 0 && emys_output_finish&&this.side=="td") {
             if (this.level_state == "normal") {
                 this.level_state = "success";
@@ -1074,7 +1077,7 @@ window.onload = function () {
                 function set_success_info(){
                     for(var i =0;i<3;i++){
                         var selector="#scores>div:nth-child("+(i+1)+")>label:nth-child("+2+")";
-                        console.log(i,selector,$(selector));
+//                        console.log(i,selector,$(selector));
                         $(selector).innerHTML=arguments[i];
                     }
                     
@@ -1094,7 +1097,9 @@ window.onload = function () {
                 time_cost/=60;//s
                 time_cost*=1000;//ms
                 console.log(this.emy_seq)
-                set_success_info(this.emy_seq.length,3,parseInt(time_cost)+"ms")
+                
+       
+                set_success_info(this.emy_seq.length,maps_power[this.level]-this.left_tower_points,parseInt(time_cost)+"ms")
                 show_panel("level_finish")
             }
 
@@ -1163,7 +1168,7 @@ window.onload = function () {
     }
 
     function fadein(d, time) {
-        console.log(d)
+//        console.log(d)
         d.style.transition = "opacity " + time + "ms";
         show(d);
         setTimeout(
@@ -1197,10 +1202,18 @@ window.onload = function () {
         enter_level(current_level);
         hide_panel("level_setting")
         hide_panel("level_failed")
+        current_map.reversing=false;
     }
     btn_restart_attack.onclick = restart_whole_level;
     btn_restart_whole_level.onclick = restart_whole_level;
-
+    function restart_defence(){
+        level_state="normal";
+        current_map.td_enter();
+        hide_panel("level_failed")
+        current_map.reversing=false;
+    }
+    btn_restart_defence1.onclick=restart_defence;
+    btn_restart_defence2.onclick=restart_defence;
     function hide_panel(name) {
         fadeout($("#" + name), 500);
         fadeout(body_mask, 500)

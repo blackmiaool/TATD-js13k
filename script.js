@@ -81,7 +81,9 @@ window.onload = function () {
         //health str callback
     var emys = [[100, 10, "None", "Basic warrior.", function () {
         var a = 1;
-    }], ];
+    }], [50, 5, "None", "Fast warrior.", function () {
+        var a = 1;
+    }]];
     //rage,power,des,callback,cost
     var towers = [[2.5, 10, "Basic tower.", function () {
 
@@ -408,7 +410,7 @@ window.onload = function () {
 
     miao_obj = function () {}
     miao_obj.prototype.init = function (kind, pos, other) {
-        var d = $("#" + this.name + "_to_copy").cloneNode(true);
+        var d = $("#" + this.name + "_to_copy[kind='"+kind+"']").cloneNode(true);
         this.kind = kind;
         this.d = d;
         this.d.id = "";
@@ -745,7 +747,7 @@ window.onload = function () {
         var m = this;
         this.side = "ta";
         this.level_state = "normal";
-        this.testside = "td"
+        this.testside = "ta"
         if (this.testside == "td") {
             this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
@@ -837,7 +839,7 @@ window.onload = function () {
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
             d.querySelector(".top").appendChild(emy)
-
+            d.querySelector(".bottom p").innerHTML = v[3];
         })
 
         tower_preset[this.level].forEach(
@@ -1189,9 +1191,9 @@ window.onload = function () {
     }
     btn_restart.onclick = function () {
         if (current_map.side == "ta") {
-            hide($("#level_setting #btn_restart_defence"));
+            hide($("#level_setting #btn_restart_defence1"));
         } else {
-            show($("#level_setting #btn_restart_defence"));
+            show($("#level_setting #btn_restart_defence1"));
         }
         show_panel("level_setting");
 

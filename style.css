@@ -68,6 +68,7 @@ body {
 .ftr .speed button {
     width: 33%;
     /*            height: 100%;*/
+    
     margin: 0px;
     /*            box-sizing: border-box;*/
 }
@@ -89,6 +90,7 @@ body {
 .start button {
     width: 100%;
     /*            height: 38px;*/
+    
     margin: 0px;
     box-sizing: border-box;
 }
@@ -170,6 +172,7 @@ body {
     height: 50px;
     width: 50px;
     /*            border:1px black solid;*/
+    
     display: inline-block;
     -webkit-transition: 0.1s linear;
     -o-transition: 0.1s linear;
@@ -179,6 +182,7 @@ body {
             border-bottom: 1px rgba(0,0,0,0) solid;
 */
     /*            border: 3px rgba(0, 0, 0, 0) solid;*/
+    
     text-align: center;
     position: relative;
 }
@@ -217,6 +221,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
 
 .emy-panel {
     /*            height: 100px;*/
+    
     margin: 15px;
     background-color: rgba(255, 255, 255, 0.15);
     position: relative;
@@ -267,6 +272,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     text-indent: 2em;
     /*            position: absolute;*/
     /*            top: 0px;*/
+    
     margin-top: 10px;
     color: white;
 }
@@ -286,102 +292,14 @@ body.catching #mn.active .grid[lang=wall]:hover {
 
 .emy-panel .bottom {
     /*            height: 70px;*/
+    
     overflow: auto;
     position: relative;
 }
 
-.tower {
-    position: absolute;
-    height: 50px;
-    width: 50px;
-    overflow: visible;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    box-sizing: border-box;
-    /*            transition: 0.3s linear;*/
-}
-
-.tower>svg {
-    height: 50px;
-    width: 50px;
-    z-index: 1000;
-    position: relative;
-}
-
-.tower[kind="0"] .shape {
-    height: 50px;
-    width: 50px;
-    border: 7px rgba(51, 122, 182, 0.6) solid;
-    border-bottom-color: rgba(0, 0, 0, 0);
-    border-radius: 50%;
-    box-sizing: border-box;
-    display: inline-block;
-}
-
-.tower[kind="0"] .shape .core {
-    /*
-            width: 10px;
-            height: 10px;
-*/
-    /*            box-sizing: border-box;*/
-    /*            width: 10px;*/
-    /*            height: 10px;*/
-    background-color: #66ccff;
-    top: 50%;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: inline-block;
-    border: 6px solid rgba(102, 204, 255, 0);
-    border-radius: 50%;
-}
-
-.tower[kind="0"] .shape .core .horn {
-    width: 0px;
-    height: 0px;
-    border: solid rgba(0, 0, 0, 0);
-    border-width: 5px 20px;
-    border-left-color: steelblue;
-    transform: translate(0, -50%) rotate(270deg);
-    /*            rotate(90deg);*/
-    transform-origin: 0% 38%;
-    position: absolute;
-    top: 0px;
-    box-sizing: border-box;
-}
-
-.tower[kind="0"] .shape .core .horn>div {}
-
-.tower>.fill {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-}
-
-.tower>.range {
-    transform: translate(-50%, -50%);
-    left: 50%;
-    top: 50%;
-    position: absolute;
-    border: 2px steelblue solid;
-    border-radius: 50%;
-    box-sizing: border-box;
-    transition: 0.3s ease-out;
-    width: 0px;
-    height: 0px;
-    background-color: rgba(51, 122, 182, 0.1);
-    opacity: 0;
-}
-
-.tower>.range.active {
-    width: 150px;
-    height: 150px;
-    opacity: 1;
-}
-
 .hide {
     /*            display: none;*/
+    
     visibility: hidden;
 }
 
@@ -694,7 +612,7 @@ div#tower_points label.zoom {
     width: 30px;
     transform: translate(-50%, -50%);
     transition: opacity 0.5s;
-/*    animation: float 3s infinite;*/
+    /*    animation: float 3s infinite;*/
 }
 
 .emy[kind='2'] .head {
@@ -753,4 +671,139 @@ div#tower_points label.zoom {
     100% {
         top: 50%;
     }
+}
+
+.tower {
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    overflow: visible;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    box-sizing: border-box;
+    /*            transition: 0.3s linear;*/
+}
+
+.tower>.range {
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    border: 2px steelblue solid;
+    border-radius: 50%;
+    box-sizing: border-box;
+    transition: 0.3s ease-out;
+    width: 0px;
+    height: 0px;
+    background-color: rgba(51, 122, 182, 0.1);
+    opacity: 0;
+}
+
+.tower>.range.active {
+    width: 150px;
+    height: 150px;
+    opacity: 1;
+}
+
+.tower[kind="0"] .shape {
+    height: 50px;
+    width: 50px;
+    border: 7px rgba(51, 122, 182, 0.6) solid;
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: inline-block;
+}
+
+.tower[kind="0"] .shape .core {
+    background-color: #66ccff;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    border: 6px solid rgba(102, 204, 255, 0);
+    border-radius: 50%;
+}
+
+.tower[kind="0"]>.fill {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
+
+.tower[kind="1"] .outline1 {
+    height: 30px;
+    width: 30px;
+    border: 5px rgba(51, 122, 182, 0.8) solid;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg) skew(10deg, 10deg);
+    box-sizing: border-box;
+    display: inline-block;
+    position: absolute;
+}
+
+.tower[kind="1"] .core {
+    background-color: #66ccff;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    border: 4px solid rgba(102, 204, 255, 0);
+    border-radius: 50%;
+}
+
+.tower[kind="2"] .head {
+    height: 0px;
+    width: 0px;
+    border: 5px rgba(102, 204, 255, 1) solid;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%) ;
+    box-sizing: border-box;
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+}
+
+.tower[kind="2"] .body {
+    height: 0px;
+    width: 0px;
+    /*    background-color: #66ccff;*/
+    
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    border: 5px solid steelblue;
+    border-bottom-width: 35px;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+}
+
+.tower[kind="2"] .base {
+    /*    background-color: #66ccff;*/
+    
+    top: 90%;
+    position: absolute;
+    left: 50%;
+    height: 10px;
+    width: 20px;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    border: 3px solid steelblue;
+    opacity: 0.6;
+    border-radius: 50%;
+}
+
+.tower>.fill {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
 }

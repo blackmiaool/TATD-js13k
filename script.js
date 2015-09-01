@@ -75,8 +75,8 @@ window.onload = function () {
     ]
     var speed = {
             bul: [5, 10, 15],
-            tower: [],
-            emy: [0.03, 0.05],
+            tower: [30,20,50],
+            emy: [0.03, 0.05,0.03],
         }
         //health str callback
     var emys = [[100, 10, "None", "Basic warrior.", function () {
@@ -89,10 +89,14 @@ window.onload = function () {
     //rage,power,des,callback,cost
     var towers = [[2.5, 10, "Basic tower.", function () {
 
-    }, 10]];
+    }, 10],[2.5, 10, "Ice tower.", function () {
+
+    }, 10],[2.5, 10, "Basic tower.", function () {
+
+    }, 10]]; 
 
 
-
+    
     var maps_start = [
             [0, 2],
         ]
@@ -478,7 +482,7 @@ window.onload = function () {
             level: 0,
             base_trans: "translate(-50%, -50%)",
             prepare: 0,
-            prepare_max: 30,
+            prepare_max: speed.tower[kind],
         })
 
         var tower = this;
@@ -627,7 +631,9 @@ window.onload = function () {
             //            this.unregister();
             this.is_continue = false;
         }
+
         var pos_now = clone(paths[path_len_i]);
+         
         spread_dir(function (dx, dy) {
             point_add(pos_now, [dx, dy])
         }, this.path_len - path_len_i, current_map.dirs[path_len_i])
@@ -637,16 +643,6 @@ window.onload = function () {
     emy_create = function (kind, pos) {
         return new Emy(kind, pos);
     }
-
-    function map_put(kind) {
-        addClass(current_map.start_grid.querySelector(".startp"), "out");
-        setTimeout(
-            function () {
-                removeClass(current_map.start_grid.querySelector(".startp"), "out");
-            }, 500
-        )
-    }
-
     function put_emy(kind, pos) {
         map_put(kind);
         setTimeout(
@@ -656,6 +652,16 @@ window.onload = function () {
         )
 
     }
+    function map_put(kind) {
+        addClass(current_map.start_grid.querySelector(".startp"), "out");
+        setTimeout(
+            function () {
+                removeClass(current_map.start_grid.querySelector(".startp"), "out");
+            }, 500
+        )
+    }
+
+    
 
     function clone_tpl(dom) {
         dom = dom.cloneNode(true);
@@ -749,7 +755,7 @@ window.onload = function () {
         var m = this;
         this.side = "ta";
         this.level_state = "normal";
-        this.testside = "ta"
+        this.testside = "td"
         if (this.testside == "td") {
             this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
@@ -840,6 +846,13 @@ window.onload = function () {
                 //            console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
+            var lens=[v[0]/5,speed.emy[k]*1000,v[1]*2]
+            Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
+                function(bar,index){
+                    csl.log(bar)
+                    bar.style.width=lens[index]+"px"
+                }
+            )
             d.querySelector(".top").appendChild(emy)
             d.querySelector(".bottom p").innerHTML = v[3];
         })
@@ -903,6 +916,17 @@ window.onload = function () {
                 //            console.log(tower)
             tower.id = ""
             left_panel.appendChild(d);
+            
+            
+            var lens=[v[1],v[0]*10,1/speed.tower[k]*500,v[4]]
+            Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
+                function(bar,index){
+                    csl.log(bar)
+                    bar.style.width=lens[index]+"px"
+                }
+            )
+            
+            
             d.querySelector(".top").appendChild(tower)
             d.querySelector(".bottom p").innerHTML = v[2];
 

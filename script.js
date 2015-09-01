@@ -83,6 +83,8 @@ window.onload = function () {
         var a = 1;
     }], [50, 5, "None", "Fast warrior.", function () {
         var a = 1;
+    }], [200, 10, "None", "Solid warrior.", function () {
+        var a = 1;
     }]];
     //rage,power,des,callback,cost
     var towers = [[2.5, 10, "Basic tower.", function () {
@@ -410,7 +412,7 @@ window.onload = function () {
 
     miao_obj = function () {}
     miao_obj.prototype.init = function (kind, pos, other) {
-        var d = $("#" + this.name + "_to_copy[kind='"+kind+"']").cloneNode(true);
+        var d = $("#" + this.name + "_to_copy[kind='" + kind + "']").cloneNode(true);
         this.kind = kind;
         this.d = d;
         this.d.id = "";
@@ -689,7 +691,7 @@ window.onload = function () {
     }
     body.oncontextmenu = function () {
             if (is_catching()) {
-          
+
                 catching_thing.parentNode.removeChild(catching_thing);
                 catching_thing = undefined;
                 removeClass(body, "catching");
@@ -811,7 +813,7 @@ window.onload = function () {
     Map.prototype.ta_enter = function () {
         var m = this;
         set_sys_play_state("Pause");
-        emys_left.innerHTML=""
+        emys_left.innerHTML = ""
         this.remove_things();
         left_panel.innerHTML = "";
         var tpl = $("#emy_panel_to_copy")
@@ -867,12 +869,12 @@ window.onload = function () {
     }
 
     Map.prototype.td_enter = function () {
-//        console.log("td enter")
+        //        console.log("td enter")
         var m = this;
-        
+
         this.level_state = "normal";
         emys_output_finish = false;
-//        console.log(JSON.stringify(this.emy_seq));
+        //        console.log(JSON.stringify(this.emy_seq));
         set_sys_play_state("Start");
         this.remove_things();
         this.emy_seq_len = this.emy_seq.length;
@@ -891,7 +893,7 @@ window.onload = function () {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
-          
+
                 catch_tower(k, m.map_start)
             }
 
@@ -981,8 +983,8 @@ window.onload = function () {
         if (this.reversing)
             return;
         else
-            
-        var endp = $(".endp>.fill")
+
+            var endp = $(".endp>.fill")
         endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-in";
         if (state == "ta") {
             addClass(endp, "rotate")
@@ -1030,10 +1032,10 @@ window.onload = function () {
                 }, dg(3300, 0)
             )
         } else {
-//            console.log("tttttttt")
-                //            enter_level(this.level);
+            //            console.log("tttttttt")
+            //            enter_level(this.level);
             show_panel("level_failed");
-            
+
             this.level_state = "failed";
         }
 
@@ -1071,37 +1073,38 @@ window.onload = function () {
         this.remove_things();
     }
     Map.prototype.step = function () {
-//        console.log("step", miao_objs.emy, miao_objs.emy.length, emys_output_finish)
-        if (miao_objs.emy.length == 0 && emys_output_finish&&this.side=="td") {
+        //        console.log("step", miao_objs.emy, miao_objs.emy.length, emys_output_finish)
+        if (miao_objs.emy.length == 0 && emys_output_finish && this.side == "td") {
             if (this.level_state == "normal") {
                 this.level_state = "success";
                 console.log("finish");
-                function set_success_info(){
-                    for(var i =0;i<3;i++){
-                        var selector="#scores>div:nth-child("+(i+1)+")>label:nth-child("+2+")";
-//                        console.log(i,selector,$(selector));
-                        $(selector).innerHTML=arguments[i];
+
+                function set_success_info() {
+                    for (var i = 0; i < 3; i++) {
+                        var selector = "#scores>div:nth-child(" + (i + 1) + ")>label:nth-child(" + 2 + ")";
+                        //                        console.log(i,selector,$(selector));
+                        $(selector).innerHTML = arguments[i];
                     }
-                    
+
                 }
-                var time_cost=0;
+                var time_cost = 0;
                 this.emy_seq.forEach(
-                    function(i){
-                        time_cost+=i[0];
-                    }
-                )
-//                for(var i in this.emy_seq){
-//                    console.log(this.emy_seq[i],this.emy_seq[i][0])
-//                    
-//                    csl.log(time_cost)
-//                }
-//                csl.log(time_cost);
-                time_cost/=60;//s
-                time_cost*=1000;//ms
+                        function (i) {
+                            time_cost += i[0];
+                        }
+                    )
+                    //                for(var i in this.emy_seq){
+                    //                    console.log(this.emy_seq[i],this.emy_seq[i][0])
+                    //                    
+                    //                    csl.log(time_cost)
+                    //                }
+                    //                csl.log(time_cost);
+                time_cost /= 60; //s
+                time_cost *= 1000; //ms
                 console.log(this.emy_seq)
-                
-       
-                set_success_info(this.emy_seq.length,maps_power[this.level]-this.left_tower_points,parseInt(time_cost)+"ms")
+
+
+                set_success_info(this.emy_seq.length, maps_power[this.level] - this.left_tower_points, parseInt(time_cost) + "ms")
                 show_panel("level_finish")
             }
 
@@ -1170,7 +1173,7 @@ window.onload = function () {
     }
 
     function fadein(d, time) {
-//        console.log(d)
+        //        console.log(d)
         d.style.transition = "opacity " + time + "ms";
         show(d);
         setTimeout(
@@ -1204,18 +1207,20 @@ window.onload = function () {
         enter_level(current_level);
         hide_panel("level_setting")
         hide_panel("level_failed")
-        current_map.reversing=false;
+        current_map.reversing = false;
     }
     btn_restart_attack.onclick = restart_whole_level;
     btn_restart_whole_level.onclick = restart_whole_level;
-    function restart_defence(){
-        level_state="normal";
+
+    function restart_defence() {
+        level_state = "normal";
         current_map.td_enter();
         hide_panel("level_failed")
-        current_map.reversing=false;
+        current_map.reversing = false;
     }
-    btn_restart_defence1.onclick=restart_defence;
-    btn_restart_defence2.onclick=restart_defence;
+    btn_restart_defence1.onclick = restart_defence;
+    btn_restart_defence2.onclick = restart_defence;
+
     function hide_panel(name) {
         fadeout($("#" + name), 500);
         fadeout(body_mask, 500)

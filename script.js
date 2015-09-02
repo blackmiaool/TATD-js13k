@@ -86,7 +86,7 @@ window.onload = function () {
     }], [200, 10, "None", "Solid warrior.", function () {
         var a = 1;
     }]];
-    //rage,power,des,callback,cost
+    //range,power,des,callback,cost
     var towers = [[2.5, 10, "Basic tower.", function () {
 
     }, 10],[2.5, 10, "Ice tower.", function () {
@@ -94,29 +94,33 @@ window.onload = function () {
     }, 10],[2.5, 10, "Basic tower.", function () {
 
     }, 10]]; 
-//    var towers=[
-//        {
-//            rage:2.5,
-//            power:10,
-//            des:"Basic tower.",
-//            emit:function(){},
-//            cost:10,
-//        },
-//        {
-//            rage:2.5,
-//            power:10,
-//            des:"Basic tower.",
-//            emit:function(){},
-//            cost:10,
-//        },
-//        {
-//            rage:2.5,
-//            power:10,
-//            des:"Basic tower.",
-//            emit:function(){},
-//            cost:10,
-//        }
-//    ]
+    var towers=[
+        {
+            range:2.5,
+            power:10,
+            des:"Basic tower.",
+            emit:function(){},
+            cost:10,
+            rotate:true,
+        },
+        {
+            range:2.5,
+            power:10,
+            des:"Basic tower.",
+            emit:function(){},
+            cost:10,
+            rotate:true,
+        },
+        {
+            range:2.5,
+            power:10,
+            des:"Basic tower.",
+            emit:function(){},
+            cost:10,
+            bias:[0,-13],
+            rotate:false,
+        }
+    ]
 
     
     var maps_start = [
@@ -455,6 +459,9 @@ window.onload = function () {
         var p = get_grid_pos(pos);
         p[0] -= std_size[this.name][this.kind][0] / 2;
         p[1] -= std_size[this.name][this.kind][1] / 2;
+        if(this.bias){
+            point_add(p,this.bias)
+        }
         this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
     }
 
@@ -468,10 +475,12 @@ window.onload = function () {
         mn.removeChild(this.d)
     }
 
-    Bul = function (kind, pos, target) {
+    Bul = function (kind, pos, target,bias) {
         this.name = "bul"
+        this.bias=bias;
         this.target = target;
         this.init.apply(this, arguments)
+        
             //        console.log(target)
         this.target.add_bul(this);
     };
@@ -499,7 +508,7 @@ window.onload = function () {
     Tower = function (kind, pos) {
         this.name = "tower";
         this.init.apply(this, arguments);
-
+        this.model=towers[this.kind];
         obj_add(this, {
             level: 0,
             base_trans: "translate(-50%, -50%)",
@@ -557,10 +566,12 @@ window.onload = function () {
         miao_objs.emy.r_forEach(
             function (e) {
                 var dis = cal_dis(e.pos, tower.pos);
-                if (dis < towers[tower.kind][0]) {
+                if (dis < towers[tower.kind].range) {
+                    if(tower.model.rotate)
                     tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                     if (tower.ready) {
-                        var bul = new Bul(0, tower.pos, e);
+                        console.log(tower.pos)
+                        var bul = new Bul(0, tower.pos, e,tower.model.bias?tower.model.bias:null);
                         tower.ready = false;
                         tower.prepare = 0;
                     }
@@ -623,7 +634,7 @@ window.onload = function () {
         current_map.step();
     }
     Emy.prototype.suffer = function (kind) {
-        this.hp -= towers[kind][1];
+        this.hp -= towers[kind].power;
         this.bf.style.right = (1 - this.hp / this.hp_max) * 100 + "%";
         if (this.hp <= 0 && !this.dead) {
             this.destroy();
@@ -754,8 +765,8 @@ window.onload = function () {
     mn.onclick = function (event) {
         console.log("click")
         if (catching_thing && event.target.lang == "wall") {
-            if (current_map.left_tower_points >= towers[catching_thing.kind][4]) {
-                current_map.left_tower_points -= towers[catching_thing.kind][4];
+            if (current_map.left_tower_points >= towers[catching_thing.kind].cost) {
+                current_map.left_tower_points -= towers[catching_thing.kind].cost;
                 current_map.tower_points_update();
                 put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
             } else {
@@ -776,7 +787,7 @@ window.onload = function () {
         var m = this;
         this.side = "ta";
         this.level_state = "normal";
-        this.testside = "ta"
+        this.testside = "td"
         if (this.testside == "td") {
             this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
@@ -939,7 +950,7 @@ window.onload = function () {
             left_panel.appendChild(d);
             
             
-            var lens=[v[1],v[0]*10,1/speed.tower[k]*500,v[4]]
+            var lens=[v.power,v.range*10,1/speed.tower[k]*500,v.cost]
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
                 function(bar,index){
 //                    csl.log(bar)
@@ -949,7 +960,7 @@ window.onload = function () {
             
             
             d.querySelector(".top").appendChild(tower)
-            d.querySelector(".bottom p").innerHTML = v[2];
+            d.querySelector(".bottom p").innerHTML = v.des;
 
         })
     }

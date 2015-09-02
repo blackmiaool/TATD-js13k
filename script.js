@@ -94,7 +94,29 @@ window.onload = function () {
     }, 10],[2.5, 10, "Basic tower.", function () {
 
     }, 10]]; 
-
+//    var towers=[
+//        {
+//            rage:2.5,
+//            power:10,
+//            des:"Basic tower.",
+//            emit:function(){},
+//            cost:10,
+//        },
+//        {
+//            rage:2.5,
+//            power:10,
+//            des:"Basic tower.",
+//            emit:function(){},
+//            cost:10,
+//        },
+//        {
+//            rage:2.5,
+//            power:10,
+//            des:"Basic tower.",
+//            emit:function(){},
+//            cost:10,
+//        }
+//    ]
 
     
     var maps_start = [
@@ -518,10 +540,6 @@ window.onload = function () {
             top: array[1]
         })
     }
-    Tower.prototype.rotate = function () {
-        console.log(angle)
-        this.style.transform = this.base_trans + " rotate(" + angle + "deg)";
-    }
     Tower.prototype.f_rotate = function (y, x) {
         var angle = m.atan2(y, x);
         this.style.transform = this.base_trans + " rotate(" + (angle * 180 / m.PI + 90) + "deg)";
@@ -686,6 +704,8 @@ window.onload = function () {
     }
 
     function catch_tower(kind) {
+        if(catching_thing)
+        catching_thing.parentNode.removeChild(catching_thing);
         catching_thing = clone_tpl($("#tower_to_copy[kind='" + kind + "']"));
         catching_thing.style["pointer-events"] = "none";
         catching_thing.kind = kind;
@@ -732,6 +752,7 @@ window.onload = function () {
 
     }
     mn.onclick = function (event) {
+        console.log("click")
         if (catching_thing && event.target.lang == "wall") {
             if (current_map.left_tower_points >= towers[catching_thing.kind][4]) {
                 current_map.left_tower_points -= towers[catching_thing.kind][4];
@@ -755,7 +776,7 @@ window.onload = function () {
         var m = this;
         this.side = "ta";
         this.level_state = "normal";
-        this.testside = "td"
+        this.testside = "ta"
         if (this.testside == "td") {
             this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
@@ -849,7 +870,7 @@ window.onload = function () {
             var lens=[v[0]/5,speed.emy[k]*1000,v[1]*2]
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
                 function(bar,index){
-                    csl.log(bar)
+//                    csl.log(bar)
                     bar.style.width=lens[index]+"px"
                 }
             )
@@ -921,7 +942,7 @@ window.onload = function () {
             var lens=[v[1],v[0]*10,1/speed.tower[k]*500,v[4]]
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
                 function(bar,index){
-                    csl.log(bar)
+//                    csl.log(bar)
                     bar.style.width=lens[index]+"px"
                 }
             )
@@ -1001,7 +1022,7 @@ window.onload = function () {
         //        console.log("finish", dom.style.transform)
     }
     Map.prototype.half_level_finish = function (state) {
-        console.log(state);
+//        console.log(state);
         var m = this;
 
         if (this.reversing)
@@ -1011,6 +1032,7 @@ window.onload = function () {
             var endp = $(".endp>.fill")
         endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-in";
         if (state == "ta") {
+            this.reversing=true;
             addClass(endp, "rotate")
 
             setTimeout(

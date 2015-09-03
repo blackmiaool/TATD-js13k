@@ -488,6 +488,12 @@ window.onload = function () {
         miao_objs[this.name].remove(this);
         mn.removeChild(this.d)
     }
+    miao_obj.prototype.r_unregister=function(){
+        miao_objs[this.name].remove(this);
+    }
+    miao_obj.prototype.r_remove=function(){
+        mn.removeChild(this.d)
+    }
 
     Bul = function (kind, pos, target, bias, tower) {
         this.tower = tower;
@@ -634,23 +640,31 @@ window.onload = function () {
     }
     Emy.prototype.destroy = function () {
         if (this.dead)
-            return
+            return;
+        this.dead = true;
+        var e=this;
         this.buls.forEach(
             function (b) {
                 addClass(b.d, "trans")
             }
         )
-
-        this.unregister();
-        current_map.step();
+        addClass(this.d,"trans");
+        this.r_unregister();
+        setTimeout(
+            function(){
+                e.r_unregister();
+                current_map.step();
+            },500
+        )
+        
     }
     Emy.prototype.suffer = function (kind) {
 
         this.hp -= towers[kind].power;
         this.bf.style.right = (1 - this.hp / this.hp_max) * 100 + "%";
-        if (this.hp <= 0 && !this.dead) {
+        if (this.hp <= 0) {
             this.destroy();
-            this.dead = true;
+            
         }
     }
     Emy.prototype.step = function () {
@@ -668,8 +682,6 @@ window.onload = function () {
         if (path_len_i >= current_map.dirs.length) {
             current_map.suffer(this);
             this.destroy();
-            this.dead = true;
-            //            this.unregister();
             this.is_continue = false;
         }
 
@@ -867,6 +879,12 @@ window.onload = function () {
 
 
 
+    }
+    var cd=function(){
+        
+    }
+    cd.prototype.step=function(){
+        
     }
     Map.prototype.set_hp = function (hp) {
         //        csl.log(hp)

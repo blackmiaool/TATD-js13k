@@ -547,7 +547,7 @@ div#tower_points label.zoom {
     top: 0px;
     z-index: 999;
 }
-
+ 
 .emy {
     left: 0px;
     top: 0px;
@@ -558,12 +558,13 @@ div#tower_points label.zoom {
     z-index: 1;
     position: absolute;
 }
-
+.emy.trans{
+    opacity: 0;
+}
 .emy[kind='0'] {
     height: 10px;
     width: 10px;
     background-color: antiquewhite;
-    position: absolute;
 }
 
 .emy[kind='1'] {
@@ -571,8 +572,6 @@ div#tower_points label.zoom {
     width: 16px;
     border-radius: 5px;
     background-color: antiquewhite;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.5s;
 }
 
 .emy[kind='1'] .eye {
@@ -583,6 +582,34 @@ div#tower_points label.zoom {
     background-color: black;
     position: absolute;
     animation: blink 4s infinite;
+}
+
+.emy[kind='2'] {
+    height: 30px;
+    width: 30px;
+    /*    animation: float 3s infinite;*/
+}
+
+.emy[kind='2'] .head {
+    height: 18px;
+    width: 18px;
+    border-radius: 5px;
+    transform: translate(-50%, -50%);
+    background-color: antiquewhite;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+}
+
+.emy[kind='2'] .leg {
+    height: 20px;
+    width: 5px;
+    border-radius: 5px;
+    background-color: antiquewhite;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translate(-50%, 0%);
 }
 
 @keyframes blink {
@@ -609,35 +636,7 @@ div#tower_points label.zoom {
     }
 }
 
-.emy[kind='2'] {
-    height: 30px;
-    width: 30px;
-    transform: translate(-50%, -50%);
-    transition: opacity 0.5s;
-    /*    animation: float 3s infinite;*/
-}
 
-.emy[kind='2'] .head {
-    height: 18px;
-    width: 18px;
-    border-radius: 5px;
-    transform: translate(-50%, -50%);
-    background-color: antiquewhite;
-    position: absolute;
-    top: 10px;
-    left: 50%;
-}
-
-.emy[kind='2'] .leg {
-    height: 20px;
-    width: 5px;
-    border-radius: 5px;
-    background-color: antiquewhite;
-    position: absolute;
-    bottom: 0px;
-    left: 50%;
-    transform: translate(-50%, 0%);
-}
 
 @keyframes blink {
     0% {

@@ -109,7 +109,7 @@ window.onload = function () {
             des:"Basic tower.",
             emit:function(){},
             cost:10,
-            rotate:true,
+            rotate:false,
         },
         {
             range:2.5,
@@ -878,11 +878,16 @@ window.onload = function () {
                 //            console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
-            var lens=[v[0]/5,speed.emy[k]*1000,v[1]*2]
+            var lens=[v[0],speed.emy[k]*1000,v[1]]
+            var lens_k=[0.2,1,4];
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
                 function(bar,index){
 //                    csl.log(bar)
-                    bar.style.width=lens[index]+"px"
+                    bar.style.width=lens[index]*lens_k[index]+"px"
+                    var value=document.createElement("label")
+                    addClass(value,"prop-value");
+                    value.innerHTML=parseInt(lens[index]);
+                    bar.appendChild(value);
                 }
             )
             d.querySelector(".top").appendChild(emy)
@@ -897,21 +902,8 @@ window.onload = function () {
         )
 
     }
-    Map.prototype.tower_points_update = function () {
-        tower_points_value.innerHTML = this.left_tower_points;
-    }
-    Map.prototype.side_init = function () {
-        if (this.side == "ta") {
+    
 
-        } else {
-            this.left_tower_points = maps_power[this.level];
-            tower_points_value.innerHTML = this.left_tower_points;
-        }
-    }
-
-    function get_tower_points() {
-
-    }
 
     Map.prototype.td_enter = function () {
         //        console.log("td enter")
@@ -954,7 +946,11 @@ window.onload = function () {
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
                 function(bar,index){
 //                    csl.log(bar)
-                    bar.style.width=lens[index]+"px"
+                    bar.style.width=lens[index]+"px";
+                    var value=document.createElement("label")
+                    addClass(value,"prop-value");
+                    value.innerHTML=parseInt(lens[index]);
+                    bar.appendChild(value);
                 }
             )
             
@@ -963,6 +959,17 @@ window.onload = function () {
             d.querySelector(".bottom p").innerHTML = v.des;
 
         })
+    }
+    Map.prototype.tower_points_update = function () {
+        tower_points_value.innerHTML = this.left_tower_points;
+    }
+    Map.prototype.side_init = function () {
+        if (this.side == "ta") {
+
+        } else {
+            this.left_tower_points = maps_power[this.level];
+            tower_points_value.innerHTML = this.left_tower_points;
+        }
     }
     Map.prototype.remove_things = function () {
         //        console.log("remove_things")

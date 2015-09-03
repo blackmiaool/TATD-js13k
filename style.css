@@ -260,7 +260,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     color: white;
     background-color: steelblue;
     width: 30px;
-    height: 10px;
+    height: 13px;
     display: inline-block;
     line-height: 100%;
     vertical-align: middle;
@@ -808,4 +808,11 @@ div#tower_points label.zoom {
     width: 100%;
     position: absolute;
     top: 0;
+}
+label.prop-value{
+    line-height: 13px;
+    font-size:13px;
+    left: 100%;  
+    position: absolute;
+    margin-left: 2px;
 }

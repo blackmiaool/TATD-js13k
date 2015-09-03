@@ -1,5 +1,6 @@
 window.onload = function () {
-
+    var testside = "ta"
+    var current_level = 1;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
@@ -24,12 +25,18 @@ window.onload = function () {
     var fps = 60;
     var names = ["bul", "tower", "emy"];
     var doc = document;
+    var $ = function (tag) {
+        return doc.querySelector(tag);
+    }
+    var $$ = function (tag) {
+        return doc.querySelectorAll(tag);
+    }
     var m = Math;
     var csl = console;
     var sys_tick = 0;
     var playing = true;
     var current_map;
-    var current_level = 0;
+    
     var miao_objs = {
         emy: [],
         bul: [],
@@ -53,7 +60,8 @@ window.onload = function () {
 
     var just_a_grid;
     var maps = [
-            [
+        {
+            map: [
                 "111111111111111",
                 "111111111111111",
                 "000000000000001",
@@ -65,80 +73,94 @@ window.onload = function () {
                 "111111111111111",
                 "111111111111111",
             ],
+            start: [0, 2],
+            end: [14, 7],
+            hp: 20,
+            power: 40,
+            preset: [[6, 1, 0], [8, 1, 0], [12, 3, 0],],
+        },
+        {
+            map: [
+                "111111111111111",
+                "111111111111111",
+                "000011111111111",
+                "111011111111111",
+                "100011111111111",
+                "101111111111111",
+                "101111111111111",
+                "100000000000000",
+                "111111111111111",
+                "111111111111111",
+            ],
+            start: [0, 2],
+            end: [14, 7],
+            hp: 40,
+            power: 50,
+            preset:[[2,5,1],[2,6,1],[2,3,0],[1,3,0],],
+        },
         ]
-    var maps_hp = [20, 120]
-    var maps_power = [40, 120]
-    var tower_preset = [
-        [
-            [6, 1, 0], [8, 1, 0], [12, 3, 0],
-        ],
-    ]
+
+
     var speed = {
             bul: [5, 10, 15],
-            tower: [30,20,50],
-            emy: [0.03, 0.05,0.03],
+            tower: [30, 20, 50],
+            emy: [0.03, 0.05, 0.03],
         }
         //health str callback
     var emys = [[100, 10, "None", "Basic warrior.", function () {
         var a = 1;
     }], [50, 5, "None", "Fast warrior.", function () {
         var a = 1;
-    }], [200, 10, "None", "Solid warrior.", function () {
+    }], [170, 10, "None", "Solid warrior.", function () {
         var a = 1;
     }]];
     //range,power,des,callback,cost
-    var towers = [[2.5, 10, "Basic tower.", function () {
-
-    }, 10],[2.5, 10, "Ice tower.", function () {
-
-    }, 10],[2.5, 10, "Basic tower.", function () {
-
-    }, 10]]; 
-    var towers=[
+    //    var towers = [[2.5, 10, "Basic tower.", function () {
+    //
+    //    }, 10], [2.5, 10, "Ice tower.", function () {
+    //
+    //    }, 10], [2.5, 10, "Basic tower.", function () {
+    //
+    //    }, 10]];
+    var towers = [
         {
-            range:2.5,
-            power:10,
-            des:"Basic tower.",
-            emit:function(){},
-            cost:10,
-            rotate:true,
+            range: 1.5,
+            power: 10,
+            des: "Basic tower.",
+            emit: function () {},
+            cost: 10,
+            rotate: true,
         },
         {
-            range:2.5,
-            power:10,
-            des:"Basic tower.",
-            emit:function(){},
-            cost:10,
-            rotate:false,
+            range: 1.5,
+            power: 10,
+            des: "Fast tower.",
+            emit: function () {},
+            cost: 10,
+            rotate: false,
         },
         {
-            range:2.5,
-            power:10,
-            des:"Basic tower.",
-            emit:function(){},
-            cost:10,
-            bias:[0,-13],
-            rotate:false,
+            range: 2.5,
+            power: 137,
+            des: "Powerful tower.",
+            emit: function () {},
+            cost: 10,
+            bias: [0, -13],
+            rotate: false,
         }
     ]
 
-    
-    var maps_start = [
-            [0, 2],
-        ]
-    var maps_end = [
-            [14, 7],
-        ]
+
+
     var row_sum = 10;
     var column_sum = 15;
-    //    csl.log(maps)
-    //    var mn = doc.querySelector("#mn");
+
     var grids = [];
 
 
     names.forEach(
         function (name, index) {
-            var d = doc.querySelectorAll("#" + name + "_to_copy");
+            var d = $$("#" + name + "_to_copy");
             //            csl.log(d)
             names.forEach.call(d, function (dom) {
                 std_size[name].push([dom.offsetWidth, dom.offsetHeight]);
@@ -201,12 +223,7 @@ window.onload = function () {
             addClass(obj, cls);
         }
     }
-    var $ = function (tag) {
-        return doc.querySelector(tag);
-    }
-    var $$ = function (tag) {
-        return doc.querySelectorAll(tag);
-    }
+
     body = $("body")
     btn1.onclick = function () {
         //        addClass(title, "td");
@@ -238,7 +255,7 @@ window.onload = function () {
         sys_cb_queue.push([func, sys_tick + ticks]);
     }
     btn3.onclick = function () {
-        current_map.start();
+        btn_next_level.onclick();
     }
     btn4.onclick = function () {
         current_map.ta_finish();
@@ -419,9 +436,6 @@ window.onload = function () {
 
 
     function get_grid_pos(pos) {
-        //        csl.log(just_a_grid)
-        //        var h = just_a_grid.clientHeight;
-        //        var w = just_a_grid.clientWidth;
         var h = 50,
             w = 50;
         return [(pos[0] + 0.5) * h, (pos[1] + 0.5) * w]
@@ -459,8 +473,8 @@ window.onload = function () {
         var p = get_grid_pos(pos);
         p[0] -= std_size[this.name][this.kind][0] / 2;
         p[1] -= std_size[this.name][this.kind][1] / 2;
-        if(this.bias){
-            point_add(p,this.bias)
+        if (this.bias) {
+            point_add(p, this.bias)
         }
         this.style.transform = "translate(" + p[0] + "px," + p[1] + "px)";
     }
@@ -475,13 +489,14 @@ window.onload = function () {
         mn.removeChild(this.d)
     }
 
-    Bul = function (kind, pos, target,bias) {
+    Bul = function (kind, pos, target, bias, tower) {
+        this.tower = tower;
         this.name = "bul"
-        this.bias=bias;
+        this.bias = bias;
         this.target = target;
         this.init.apply(this, arguments)
-        
-            //        console.log(target)
+
+        //        console.log(target)
         this.target.add_bul(this);
     };
     Bul.prototype = new miao_obj();
@@ -499,7 +514,7 @@ window.onload = function () {
     Bul.prototype.step = function () {
         var pos = this.cal_pos(this.pos, this.target.pos, this.speed * global_speed / fps);
         if (!pos) {
-            this.target.suffer(this.kind);
+            this.target.suffer(this.tower.kind);
             this.unregister();
         } else {
             this.set_pos(pos);
@@ -508,7 +523,7 @@ window.onload = function () {
     Tower = function (kind, pos) {
         this.name = "tower";
         this.init.apply(this, arguments);
-        this.model=towers[this.kind];
+        this.model = towers[this.kind];
         obj_add(this, {
             level: 0,
             base_trans: "translate(-50%, -50%)",
@@ -567,11 +582,11 @@ window.onload = function () {
             function (e) {
                 var dis = cal_dis(e.pos, tower.pos);
                 if (dis < towers[tower.kind].range) {
-                    if(tower.model.rotate)
-                    tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
+                    if (tower.model.rotate)
+                        tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                     if (tower.ready) {
-                        console.log(tower.pos)
-                        var bul = new Bul(0, tower.pos, e,tower.model.bias?tower.model.bias:null);
+//                        console.log(tower.pos)
+                        var bul = new Bul(0, tower.pos, e, tower.model.bias ? tower.model.bias : null, tower);
                         tower.ready = false;
                         tower.prepare = 0;
                     }
@@ -581,10 +596,6 @@ window.onload = function () {
         )
     }
 
-    function bullet_create(kind, pos, target) {
-        return new Bul(kind, pos, target);
-
-    }
 
     function put_tower(kind, x, y) {
         return new Tower(kind, [x, y]);
@@ -634,6 +645,7 @@ window.onload = function () {
         current_map.step();
     }
     Emy.prototype.suffer = function (kind) {
+
         this.hp -= towers[kind].power;
         this.bf.style.right = (1 - this.hp / this.hp_max) * 100 + "%";
         if (this.hp <= 0 && !this.dead) {
@@ -645,7 +657,7 @@ window.onload = function () {
         if (!this.initted) //uninited
         {
             this.initted = true;
-            this.set_pos(maps_start[level]);
+            this.set_pos(maps[level].start);
             return;
         }
         if (!this.is_continue) {
@@ -662,7 +674,7 @@ window.onload = function () {
         }
 
         var pos_now = clone(paths[path_len_i]);
-         
+
         spread_dir(function (dx, dy) {
             point_add(pos_now, [dx, dy])
         }, this.path_len - path_len_i, current_map.dirs[path_len_i])
@@ -672,6 +684,7 @@ window.onload = function () {
     emy_create = function (kind, pos) {
         return new Emy(kind, pos);
     }
+
     function put_emy(kind, pos) {
         map_put(kind);
         setTimeout(
@@ -681,6 +694,7 @@ window.onload = function () {
         )
 
     }
+
     function map_put(kind) {
         addClass(current_map.start_grid.querySelector(".startp"), "out");
         setTimeout(
@@ -690,7 +704,7 @@ window.onload = function () {
         )
     }
 
-    
+
 
     function clone_tpl(dom) {
         dom = dom.cloneNode(true);
@@ -700,23 +714,15 @@ window.onload = function () {
         return dom;
     }
     var catching_thing;
-    mn.onmousemove = function (para) {
-        //        console.log(para)
-        //        console.log(mn.style)
-        if (is_catching()) {
-            //            console.log("m")
-            catching_thing.style.left = para.x;
-            catching_thing.style.top = para.y;
-        }
-    }
+
 
     function is_catching() {
         return (typeof (catching_thing) != "undefined");
     }
 
     function catch_tower(kind) {
-        if(catching_thing)
-        catching_thing.parentNode.removeChild(catching_thing);
+        if (catching_thing)
+            catching_thing.parentNode.removeChild(catching_thing);
         catching_thing = clone_tpl($("#tower_to_copy[kind='" + kind + "']"));
         catching_thing.style["pointer-events"] = "none";
         catching_thing.kind = kind;
@@ -725,20 +731,44 @@ window.onload = function () {
         //        addClass(catching_thing,"hide");
         body.appendChild(catching_thing);
         addClass($("body"), "inactive")
+        mouseisinmn = true;
+
+        my_panel.onmouseout();
+        my_panel.onmouseover();
+        my_panel.onmousemove(pre_mouse_pos)
+            //        
     }
     body.oncontextmenu = function () {
-            if (is_catching()) {
+        if (is_catching()) {
 
-                catching_thing.parentNode.removeChild(catching_thing);
-                catching_thing = undefined;
-                removeClass(body, "catching");
-                return false;
-            }
+            catching_thing.parentNode.removeChild(catching_thing);
+            catching_thing = undefined;
+            removeClass(body, "catching");
+            return false;
         }
-        //    body.onmousedown = function () {
-        //
-        //    }
-    mn.onmouseover = function () {
+    }
+    var pre_mouse_pos;
+    my_panel.onmousemove = function (para) {
+
+        //                console.log(para)
+        //        console.log(mn.style)
+        pre_mouse_pos = para;
+        if (is_catching()) {
+            //            console.log("m")
+            if (para) {
+                catching_thing.style.left = para.x;
+                catching_thing.style.top = para.y;
+            } else {
+                console.log(my_panel)
+                catching_thing.style.left = my_panel.x;
+                catching_thing.style.top = my_panel.y;
+            }
+
+        }
+    }
+
+    my_panel.onmouseover = function () {
+        //        console.log("over")
         if (mouseisinmn) { //trigger something
 
         } else {
@@ -751,14 +781,23 @@ window.onload = function () {
 
 
     }
-    mn.onmouseout = function (para) {
-        if (!hasChild(mn, para.toElement)) { //really out
+    my_panel.onmouseout = function (para) {
+        //        console.log("out")
+        if (para) {
+            if (!hasChild(mn, para.toElement)) { //really out
+                mouseisinmn = false;
+                //            console.log("leave");
+                removeClass(mn, "active")
+                removeClass(body, "active")
+                addClass(body, "inactive")
+
+            }
+        } else {
             mouseisinmn = false;
             //            console.log("leave");
             removeClass(mn, "active")
             removeClass(body, "active")
             addClass(body, "inactive")
-
         }
 
     }
@@ -775,20 +814,15 @@ window.onload = function () {
                     removeClass(tower_points_label, "zoom");
                 }, 100)
             }
-
-            //            csl.log(parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
         }
-
-
-
     }
 
     var Map = function (level) {
         var m = this;
         this.side = "ta";
         this.level_state = "normal";
-        this.testside = "td"
-        if (this.testside == "td") {
+
+        if (testside == "td") {
             this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
             setTimeout(
@@ -803,13 +837,16 @@ window.onload = function () {
 
         this.load_map(level);
         this.reversing = false;
-        map = maps[level];
+        map = maps[level].map;
         this.level = level;
-        this.hp = maps_hp[level];
+        this.hp = maps[level].hp;
+        console.log(maps[level].hp,this.hp)
         this.hp_max = this.hp;
-        this.map_start = maps_start[level];
-        this.map_end = maps_end[level];
+        this.map_start = maps[level].start;
+        this.map_end = maps[level].end;
         this.dirs = dirs_create(map, this.map_start, this.map_end);
+        //        console.log(this.dirs)
+        paths = []
         paths.push(clone(this.map_start));
         this.dirs.forEach(
             function (d) {
@@ -819,7 +856,7 @@ window.onload = function () {
                 }, 1, d);
             }
         );
-        if (this.testside == "ta")
+        if (testside == "ta")
             this.ta_enter();
         else {
             this.td_enter();
@@ -833,8 +870,11 @@ window.onload = function () {
     Map.prototype.set_hp = function (hp) {
         //        csl.log(hp)
 
-        if (hp > -1)
+//        if (hp > -1)
+        
             this.hp = hp;
+        if(this.hp==undefined)
+            this.hp=this.hp_max
         if (this.hp <= 0) {
             this.hp = 0;
 
@@ -856,7 +896,7 @@ window.onload = function () {
         left_panel.innerHTML = "";
         var tpl = $("#emy_panel_to_copy")
         this.hp = this.hp_max;
-        this.set_hp(this.hp);
+        this.set_hp(maps[current_level].hp);
         emys.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
@@ -878,15 +918,15 @@ window.onload = function () {
                 //            console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
-            var lens=[v[0],speed.emy[k]*1000,v[1]]
-            var lens_k=[0.2,1,4];
+            var lens = [v[0], speed.emy[k] * 1000, v[1]]
+            var lens_k = [0.3, 1, 3];
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
-                function(bar,index){
-//                    csl.log(bar)
-                    bar.style.width=lens[index]*lens_k[index]+"px"
-                    var value=document.createElement("label")
-                    addClass(value,"prop-value");
-                    value.innerHTML=parseInt(lens[index]);
+                function (bar, index) {
+                    //                    csl.log(bar)
+                    bar.style.width = lens[index] * lens_k[index] + "px"
+                    var value = document.createElement("label")
+                    addClass(value, "prop-value");
+                    value.innerHTML = parseInt(lens[index]);
                     bar.appendChild(value);
                 }
             )
@@ -894,7 +934,7 @@ window.onload = function () {
             d.querySelector(".bottom p").innerHTML = v[3];
         })
 
-        tower_preset[this.level].forEach(
+        maps[this.level].preset.forEach(
             function (t) {
                 //                csl.log(t);
                 put_tower(t[2], t[0], t[1])
@@ -902,7 +942,7 @@ window.onload = function () {
         )
 
     }
-    
+
 
 
     Map.prototype.td_enter = function () {
@@ -940,21 +980,23 @@ window.onload = function () {
                 //            console.log(tower)
             tower.id = ""
             left_panel.appendChild(d);
-            
-            
-            var lens=[v.power,v.range*10,1/speed.tower[k]*500,v.cost]
+
+            console.log(v)
+            var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost]
+            var lens_k = [3, 20, 3, 3]
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
-                function(bar,index){
-//                    csl.log(bar)
-                    bar.style.width=lens[index]+"px";
-                    var value=document.createElement("label")
-                    addClass(value,"prop-value");
-                    value.innerHTML=parseInt(lens[index]);
+                function (bar, index) {
+                    //                    csl.log(bar)
+                    bar.style.width = lens[index] * lens_k[index] + "px";
+                    var value = document.createElement("label")
+                    addClass(value, "prop-value");
+
+                    value.innerHTML = index != 1 ? parseInt(lens[index]) : lens[index];
                     bar.appendChild(value);
                 }
             )
-            
-            
+
+
             d.querySelector(".top").appendChild(tower)
             d.querySelector(".bottom p").innerHTML = v.des;
 
@@ -967,7 +1009,7 @@ window.onload = function () {
         if (this.side == "ta") {
 
         } else {
-            this.left_tower_points = maps_power[this.level];
+            this.left_tower_points = maps[this.level].power;
             tower_points_value.innerHTML = this.left_tower_points;
         }
     }
@@ -1040,7 +1082,7 @@ window.onload = function () {
         //        console.log("finish", dom.style.transform)
     }
     Map.prototype.half_level_finish = function (state) {
-//        console.log(state);
+        //        console.log(state);
         var m = this;
 
         if (this.reversing)
@@ -1050,7 +1092,7 @@ window.onload = function () {
             var endp = $(".endp>.fill")
         endp.style.transition = "transform " + dg("3.5", "0.1") + "s ease-in";
         if (state == "ta") {
-            this.reversing=true;
+            this.reversing = true;
             addClass(endp, "rotate")
 
             setTimeout(
@@ -1107,16 +1149,16 @@ window.onload = function () {
 
     Map.prototype.load_map = function (level) {
         for (var row = 0; row < row_sum; row++) {
-            var row_value = parseInt(maps[level][row], 2);
+            var row_value = parseInt(maps[level].map[row], 2);
             for (var column = 0; column < column_sum; column++) {
                 //                    grids[column][row].lang = get_bit(row_value, column_sum - column - 1) ? "wall" : "road";
-                grids[column][row].lang = get_pos_value(maps[level], column, row) ? "wall" : "road";
+                grids[column][row].lang = get_pos_value(maps[level].map, column, row) ? "wall" : "road";
             }
         }
-        this.start_grid = grids[maps_start[level][0]][maps_start[level][1]]
+        this.start_grid = grids[maps[level].start[0]][maps[level].start[1]]
         this.start_grid.lang = "start";
         this.start_grid.appendChild($("#startp_to_copy"))
-        this.end_grid = grids[maps_end[level][0]][maps_end[level][1]];
+        this.end_grid = grids[maps[level].end[0]][maps[level].end[1]];
         this.end_grid.lang = "end";
         this.end_grid.appendChild(endp_to_copy);
 
@@ -1168,7 +1210,7 @@ window.onload = function () {
                 console.log(this.emy_seq)
 
 
-                set_success_info(this.emy_seq.length, maps_power[this.level] - this.left_tower_points, parseInt(time_cost) + "ms")
+                set_success_info(this.emy_seq.length, maps[this.level].power - this.left_tower_points, parseInt(time_cost) + "ms")
                 show_panel("level_finish")
             }
 
@@ -1292,6 +1334,12 @@ window.onload = function () {
     btn_continue.onclick = function () {
 
         hide_panel("level_setting");
+    }
+    btn_next_level.onclick = function () {
+        hide_panel("level_finish");
+
+        enter_level(++current_level);
+
     }
 
     function show_panel(name) {

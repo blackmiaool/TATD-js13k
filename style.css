@@ -701,11 +701,25 @@ div#tower_points label.zoom {
     opacity: 0;
 }
 
+
 .tower>.range.active {
-    width: 150px;
-    height: 150px;
+    
     opacity: 1;
 }
+
+.tower[kind='0']>.range.active{
+    width: 150px;
+    height: 150px;
+}
+.tower[kind='1']>.range.active{
+    width: 150px;
+    height: 150px;
+}
+.tower[kind='2']>.range.active{
+    width: 250px;
+    height: 250px;
+}
+
 
 .tower[kind="0"] .shape {
     height: 50px;

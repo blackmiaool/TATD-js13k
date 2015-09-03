@@ -1,6 +1,6 @@
 window.onload = function () {
     var testside = "ta"
-    var current_level = 1;
+    var current_level = 0;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
@@ -833,8 +833,9 @@ window.onload = function () {
             this.half_level_finish("ta")
         } else {
             this.emy_seq = [];
+            title.innerHTML = "LV" + (level + 1) + "&nbsp;-&nbsp;TA";
         }
-
+        
         this.load_map(level);
         this.reversing = false;
         map = maps[level].map;
@@ -1115,26 +1116,16 @@ window.onload = function () {
             setTimeout(
                 function () {
                     reverse(left_panel);
-                    if (m.side == "ta") {
+         
                         m.side = "td";
                         m.td_enter();
                         addClass(title, "td");
                         setTimeout(
                             function () {
-                                title.innerHTML = "LV1&nbsp;-&nbsp;TD";
+                                title.innerHTML = "LV"+(m.level+1)+"&nbsp;-&nbsp;TD";
                             }, 250
                         )
-                    } else {
-                        m.side = "ta";
-                        m.ta_enter();
-
-                        removeClass(title, "td");
-                        setTimeout(
-                            function () {
-                                title.innerHTML = "LV1&nbsp;-&nbsp;TA";
-                            }, 250
-                        )
-                    }
+               
                 }, dg(3300, 0)
             )
         } else {
@@ -1173,8 +1164,8 @@ window.onload = function () {
             my_panel.style.transform += " rotateY(180deg)"
             reverse(left_panel);
             reverse(my_panel.querySelector(".ftr"))
-            addClass(title, "td");
-            title.innerHTML = "LV" + (this.level + 1) + "&nbsp;-&nbsp;TA";
+//            addClass(title, "td");
+//            title.innerHTML = "LV" + (this.level + 1) + "&nbsp;-&nbsp;TA";
         }
         this.remove_things();
     }
@@ -1259,14 +1250,23 @@ window.onload = function () {
     function set_global_speed(times) {
         global_speed = times;
     }
+    function set_speed_btn(btn,speed){
+        (new Array).forEach.call($$(".speed .top-btn"),
+            function(btn){
+                addClass(btn,"inactive")
+            }
+        )
+        removeClass(btn,"inactive");
+        set_global_speed(speed)
+    }
     speedfor1.onclick = function () {
-        set_global_speed(1)
+        set_speed_btn(speedfor1,1);
     }
     speedfor2.onclick = function () {
-        set_global_speed(2)
+        set_speed_btn(speedfor2,2);
     }
     speedfor4.onclick = function () {
-        set_global_speed(16)
+        set_speed_btn(speedfor4,16);
     }
 
     function fadeout(d, time) {

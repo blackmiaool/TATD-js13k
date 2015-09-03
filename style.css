@@ -480,7 +480,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     background-color: #626465;
 }
 
-.top-btn:active {
+.top-btn:active,.top-btn.inactive {
     background-color: #3f4041;
 }
 

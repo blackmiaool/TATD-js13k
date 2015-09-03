@@ -36,7 +36,7 @@ window.onload = function () {
     var sys_tick = 0;
     var playing = true;
     var current_map;
-    
+
     var miao_objs = {
         emy: [],
         bul: [],
@@ -77,7 +77,7 @@ window.onload = function () {
             end: [14, 7],
             hp: 20,
             power: 40,
-            preset: [[6, 1, 0], [8, 1, 0], [12, 3, 0],],
+            preset: [[6, 1, 0], [8, 1, 0], [12, 3, 0], ],
         },
         {
             map: [
@@ -96,7 +96,7 @@ window.onload = function () {
             end: [14, 7],
             hp: 40,
             power: 50,
-            preset:[[2,5,1],[2,6,1],[2,3,0],[1,3,0],],
+            preset: [[2, 5, 1], [2, 6, 1], [2, 3, 0], [1, 3, 0], ],
         },
         ]
 
@@ -488,10 +488,10 @@ window.onload = function () {
         miao_objs[this.name].remove(this);
         mn.removeChild(this.d)
     }
-    miao_obj.prototype.r_unregister=function(){
+    miao_obj.prototype.r_unregister = function () {
         miao_objs[this.name].remove(this);
     }
-    miao_obj.prototype.r_remove=function(){
+    miao_obj.prototype.r_remove = function () {
         mn.removeChild(this.d)
     }
 
@@ -591,7 +591,7 @@ window.onload = function () {
                     if (tower.model.rotate)
                         tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                     if (tower.ready) {
-//                        console.log(tower.pos)
+                        //                        console.log(tower.pos)
                         var bul = new Bul(0, tower.pos, e, tower.model.bias ? tower.model.bias : null, tower);
                         tower.ready = false;
                         tower.prepare = 0;
@@ -642,21 +642,21 @@ window.onload = function () {
         if (this.dead)
             return;
         this.dead = true;
-        var e=this;
+        var e = this;
         this.buls.forEach(
             function (b) {
                 addClass(b.d, "trans")
             }
         )
-        addClass(this.d,"trans");
+        addClass(this.d, "trans");
         this.r_unregister();
         setTimeout(
-            function(){
+            function () {
                 e.r_unregister();
                 current_map.step();
-            },500
+            }, 500
         )
-        
+
     }
     Emy.prototype.suffer = function (kind) {
 
@@ -664,7 +664,7 @@ window.onload = function () {
         this.bf.style.right = (1 - this.hp / this.hp_max) * 100 + "%";
         if (this.hp <= 0) {
             this.destroy();
-            
+
         }
     }
     Emy.prototype.step = function () {
@@ -847,13 +847,13 @@ window.onload = function () {
             this.emy_seq = [];
             title.innerHTML = "LV" + (level + 1) + "&nbsp;-&nbsp;TA";
         }
-        
+
         this.load_map(level);
         this.reversing = false;
         map = maps[level].map;
         this.level = level;
         this.hp = maps[level].hp;
-        console.log(maps[level].hp,this.hp)
+        console.log(maps[level].hp, this.hp)
         this.hp_max = this.hp;
         this.map_start = maps[level].start;
         this.map_end = maps[level].end;
@@ -880,20 +880,30 @@ window.onload = function () {
 
 
     }
-    var cd=function(){
-        
+    var cds=[];
+    var cd = function (dom,time,cb) {
+        this.d=dom;
+        this.time=time;
+        this.cb=cb;
+        this.time*=fps;
+        this.time_max=this.time;
+        cds.push(this);
     }
-    cd.prototype.step=function(){
+    cd.prototype.step = function () {        
+        this.time--;
+        this.d.style.width=this.time*100/this.time_max+"%";
+        if(!this.time){
+            this.cb();
+            cds.remove(this);
+            
+        }
         
+            
     }
     Map.prototype.set_hp = function (hp) {
-        //        csl.log(hp)
-
-//        if (hp > -1)
-        
-            this.hp = hp;
-        if(this.hp==undefined)
-            this.hp=this.hp_max
+        this.hp = hp;
+        if (this.hp == undefined)
+            this.hp = this.hp_max
         if (this.hp <= 0) {
             this.hp = 0;
 
@@ -1134,16 +1144,16 @@ window.onload = function () {
             setTimeout(
                 function () {
                     reverse(left_panel);
-         
-                        m.side = "td";
-                        m.td_enter();
-                        addClass(title, "td");
-                        setTimeout(
-                            function () {
-                                title.innerHTML = "LV"+(m.level+1)+"&nbsp;-&nbsp;TD";
-                            }, 250
-                        )
-               
+
+                    m.side = "td";
+                    m.td_enter();
+                    addClass(title, "td");
+                    setTimeout(
+                        function () {
+                            title.innerHTML = "LV" + (m.level + 1) + "&nbsp;-&nbsp;TD";
+                        }, 250
+                    )
+
                 }, dg(3300, 0)
             )
         } else {
@@ -1182,8 +1192,8 @@ window.onload = function () {
             my_panel.style.transform += " rotateY(180deg)"
             reverse(left_panel);
             reverse(my_panel.querySelector(".ftr"))
-//            addClass(title, "td");
-//            title.innerHTML = "LV" + (this.level + 1) + "&nbsp;-&nbsp;TA";
+                //            addClass(title, "td");
+                //            title.innerHTML = "LV" + (this.level + 1) + "&nbsp;-&nbsp;TA";
         }
         this.remove_things();
     }
@@ -1268,23 +1278,24 @@ window.onload = function () {
     function set_global_speed(times) {
         global_speed = times;
     }
-    function set_speed_btn(btn,speed){
+
+    function set_speed_btn(btn, speed) {
         (new Array).forEach.call($$(".speed .top-btn"),
-            function(btn){
-                addClass(btn,"inactive")
+            function (btn) {
+                addClass(btn, "inactive")
             }
         )
-        removeClass(btn,"inactive");
+        removeClass(btn, "inactive");
         set_global_speed(speed)
     }
     speedfor1.onclick = function () {
-        set_speed_btn(speedfor1,1);
+        set_speed_btn(speedfor1, 1);
     }
     speedfor2.onclick = function () {
-        set_speed_btn(speedfor2,2);
+        set_speed_btn(speedfor2, 2);
     }
     speedfor4.onclick = function () {
-        set_speed_btn(speedfor4,16);
+        set_speed_btn(speedfor4, 16);
     }
 
     function fadeout(d, time) {

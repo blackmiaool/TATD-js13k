@@ -2,15 +2,12 @@
 
 <head style="height:100%;">
     <title>TATD js13kgame</title>
-
-    <!-- build:js build/script.min.js -->
+    <!-- build:script inline bundle -->
     <script src="script.js"></script>
-    <script src="s.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:css build/style.min.css -->
+    <!-- /build -->
+    <!-- build:style inline bundle -->
     <link rel="stylesheet" href="style.css">
-    <!-- endbuild -->
+    <!-- /build -->
 </head>
 
 <body style="background-color:#4A4D4E;height:100%;margin:0px;">
@@ -227,26 +224,5 @@
 
     </div>
 </body>
-
-<!--
-<div ng-repeat="a in result|filter:(search):::">
-    <div ng-repeat="(key,value) in a">
-
-    </div>
-
-</div>
-$scope.c=[{a:1,b:2}...]
-if(c[0]){
-    input_show=true;
-    $scope.input={};
-}
-
-<input ng-repeat="(key,value) in c[0]" ng-model="input[key]">
-
-
-
-input a b
-
--->
 
 </html>

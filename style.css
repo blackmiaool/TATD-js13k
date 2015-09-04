@@ -228,6 +228,9 @@ body.catching #mn.active .grid[lang=wall]:hover {
     border-bottom: 1px #222 solid;
     /*            cursor: pointer;*/
 }
+.emy-panel.tower-panel {
+    margin-right: 0px;
+}
 
 .emy-panel * {
     cursor: pointer;
@@ -236,7 +239,10 @@ body.catching #mn.active .grid[lang=wall]:hover {
 .emy-panel .emy,
 .emy-panel .tower {
     top: 50%;
-    left: 15%;
+    left: 15%;    
+}
+.emy-panel .emy{
+    animation: none !important;
 }
 
 .emy-panel .abt {
@@ -248,6 +254,13 @@ body.catching #mn.active .grid[lang=wall]:hover {
 
 .emy-panel .abt .bar {
     margin: 25px;
+    line-height: 0px;
+    position: relative;
+    margin-left: 0px;
+    color: white;
+}
+.emy-panel.tower-panel .abt .bar {
+    margin: 20px;
     line-height: 0px;
     position: relative;
     margin-left: 0px;
@@ -282,7 +295,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
 }
 
 .emy-panel.tower-panel .top {
-    height: 90px;
+    height: 70px;
 }
 
 .emy-panel.tower-panel:nth-child(2) {
@@ -591,7 +604,7 @@ div#tower_points label.zoom {
 .emy[kind='2'] {
     height: 30px;
     width: 30px;
-    /*    animation: float 3s infinite;*/
+    animation: float 3s infinite;
 }
 
 .emy[kind='2'] .head {
@@ -615,7 +628,34 @@ div#tower_points label.zoom {
     left: 50%;
     transform: translate(-50%, 0%);
 }
+.emy[kind='3']{
+    height: 30px;
+    width: 30px;
+}
+.emy[kind='3']  .outline{
+    height: 30px;
+    width: 30px;
+    border-radius: 10px;
+    border: 5px solid antiquewhite;
+    box-sizing: border-box;
+    position: absolute;
+    transform: translate(-50%,-5%);
+    
 
+}
+.emy[kind='3']  .core{
+    height: 10px;
+    width: 10px;
+    left: 50%;
+    top:50%;
+    border: 6px solid antiquewhite;
+    border-radius: 50%;
+/*    background-color:  antiquewhite;*/
+    box-sizing: border-box;
+    position: absolute;
+    transform: translate(-50%,-50%);
+
+}
 @keyframes blink {
     0% {
         transform: scaleY(1);
@@ -666,14 +706,27 @@ div#tower_points label.zoom {
 
 @keyframes float {
     0% {
-        top: 50%;
+        top:0px;
     }
     50% {
-        top: 30%;
+        top:-10px;
     }
     100% {
-        top: 50%;
+        top:0px;
     }
+
+}
+@keyframes r_rotate {
+    0% {
+        transform:translate(-50%, -50%) rotate(0deg);
+    }
+    50% {
+        transform:translate(-50%, -50%) rotate(180deg);
+    }
+    100% {
+        transform:translate(-50%, -50%) rotate(360deg);
+    }
+
 }
 
 .tower {
@@ -719,6 +772,10 @@ div#tower_points label.zoom {
 .tower[kind='2']>.range.active {
     width: 250px;
     height: 250px;
+}
+.tower[kind='3']>.range.active {
+    width: 200px;
+    height: 200px;
 }
 
 .tower[kind="0"] .shape {
@@ -814,6 +871,42 @@ div#tower_points label.zoom {
     opacity: 0.6;
     border-radius: 50%;
 }
+.tower[kind="3"] .outline {
+    height: 40px;
+    width: 40px;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    border: 3px solid steelblue;
+    opacity: 0.8;
+}
+.tower[kind="3"] .core {
+    height: 0px;
+    width: 0px;
+    border-radius: 50%;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    border: 5px solid rgba(102, 204, 255, 1);
+
+}
+.tower[kind="3"] .shield{
+    height: 23px;
+    width: 23px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 4px solid rgba(0,0,0,0);
+    border-right-color:steelblue;
+    animation: r_rotate 2s infinite linear;
+    opacity: 1;
+}
 
 .tower>.fill {
     height: 100%;
@@ -845,62 +938,33 @@ label.prop-value {
     bottom: 0px;
     right: 0px;
     position: absolute;
-    zoom:0.5;
+    zoom: 0.5;
     overflow: auto;
     overflow-x: hidden;
 }
-.emy_queue .emy{
+
+.emy_queue .emy {
     position: absolute;
-      transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     left: 50%;
-    top: 60%;
+    top: 60% ;
+    animation: none !important;
 }
-.emy_queue_grid{
+
+.emy_queue_grid {
     height: 50px;
     width: 100px;
     position: relative;
-    background-color: rgba(250,235,215,0.2);
+    background-color: rgba(250, 235, 215, 0.2);
     margin-bottom: 2px;
 }
-.emy_queue_grid .wrap{
+
+.emy_queue_grid .wrap {
     position: absolute;
-    top:0px;
-    bottom:0px;
+    top: 0px;
+    bottom: 0px;
     left: 0px;
     right: 0px;
     height: 50px;
-/*    transform: translate(-50%,-50%);*/
+    /*    transform: translate(-50%,-50%);*/
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,5 @@
 window.onload = function () {
-    var testside = "ta"
+    var testside = "td"
     var current_level = 0;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
@@ -103,8 +103,8 @@ window.onload = function () {
 
     var speed = {
             bul: [5, 10, 15],
-            tower: [30, 20, 50],
-            emy: [0.03, 0.05, 0.03],
+            tower: [30, 20, 50,10],
+            emy: [0.03, 0.05, 0.03,0.02],
         }
         //health str callback
 //    var emys = [[100, 10, "None", "Basic warrior.", function () {
@@ -136,6 +136,13 @@ window.onload = function () {
             cb:function(){},
             cd:1,
         },
+        {
+            hp:170,
+            str:20,
+            des:"Final warrior.",
+            cb:function(){},
+            cd:1.5,
+        },
     ]
     //range,power,des,callback,cost
     //    var towers = [[2.5, 10, "Basic tower.", function () {
@@ -166,6 +173,15 @@ window.onload = function () {
             range: 2.5,
             power: 137,
             des: "Powerful tower.",
+            emit: function () {},
+            cost: 10,
+            bias: [0, -13],
+            rotate: false,
+        },
+        {
+            range: 2.5,
+            power: 137,
+            des: "Final tower.",
             emit: function () {},
             cost: 10,
             bias: [0, -13],

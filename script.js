@@ -102,7 +102,7 @@ window.onload = function () {
 
 
     var speed = {
-            bul: [5, 10, 15],
+            bul: [4, 10, 15],
             tower: [30, 20, 50, 10],
             emy: [0.03, 0.05, 0.03, 0.02],
         }
@@ -905,7 +905,7 @@ window.onload = function () {
         map = maps[level].map;
         this.level = level;
         this.hp = maps[level].hp;
-        console.log(maps[level].hp, this.hp)
+//        console.log(maps[level].hp, this.hp)
         this.hp_max = this.hp;
         this.map_start = maps[level].start;
         this.map_end = maps[level].end;
@@ -983,7 +983,7 @@ window.onload = function () {
         this.wrap.style.top = -(this.height_max - h);
     }
     Eq.prototype.unregister = function () {
-        console.log(sys_tick)
+//        console.log(sys_tick)
         this.cb();
         emy_queue.remove(this);
         //        console.log("un")

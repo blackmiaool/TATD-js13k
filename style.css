@@ -228,6 +228,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     border-bottom: 1px #222 solid;
     /*            cursor: pointer;*/
 }
+
 .emy-panel.tower-panel {
     margin-right: 0px;
 }
@@ -239,9 +240,10 @@ body.catching #mn.active .grid[lang=wall]:hover {
 .emy-panel .emy,
 .emy-panel .tower {
     top: 50%;
-    left: 15%;    
+    left: 15%;
 }
-.emy-panel .emy{
+
+.emy-panel .emy {
     animation: none !important;
 }
 
@@ -260,6 +262,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     color: white;
     font-size: 14px;
 }
+
 .emy-panel.tower-panel .abt .bar {
     margin: 20px;
     line-height: 0px;
@@ -337,6 +340,27 @@ body.catching #mn.active .grid[lang=wall]:hover {
     left: 0px;
     top: 0px;
     transition: opacity 0.3s;
+}
+
+.bul[kind='1'] {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 10px solid steelblue;
+    position: absolute;
+}
+
+.bul[kind='1']:after {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid steelblue;
+    position: absolute;
+    content: "";
+    top: 3px;
+    left: -5px;
 }
 
 .blood {
@@ -473,9 +497,11 @@ body.catching #mn.active .grid[lang=wall]:hover {
     color: white;
     border-radius: 20px;
 }
-.m-panel.center{
+
+.m-panel.center {
     transform: translate(-50%, -50%);
 }
+
 #next_level {
     position: absolute;
     bottom: 30px;
@@ -631,34 +657,35 @@ div#tower_points label.zoom {
     left: 50%;
     transform: translate(-50%, 0%);
 }
-.emy[kind='3']{
+
+.emy[kind='3'] {
     height: 30px;
     width: 30px;
 }
-.emy[kind='3']  .outline{
+
+.emy[kind='3'] .outline {
     height: 30px;
     width: 30px;
     border-radius: 10px;
     border: 5px solid antiquewhite;
     box-sizing: border-box;
     position: absolute;
-    transform: translate(-50%,-5%);
-    
-
+    transform: translate(-50%, -5%);
 }
-.emy[kind='3']  .core{
+
+.emy[kind='3'] .core {
     height: 10px;
     width: 10px;
     left: 50%;
-    top:50%;
+    top: 50%;
     border: 6px solid antiquewhite;
     border-radius: 50%;
-/*    background-color:  antiquewhite;*/
+    /*    background-color:  antiquewhite;*/
     box-sizing: border-box;
     position: absolute;
-    transform: translate(-50%,-50%);
-
+    transform: translate(-50%, -50%);
 }
+
 @keyframes blink {
     0% {
         transform: scaleY(1);
@@ -709,27 +736,26 @@ div#tower_points label.zoom {
 
 @keyframes float {
     0% {
-        top:0px;
+        top: 0px;
     }
     50% {
-        top:-10px;
+        top: -10px;
     }
     100% {
-        top:0px;
+        top: 0px;
     }
-
 }
+
 @keyframes r_rotate {
     0% {
-        transform:translate(-50%, -50%) rotate(0deg);
+        transform: translate(-50%, -50%) rotate(0deg);
     }
     50% {
-        transform:translate(-50%, -50%) rotate(180deg);
+        transform: translate(-50%, -50%) rotate(180deg);
     }
     100% {
-        transform:translate(-50%, -50%) rotate(360deg);
+        transform: translate(-50%, -50%) rotate(360deg);
     }
-
 }
 
 .tower {
@@ -776,6 +802,7 @@ div#tower_points label.zoom {
     width: 250px;
     height: 250px;
 }
+
 .tower[kind='3']>.range.active {
     width: 200px;
     height: 200px;
@@ -874,6 +901,7 @@ div#tower_points label.zoom {
     opacity: 0.6;
     border-radius: 50%;
 }
+
 .tower[kind="3"] .outline {
     height: 40px;
     width: 40px;
@@ -885,6 +913,7 @@ div#tower_points label.zoom {
     border: 3px solid steelblue;
     opacity: 0.8;
 }
+
 .tower[kind="3"] .core {
     height: 0px;
     width: 0px;
@@ -895,9 +924,9 @@ div#tower_points label.zoom {
     transform: translate(-50%, -50%);
     display: inline-block;
     border: 5px solid rgba(102, 204, 255, 1);
-
 }
-.tower[kind="3"] .shield{
+
+.tower[kind="3"] .shield {
     height: 23px;
     width: 23px;
     position: absolute;
@@ -905,8 +934,8 @@ div#tower_points label.zoom {
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    border: 4px solid rgba(0,0,0,0);
-    border-right-color:steelblue;
+    border: 4px solid rgba(0, 0, 0, 0);
+    border-right-color: steelblue;
     animation: r_rotate 2s infinite linear;
     opacity: 1;
 }
@@ -950,7 +979,7 @@ label.prop-value {
     position: absolute;
     transform: translate(-50%, -50%);
     left: 50%;
-    top: 60% ;
+    top: 60%;
     animation: none !important;
 }
 

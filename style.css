@@ -258,6 +258,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     position: relative;
     margin-left: 0px;
     color: white;
+    font-size: 14px;
 }
 .emy-panel.tower-panel .abt .bar {
     margin: 20px;
@@ -271,7 +272,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     color: white;
     background-color: steelblue;
     width: 30px;
-    height: 13px;
+    height: 10px;
     display: inline-block;
     line-height: 100%;
     vertical-align: middle;
@@ -467,12 +468,14 @@ body.catching #mn.active .grid[lang=wall]:hover {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -100%);
     text-align: center;
     color: white;
     border-radius: 20px;
 }
-
+.m-panel.center{
+    transform: translate(-50%, -50%);
+}
 #next_level {
     position: absolute;
     bottom: 30px;

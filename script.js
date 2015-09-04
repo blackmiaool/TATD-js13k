@@ -1,5 +1,5 @@
 window.onload = function () {
-    var testside = "td"
+    var testside = "ta"
     var current_level = 0;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
@@ -103,55 +103,55 @@ window.onload = function () {
 
     var speed = {
             bul: [5, 10, 15],
-            tower: [30, 20, 50,10],
-            emy: [0.03, 0.05, 0.03,0.02],
+            tower: [30, 20, 50, 10],
+            emy: [0.03, 0.05, 0.03, 0.02],
         }
         //health str callback
-//    var emys = [[100, 10, "None", "Basic warrior.", function () {
-//        var a = 1;
-//    }], [50, 5, "None", "Fast warrior.", function () {
-//        var a = 1;
-//    }], [170, 10, "None", "Solid warrior.", function () {
-//        var a = 1;
-//    }]];
-    var emys=[
-        {
-            hp:100,
-            str:10,
-            des:"Basic warrior.",
-            cb:function(){},
-            cd:0.5,
+        //    var emys = [[100, 10, "None", "Basic warrior.", function () {
+        //        var a = 1;
+        //    }], [50, 5, "None", "Fast warrior.", function () {
+        //        var a = 1;
+        //    }], [170, 10, "None", "Solid warrior.", function () {
+        //        var a = 1;
+        //    }]];
+    var emys = [
+            {
+                hp: 100,
+                str: 10,
+                des: "Basic warrior.",
+                cb: function () {},
+                cd: 0.5,
         },
-        {
-            hp:50,
-            str:5,
-            des:"Fast warrior.",
-            cb:function(){},
-            cd:0.3,
+            {
+                hp: 50,
+                str: 5,
+                des: "Fast warrior.",
+                cb: function () {},
+                cd: 0.3,
         },
-        {
-            hp:170,
-            str:10,
-            des:"Solid warrior.",
-            cb:function(){},
-            cd:1,
+            {
+                hp: 170,
+                str: 10,
+                des: "Solid warrior.",
+                cb: function () {},
+                cd: 1,
         },
-        {
-            hp:170,
-            str:20,
-            des:"Final warrior.",
-            cb:function(){},
-            cd:1.5,
+            {
+                hp: 170,
+                str: 20,
+                des: "Final warrior.",
+                cb: function () {},
+                cd: 1.5,
         },
     ]
-    //range,power,des,callback,cost
-    //    var towers = [[2.5, 10, "Basic tower.", function () {
-    //
-    //    }, 10], [2.5, 10, "Ice tower.", function () {
-    //
-    //    }, 10], [2.5, 10, "Basic tower.", function () {
-    //
-    //    }, 10]];
+        //range,power,des,callback,cost
+        //    var towers = [[2.5, 10, "Basic tower.", function () {
+        //
+        //    }, 10], [2.5, 10, "Ice tower.", function () {
+        //
+        //    }, 10], [2.5, 10, "Basic tower.", function () {
+        //
+        //    }, 10]];
     var towers = [
         {
             range: 1.5,
@@ -171,7 +171,7 @@ window.onload = function () {
         },
         {
             range: 2.5,
-            power: 137,
+            power: 20,
             des: "Powerful tower.",
             emit: function () {},
             cost: 10,
@@ -180,7 +180,7 @@ window.onload = function () {
         },
         {
             range: 2.5,
-            power: 137,
+            power: 30,
             des: "Final tower.",
             emit: function () {},
             cost: 10,
@@ -533,7 +533,7 @@ window.onload = function () {
     miao_obj.prototype.r_remove = function () {
         mn.removeChild(this.d)
     }
-
+    var emy_order_cal=false;
     Bul = function (kind, pos, target, bias, tower) {
         this.tower = tower;
         this.name = "bul"
@@ -623,6 +623,19 @@ window.onload = function () {
             }
         }
         var tower = this;
+        if(!emy_order_cal){
+            emy_order_cal=true;
+            miao_objs.emy.sort(
+                function(a,b){
+                    if(a.path_len>b.path_len)
+                        return -1;
+                    else if(a.path_len==b.path_len)
+                        return 0;
+                    else
+                        return 1;
+                }
+            )
+        }
         miao_objs.emy.r_forEach(
             function (e) {
                 var dis = cal_dis(e.pos, tower.pos);
@@ -741,7 +754,7 @@ window.onload = function () {
         sys_setTimeout(
             function () {
                 var emy = emy_create(kind, pos);
-            }, 300/1000*fps
+            }, 300 / 1000 * fps
         )
 
     }
@@ -940,52 +953,53 @@ window.onload = function () {
     Map.prototype.enter_init = function () {
 
     }
-    var emy_queue=[];
-    var queue_speed=150;//150px/s
-    Eq=function(k,cb){
-        this.kind=k;
-        this.cb=cb;
-        this.emy=get_emy(k);
-        this.grid=emy_queue_grid_to_copy.cloneNode(true);
-        this.grid.id="";
-        this.wrap=this.grid.querySelector(".wrap");
+    var emy_queue = [];
+    var queue_speed = 150; //150px/s
+    Eq = function (k, cb) {
+        this.kind = k;
+        this.cb = cb;
+        this.emy = get_emy(k);
+        this.grid = emy_queue_grid_to_copy.cloneNode(true);
+        this.grid.id = "";
+        this.wrap = this.grid.querySelector(".wrap");
         this.wrap.appendChild(this.emy)
         left_panel.querySelector(".emy_queue").appendChild(this.grid)
-        this.height=emys[k].cd*queue_speed;
-//        console.log(emys[k].cd,queue_speed)
-        this.height_max=this.height;
-        this.wrap.style.height=this.height;
-        
-        
+        this.height = emys[k].cd * queue_speed;
+        //        console.log(emys[k].cd,queue_speed)
+        this.height_max = this.height;
+        this.wrap.style.height = this.height;
+
+
         this.set_height(this.height);
-        
+
         emy_queue.push(this);
-        
+
     }
-    Eq.prototype.set_height=function(h){
-//        console.log(h)
-        
-        this.height=h;
-        this.grid.style.height=h;        
-        this.wrap.style.top=-(this.height_max-h);
+    Eq.prototype.set_height = function (h) {
+        //        console.log(h)
+
+        this.height = h;
+        this.grid.style.height = h;
+        this.wrap.style.top = -(this.height_max - h);
     }
-    Eq.prototype.unregister=function(){
+    Eq.prototype.unregister = function () {
         console.log(sys_tick)
         this.cb();
         emy_queue.remove(this);
-//        console.log("un")
+        //        console.log("un")
     }
-    Eq.prototype.step=function(){
-//        console.log("step")
-        this.height-=queue_speed/60;
+    Eq.prototype.step = function () {
+        //        console.log("step")
+        this.height -= queue_speed / 60;
         this.set_height(this.height);
-        if(this.height<=0){
+        if (this.height <= 0) {
             this.unregister();
         }
     }
-    function eq_step(){
-        for(var i=0;i<global_speed;i++){
-            if(emy_queue[0]){
+
+    function eq_step() {
+        for (var i = 0; i < global_speed; i++) {
+            if (emy_queue[0]) {
                 emy_queue[0].step();
             }
         }
@@ -993,7 +1007,7 @@ window.onload = function () {
 
     function get_emy(k) {
         var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
-        emy.id="";
+        emy.id = "";
         removeClass(emy, "hide trans")
         return emy;
     }
@@ -1012,16 +1026,16 @@ window.onload = function () {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
-                var e=new Eq(k,function(){
+                var e = new Eq(k, function () {
                     put_emy(k, m.map_start)
-                var time_now = sys_tick;
-                if (m.emy_seq.length == 0) {
+                    var time_now = sys_tick;
+                    if (m.emy_seq.length == 0) {
+                        m.pre_time = time_now;
+                    }
+                    m.emy_seq.push([time_now - m.pre_time, k]);
                     m.pre_time = time_now;
-                }
-                m.emy_seq.push([time_now - m.pre_time, k]);
-                m.pre_time = time_now;
                 });
-                
+
             }
             var emy = get_emy(k);
 
@@ -1381,21 +1395,29 @@ window.onload = function () {
         set_speed_btn(speedfor4, 16);
     }
 
-    function fadeout(d, time) {
-        d.style.transition = "opacity " + time + "ms";
-
+    function fadeout(d, time, up) {
+        d.style.transition = "all " + time + "ms";
+        if (up) {
+            removeClass(d, "center");
+        }
         addClass(d, "trans")
         setTimeout(function () {
+
+
             hide(d);
         }, time)
     }
 
-    function fadein(d, time) {
+    function fadein(d, time, down) {
         //        console.log(d)
-        d.style.transition = "opacity " + time + "ms";
+        d.style.transition = "all " + time + "ms";
         show(d);
+
         setTimeout(
             function () {
+                if (down) {
+                    addClass(d, "center");
+                }
                 removeClass(d, "trans")
             }, 100
         )
@@ -1440,7 +1462,7 @@ window.onload = function () {
     btn_restart_defence2.onclick = restart_defence;
 
     function hide_panel(name) {
-        fadeout($("#" + name), 500);
+        fadeout($("#" + name), 500, true);
         fadeout(body_mask, 500)
     }
     btn_continue.onclick = function () {
@@ -1456,11 +1478,13 @@ window.onload = function () {
 
     function show_panel(name) {
         fadein(body_mask, 500);
-        fadein($("#" + name), 500);
+        addClass($("#" + name), "down")
+        fadein($("#" + name), 300, true);
     }
 
     function step() {
         if (sys_play_state == "Pause") {
+            emy_order_cal=false;
             sys_cb_queue.forEach(
                 function (cb, i) {
                     if (sys_tick >= cb[1]) {

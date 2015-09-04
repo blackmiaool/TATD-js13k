@@ -107,13 +107,36 @@ window.onload = function () {
             emy: [0.03, 0.05, 0.03],
         }
         //health str callback
-    var emys = [[100, 10, "None", "Basic warrior.", function () {
-        var a = 1;
-    }], [50, 5, "None", "Fast warrior.", function () {
-        var a = 1;
-    }], [170, 10, "None", "Solid warrior.", function () {
-        var a = 1;
-    }]];
+//    var emys = [[100, 10, "None", "Basic warrior.", function () {
+//        var a = 1;
+//    }], [50, 5, "None", "Fast warrior.", function () {
+//        var a = 1;
+//    }], [170, 10, "None", "Solid warrior.", function () {
+//        var a = 1;
+//    }]];
+    var emys=[
+        {
+            hp:100,
+            str:10,
+            des:"Basic warrior.",
+            cb:function(){},
+            cd:0.5,
+        },
+        {
+            hp:50,
+            str:5,
+            des:"Fast warrior.",
+            cb:function(){},
+            cd:0.3,
+        },
+        {
+            hp:170,
+            str:10,
+            des:"Solid warrior.",
+            cb:function(){},
+            cd:1,
+        },
+    ]
     //range,power,des,callback,cost
     //    var towers = [[2.5, 10, "Basic tower.", function () {
     //
@@ -617,10 +640,10 @@ window.onload = function () {
             is_continue: true,
             path_len: 0,
             initted: false,
-            hp: emys[kind][0],
-            str: emys[kind][1],
-            click_callback: emys[kind][2],
-            hp_max: emys[kind][0],
+            hp: emys[kind].hp,
+            str: emys[kind].str,
+            click_callback: emys[kind].cb,
+            hp_max: emys[kind].hp,
             bf: this.d.querySelector(".fill"),
             dead: false,
             buls: [],
@@ -699,10 +722,10 @@ window.onload = function () {
 
     function put_emy(kind, pos) {
         map_put(kind);
-        setTimeout(
+        sys_setTimeout(
             function () {
                 var emy = emy_create(kind, pos);
-            }, 300
+            }, 300/1000*fps
         )
 
     }
@@ -880,26 +903,7 @@ window.onload = function () {
 
 
     }
-    var cds=[];
-    var cd = function (dom,time,cb) {
-        this.d=dom;
-        this.time=time;
-        this.cb=cb;
-        this.time*=fps;
-        this.time_max=this.time;
-        cds.push(this);
-    }
-    cd.prototype.step = function () {        
-        this.time--;
-        this.d.style.width=this.time*100/this.time_max+"%";
-        if(!this.time){
-            this.cb();
-            cds.remove(this);
-            
-        }
-        
-            
-    }
+
     Map.prototype.set_hp = function (hp) {
         this.hp = hp;
         if (this.hp == undefined)
@@ -917,6 +921,66 @@ window.onload = function () {
     Map.prototype.suffer = function (emy) {
         this.set_hp(this.hp - emy.str);
     }
+    Map.prototype.enter_init = function () {
+
+    }
+    var emy_queue=[];
+    var queue_speed=150;//150px/s
+    Eq=function(k,cb){
+        this.kind=k;
+        this.cb=cb;
+        this.emy=get_emy(k);
+        this.grid=emy_queue_grid_to_copy.cloneNode(true);
+        this.grid.id="";
+        this.wrap=this.grid.querySelector(".wrap");
+        this.wrap.appendChild(this.emy)
+        left_panel.querySelector(".emy_queue").appendChild(this.grid)
+        this.height=emys[k].cd*queue_speed;
+//        console.log(emys[k].cd,queue_speed)
+        this.height_max=this.height;
+        this.wrap.style.height=this.height;
+        
+        
+        this.set_height(this.height);
+        
+        emy_queue.push(this);
+        
+    }
+    Eq.prototype.set_height=function(h){
+//        console.log(h)
+        
+        this.height=h;
+        this.grid.style.height=h;        
+        this.wrap.style.top=-(this.height_max-h);
+    }
+    Eq.prototype.unregister=function(){
+        console.log(sys_tick)
+        this.cb();
+        emy_queue.remove(this);
+//        console.log("un")
+    }
+    Eq.prototype.step=function(){
+//        console.log("step")
+        this.height-=queue_speed/60;
+        this.set_height(this.height);
+        if(this.height<=0){
+            this.unregister();
+        }
+    }
+    function eq_step(){
+        for(var i=0;i<global_speed;i++){
+            if(emy_queue[0]){
+                emy_queue[0].step();
+            }
+        }
+    }
+
+    function get_emy(k) {
+        var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
+        emy.id="";
+        removeClass(emy, "hide trans")
+        return emy;
+    }
     Map.prototype.ta_enter = function () {
         var m = this;
         set_sys_play_state("Pause");
@@ -926,28 +990,31 @@ window.onload = function () {
         var tpl = $("#emy_panel_to_copy")
         this.hp = this.hp_max;
         this.set_hp(maps[current_level].hp);
+        this.queue = emy_queue_to_copy.cloneNode(true);
+        left_panel.appendChild(this.queue);
         emys.forEach(function (v, k) {
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
-
-                put_emy(k, m.map_start)
+                var e=new Eq(k,function(){
+                    put_emy(k, m.map_start)
                 var time_now = sys_tick;
                 if (m.emy_seq.length == 0) {
                     m.pre_time = time_now;
                 }
                 m.emy_seq.push([time_now - m.pre_time, k]);
                 m.pre_time = time_now;
+                });
+                
             }
+            var emy = get_emy(k);
 
-            var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
-            removeClass(emy, "hide trans")
-                //            console.log(emy)
+            //            console.log(emy)
             emy.id = ""
                 //            console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
-            var lens = [v[0], speed.emy[k] * 1000, v[1]]
+            var lens = [v.hp, speed.emy[k] * 1000, v.str]
             var lens_k = [0.3, 1, 3];
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
                 function (bar, index) {
@@ -960,7 +1027,7 @@ window.onload = function () {
                 }
             )
             d.querySelector(".top").appendChild(emy)
-            d.querySelector(".bottom p").innerHTML = v[3];
+            d.querySelector(".bottom p").innerHTML = v.des;
         })
 
         maps[this.level].preset.forEach(
@@ -1392,6 +1459,7 @@ window.onload = function () {
             for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);
             }
+            eq_step();
             //            current_map.step();
             sys_tick += global_speed;
         }

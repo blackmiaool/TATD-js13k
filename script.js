@@ -533,8 +533,8 @@ window.onload = function () {
     miao_obj.prototype.r_remove = function () {
         mn.removeChild(this.d)
     }
-    var emy_order_cal=false;
-    Bul = function (kind, pos, target, bias, tower) {
+    var emy_order_cal = false;
+    Bul = function (kind, pos, target, bias, tower) {        
         this.tower = tower;
         this.name = "bul"
         this.bias = bias;
@@ -623,19 +623,7 @@ window.onload = function () {
             }
         }
         var tower = this;
-        if(!emy_order_cal){
-            emy_order_cal=true;
-            miao_objs.emy.sort(
-                function(a,b){
-                    if(a.path_len>b.path_len)
-                        return -1;
-                    else if(a.path_len==b.path_len)
-                        return 0;
-                    else
-                        return 1;
-                }
-            )
-        }
+
         miao_objs.emy.r_forEach(
             function (e) {
                 var dis = cal_dis(e.pos, tower.pos);
@@ -643,7 +631,6 @@ window.onload = function () {
                     if (tower.model.rotate)
                         tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                     if (tower.ready) {
-                        //                        console.log(tower.pos)
                         var bul = new Bul(0, tower.pos, e, tower.model.bias ? tower.model.bias : null, tower);
                         tower.ready = false;
                         tower.prepare = 0;
@@ -905,7 +892,7 @@ window.onload = function () {
         map = maps[level].map;
         this.level = level;
         this.hp = maps[level].hp;
-//        console.log(maps[level].hp, this.hp)
+        //        console.log(maps[level].hp, this.hp)
         this.hp_max = this.hp;
         this.map_start = maps[level].start;
         this.map_end = maps[level].end;
@@ -983,7 +970,7 @@ window.onload = function () {
         this.wrap.style.top = -(this.height_max - h);
     }
     Eq.prototype.unregister = function () {
-//        console.log(sys_tick)
+        //        console.log(sys_tick)
         this.cb();
         emy_queue.remove(this);
         //        console.log("un")
@@ -1484,7 +1471,19 @@ window.onload = function () {
 
     function step() {
         if (sys_play_state == "Pause") {
-            emy_order_cal=false;
+
+            emy_order_cal = true;
+            miao_objs.emy.sort(
+                function (a, b) {
+                    if (a.path_len > b.path_len)
+                        return -1;
+                    else if (a.path_len == b.path_len)
+                        return 0;
+                    else
+                        return 1;
+                }
+            )
+
             sys_cb_queue.forEach(
                 function (cb, i) {
                     if (sys_tick >= cb[1]) {

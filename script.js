@@ -1,6 +1,6 @@
 window.onload = function () {
     var testside = "ta"
-    var current_level = 0;
+    var current_level = 3;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
@@ -75,9 +75,9 @@ window.onload = function () {
             ],
             start: [0, 2],
             end: [14, 7],
-            hp: 20,
+            hp: 1,
             power: 40,
-            preset: [[6, 1, 3], [8, 1, 3], [12, 3, 0], ],
+            preset: [[6, 1, 0], [8, 1,0], [8, 3, 0], ],
         },
         {
             map: [
@@ -94,9 +94,47 @@ window.onload = function () {
             ],
             start: [0, 2],
             end: [14, 7],
-            hp: 40,
+            hp: 3,
             power: 50,
             preset: [[2, 5, 1], [2, 6, 1], [2, 3, 0], [1, 3, 0], ],
+        },
+        {
+            map: [
+                "111111101111111",
+                "111111101111111",
+                "111111100111111",
+                "111111110111111",
+                "111100000111111",
+                "111101111111111",
+                "111101111111111",
+                "111101111111111",
+                "111101111111111",
+                "111101111111111",
+            ],
+            start: [7,0],
+            end: [4, 9],
+            hp: 2,
+            power: 30,
+            preset: [[5, 5, 1], [7, 3, 0], [6,2, 0],  ],
+        },
+        {
+            map: [
+                "111111101111111",
+                "111111101111111",
+                "111111100111111",
+                "111111110111111",
+                "111111100111111",
+                "111111101111111",
+                "111111100111111",
+                "111111110111111",
+                "111111110111111",
+                "111111110111111",
+            ],
+            start: [7,0],
+            end: [8, 9],
+            hp: 2,
+            power: 30,
+            preset: [[5, 5, 1], [7, 3, 0], [6,2, 0],  ],
         },
         ]
 
@@ -116,32 +154,36 @@ window.onload = function () {
         //    }]];
     var emys = [
             {
-                hp: 100,
-                str: 10,
+                hp: 70,
+                str: 1,
                 des: "Basic warrior.",
                 cb: function () {},
                 cd: 0.5,
+                
         },
             {
                 hp: 50,
-                str: 5,
+                str: 1,
                 des: "Fast warrior.",
                 cb: function () {},
                 cd: 0.3,
+                st:2,
         },
             {
                 hp: 170,
-                str: 10,
+                str: 2,
                 des: "Solid warrior.",
                 cb: function () {},
                 cd: 1,
+                st:4,
         },
             {
                 hp: 170,
-                str: 20,
+                str: 3,
                 des: "Final warrior.",
                 cb: function () {},
                 cd: 1.5,
+                st:6,
         },
     ]
         //range,power,des,callback,cost
@@ -180,7 +222,7 @@ window.onload = function () {
     }
     var towers = [
         {
-            range: 1.5,
+            range: 2,
             power: 10,
             des: "Basic tower.",
 //            emit: function () {},
@@ -219,8 +261,9 @@ window.onload = function () {
                     },900
                 )
             },
-            cost: 10,
+            cost: 15,
             rotate: false,
+            st:1,
         },
         {
             range: 2.5,
@@ -233,6 +276,7 @@ window.onload = function () {
             cost: 10,
             bias: [0, -15],
             rotate: false,
+            st:3,
         },
         {
             range: 2.5,
@@ -242,6 +286,7 @@ window.onload = function () {
             cost: 10,
             bias: [0, 0],
             rotate: false,
+            st:5,
         }
     ]
 
@@ -749,6 +794,7 @@ window.onload = function () {
                 removeClass(emy.d, "trans")
             }, 10
         )
+        this.step();
 
     }
 
@@ -1090,12 +1136,23 @@ window.onload = function () {
         emys_left.innerHTML = ""
         this.remove_things();
         left_panel.innerHTML = "";
+        setTimeout(
+            function(){
+                emys_left.innerHTML = ""
+            },100
+        )
         var tpl = $("#emy_panel_to_copy")
         this.hp = this.hp_max;
         this.set_hp(maps[current_level].hp);
         this.queue = emy_queue_to_copy.cloneNode(true);
         left_panel.appendChild(this.queue);
         emys.forEach(function (v, k) {
+            if(v.st)
+            {
+                if(current_level<v.st){
+                    return;
+                }
+            }
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
@@ -1118,7 +1175,7 @@ window.onload = function () {
             left_panel.appendChild(d);
             //                d.replaceChild(emy, d.querySelector(".top>.emy"));
             var lens = [v.hp, speed.emy[k] * 1000, v.str]
-            var lens_k = [0.3, 1, 3];
+            var lens_k = [0.3, 1, 15];
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
                 function (bar, index) {
                     //                    csl.log(bar)
@@ -1166,6 +1223,12 @@ window.onload = function () {
         left_panel.appendChild(tower_points);
         this.side_init();
         towers.forEach(function (v, k) {
+            if(v.st)
+            {
+                if(current_level<v.st){
+                    return;
+                }
+            }
             var d = tpl.cloneNode(true);
             removeClass(d, "hide")
             d.onclick = function () {
@@ -1401,9 +1464,10 @@ window.onload = function () {
 
                 set_success_info(this.emy_seq.length, maps[this.level].power - this.left_tower_points, parseInt(time_cost) + "ms")
                 if(current_level==(maps.length-1)){
-                    show_panel("level_finish");
-                }else{
                     show_panel("game_over");
+                }else{
+                    
+                    show_panel("level_finish");
                 }
                 
             }

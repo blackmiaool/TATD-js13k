@@ -363,6 +363,13 @@ body.catching #mn.active .grid[lang=wall]:hover {
     left: -5px;
 }
 
+.bul[kind='2'] {
+    width: 10px;
+    height: 2px;
+    background-color: steelblue;
+    position: absolute;
+}
+
 .blood {
     width: 25px;
     height: 5px;
@@ -372,6 +379,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     top: -10px;
     left: 50%;
     overflow: hidden;
+    box-shadow: none !important;
 }
 
 .blood>.fill {
@@ -382,6 +390,7 @@ body.catching #mn.active .grid[lang=wall]:hover {
     background-color: red;
     box-sizing: content-box;
     top: 1px;
+    box-shadow: none !important;
 }
 
 .endp {
@@ -610,10 +619,21 @@ div#tower_points label.zoom {
 .emy[kind='0'] {
     height: 10px;
     width: 10px;
+/*    background-color: antiquewhite;*/
+}
+.emy[kind='0'] .body{
+    height: 10px;
+    width: 10px;
     background-color: antiquewhite;
 }
 
 .emy[kind='1'] {
+    height: 16px;
+    width: 16px;
+/*    border-radius: 5px;*/
+/*    background-color: antiquewhite;*/
+}
+.emy[kind='1'] .body{
     height: 16px;
     width: 16px;
     border-radius: 5px;
@@ -628,6 +648,7 @@ div#tower_points label.zoom {
     background-color: black;
     position: absolute;
     animation: blink 4s infinite;
+    box-shadow: none !important;
 }
 
 .emy[kind='2'] {
@@ -645,6 +666,7 @@ div#tower_points label.zoom {
     position: absolute;
     top: 10px;
     left: 50%;
+    z-index: 1;
 }
 
 .emy[kind='2'] .leg {
@@ -684,6 +706,7 @@ div#tower_points label.zoom {
     box-sizing: border-box;
     position: absolute;
     transform: translate(-50%, -50%);
+    box-shadow: none !important;
 }
 
 @keyframes blink {
@@ -999,4 +1022,10 @@ label.prop-value {
     right: 0px;
     height: 50px;
     /*    transform: translate(-50%,-50%);*/
+}
+.cold{
+/*    box-shadow: 0px 0px 2px 3px steelblue;*/
+}
+.cold *{
+    box-shadow: 0px 0px 0px 3px steelblue;
 }

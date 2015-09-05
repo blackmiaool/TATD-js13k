@@ -77,7 +77,7 @@ window.onload = function () {
             end: [14, 7],
             hp: 20,
             power: 40,
-            preset: [[6, 1, 0], [8, 1, 0], [12, 3, 0], ],
+            preset: [[6, 1, 2], [8, 1, 1], [12, 3, 0], ],
         },
         {
             map: [
@@ -102,7 +102,7 @@ window.onload = function () {
 
 
     var speed = {
-            bul: [4, 10, 15],
+            bul: [4, 5, 5, 5, 5, 5],
             tower: [30, 20, 50, 10],
             emy: [0.03, 0.05, 0.03, 0.02],
         }
@@ -152,6 +152,31 @@ window.onload = function () {
         //    }, 10], [2.5, 10, "Basic tower.", function () {
         //
         //    }, 10]];
+    var states = {
+        cold: {
+            add: function (emy) {
+                var speed_k=0.7
+                addClass(emy.d, "cold");
+               
+                if(emy.cold_cnt==undefined)
+                    emy.cold_cnt=0;
+                emy.cold_cnt++;
+                if(emy.cold_cnt==1){
+                     emy.speed_k *= speed_k;
+                }
+                sys_setTimeout(
+                    function () {
+                        emy.cold_cnt--;
+                        if(emy.cold_cnt==0){
+                           removeClass(emy.d, "cold");
+                            emy.speed_k /= speed_k; 
+                        }
+                        
+                    }, fps
+                )
+            },
+        },
+    }
     var towers = [
         {
             range: 1.5,
@@ -165,7 +190,10 @@ window.onload = function () {
             range: 1.5,
             power: 10,
             des: "Fast tower.",
-            emit: function () {},
+            blast: function (emy) {
+                emy.add_state(states.cold)
+
+            },
             cost: 10,
             rotate: false,
         },
@@ -175,7 +203,7 @@ window.onload = function () {
             des: "Powerful tower.",
             emit: function () {},
             cost: 10,
-            bias: [0, -13],
+            bias: [0, -15],
             rotate: false,
         },
         {
@@ -184,7 +212,7 @@ window.onload = function () {
             des: "Final tower.",
             emit: function () {},
             cost: 10,
-            bias: [0, -13],
+            bias: [0, 0],
             rotate: false,
         }
     ]
@@ -534,8 +562,13 @@ window.onload = function () {
         mn.removeChild(this.d)
     }
     var emy_order_cal = false;
-    Bul = function (kind, pos, target, bias, tower) {        
+    Bul = function (kind, pos, target, bias, tower) {
+        if (kind > 1)
+            kind = 1;
+
+
         this.tower = tower;
+        tower.target = target;
         this.name = "bul"
         this.bias = bias;
         this.target = target;
@@ -543,27 +576,38 @@ window.onload = function () {
 
         //        console.log(target)
         this.target.add_bul(this);
+        this.step();
     };
+
     Bul.prototype = new miao_obj();
+    Bul.prototype.blast = function () {
+        this.target.suffer(this.tower.kind);
+        this.unregister();
+    }
     Bul.prototype.cal_pos = function (src, target, speed) {
+        var dis = cal_dis(src, target);
         var dx = target[0] - src[0];
         var dy = target[1] - src[1];
-        var dis = cal_dis(src, target);
+
         if (dis <= speed)
             return false;
         var sum = dis;
         src[0] += (target[0] - src[0]) / sum * speed;
         src[1] += (target[1] - src[1]) / sum * speed;
         return src;
+
     }
     Bul.prototype.step = function () {
         var pos = this.cal_pos(this.pos, this.target.pos, this.speed * global_speed / fps);
         if (!pos) {
-            this.target.suffer(this.tower.kind);
-            this.unregister();
+            this.blast();
         } else {
             this.set_pos(pos);
         }
+
+
+
+
     }
     Tower = function (kind, pos) {
         this.name = "tower";
@@ -631,7 +675,7 @@ window.onload = function () {
                     if (tower.model.rotate)
                         tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                     if (tower.ready) {
-                        var bul = new Bul(0, tower.pos, e, tower.model.bias ? tower.model.bias : null, tower);
+                        var bul = new Bul(tower.kind, tower.pos, e, tower.model.bias ? tower.model.bias : null, tower);
                         tower.ready = false;
                         tower.prepare = 0;
                     }
@@ -650,7 +694,7 @@ window.onload = function () {
 
     var Emy = function (kind, pos) {
         this.name = "emy";
-
+        
         this.init.apply(this, arguments);
         obj_add(this, {
             is_continue: true,
@@ -664,6 +708,8 @@ window.onload = function () {
             dead: false,
             buls: [],
         })
+        this.states=[];
+        this.speed_k=1;
         var emy = this;
         setTimeout(
             function () {
@@ -676,6 +722,9 @@ window.onload = function () {
     Emy.prototype = new miao_obj();
     Emy.prototype.add_bul = function (bul) {
         this.buls.push(bul)
+    }
+    Emy.prototype.add_state = function (state) {
+        state.add(this);
     }
     Emy.prototype.destroy = function () {
         if (this.dead)
@@ -700,6 +749,8 @@ window.onload = function () {
     Emy.prototype.suffer = function (kind) {
 
         this.hp -= towers[kind].power;
+        if (towers[kind].blast)
+            towers[kind].blast(this);
         this.bf.style.right = (1 - this.hp / this.hp_max) * 100 + "%";
         if (this.hp <= 0) {
             this.destroy();
@@ -716,7 +767,7 @@ window.onload = function () {
         if (!this.is_continue) {
             return
         }
-        this.path_len += this.speed * global_speed;
+        this.path_len += this.speed * global_speed*this.speed_k;;
         var path_len_i = Math.floor(this.path_len)
         if (path_len_i >= current_map.dirs.length) {
             current_map.suffer(this);

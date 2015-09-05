@@ -1400,7 +1400,12 @@ window.onload = function () {
 
 
                 set_success_info(this.emy_seq.length, maps[this.level].power - this.left_tower_points, parseInt(time_cost) + "ms")
-                show_panel("level_finish")
+                if(current_level==(maps.length-1)){
+                    show_panel("level_finish");
+                }else{
+                    show_panel("game_over");
+                }
+                
             }
 
         }

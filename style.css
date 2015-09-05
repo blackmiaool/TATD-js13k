@@ -560,7 +560,8 @@ body.catching #mn.active .grid[lang=wall]:hover {
 
 #level_finish .top-btn,
 #level_setting .top-btn,
-#level_failed .top-btn {
+#level_failed .top-btn,
+#game_cover .top-btn {
     margin: 15px;
     border-radius: 10px;
     padding: 8px 15px;
@@ -568,6 +569,24 @@ body.catching #mn.active .grid[lang=wall]:hover {
             padding-top: 8px;
             padding-bottom: 8px;
 */
+}
+
+.m-panel li.chinese {
+    font-size: 12px;
+    list-style: none;
+      margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+#game_cover {
+    width: 500px;
+}
+
+#game_cover ul {
+    display: inline-block;
+    text-align: left;
+    font-size: 20px;
+    margin: 5px;
 }
 
 #level_failed {
@@ -619,9 +638,10 @@ div#tower_points label.zoom {
 .emy[kind='0'] {
     height: 10px;
     width: 10px;
-/*    background-color: antiquewhite;*/
+    /*    background-color: antiquewhite;*/
 }
-.emy[kind='0'] .body{
+
+.emy[kind='0'] .body {
     height: 10px;
     width: 10px;
     background-color: antiquewhite;
@@ -630,10 +650,11 @@ div#tower_points label.zoom {
 .emy[kind='1'] {
     height: 16px;
     width: 16px;
-/*    border-radius: 5px;*/
-/*    background-color: antiquewhite;*/
+    /*    border-radius: 5px;*/
+    /*    background-color: antiquewhite;*/
 }
-.emy[kind='1'] .body{
+
+.emy[kind='1'] .body {
     height: 16px;
     width: 16px;
     border-radius: 5px;
@@ -1023,9 +1044,34 @@ label.prop-value {
     height: 50px;
     /*    transform: translate(-50%,-50%);*/
 }
-.cold{
-/*    box-shadow: 0px 0px 2px 3px steelblue;*/
+
+.cold {
+    /*    box-shadow: 0px 0px 2px 3px steelblue;*/
 }
-.cold *{
+
+.cold * {
     box-shadow: 0px 0px 0px 3px steelblue;
+}
+
+.tower[kind='1'] .loop {
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    border: 3px solid steelblue;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: scale 1s;
+}
+
+@keyframes scale {
+    0% {
+        height: 10px;
+        width: 10px;
+        opacity: 1;
+    }
+    100% {
+        height: 150px;
+        width: 150px;
+        opacity: 0;
+    }
 }

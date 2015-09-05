@@ -77,7 +77,7 @@ window.onload = function () {
             end: [14, 7],
             hp: 20,
             power: 40,
-            preset: [[6, 1, 2], [8, 1, 1], [12, 3, 0], ],
+            preset: [[6, 1, 3], [8, 1, 3], [12, 3, 0], ],
         },
         {
             map: [
@@ -103,7 +103,7 @@ window.onload = function () {
 
     var speed = {
             bul: [4, 5, 5, 5, 5, 5],
-            tower: [30, 20, 50, 10],
+            tower: [30, 50, 50, 10],
             emy: [0.03, 0.05, 0.03, 0.02],
         }
         //health str callback
@@ -153,25 +153,26 @@ window.onload = function () {
         //
         //    }, 10]];
     var states = {
+
         cold: {
             add: function (emy) {
-                var speed_k=0.7
+                var speed_k = 0.7
                 addClass(emy.d, "cold");
-               
-                if(emy.cold_cnt==undefined)
-                    emy.cold_cnt=0;
+
+                if (emy.cold_cnt == undefined)
+                    emy.cold_cnt = 0;
                 emy.cold_cnt++;
-                if(emy.cold_cnt==1){
-                     emy.speed_k *= speed_k;
+                if (emy.cold_cnt == 1) {
+                    emy.speed_k *= speed_k;
                 }
                 sys_setTimeout(
                     function () {
                         emy.cold_cnt--;
-                        if(emy.cold_cnt==0){
-                           removeClass(emy.d, "cold");
-                            emy.speed_k /= speed_k; 
+                        if (emy.cold_cnt == 0) {
+                            removeClass(emy.d, "cold");
+                            emy.speed_k /= speed_k;
                         }
-                        
+
                     }, fps
                 )
             },
@@ -182,7 +183,7 @@ window.onload = function () {
             range: 1.5,
             power: 10,
             des: "Basic tower.",
-            emit: function () {},
+//            emit: function () {},
             cost: 10,
             rotate: true,
         },
@@ -190,9 +191,33 @@ window.onload = function () {
             range: 1.5,
             power: 10,
             des: "Fast tower.",
-            blast: function (emy) {
-                emy.add_state(states.cold)
-
+            
+            emit:function(tower){
+//                console.log(tower)
+                var loop=doc.createElement("div");
+                addClass(loop,"loop");
+                tower.d.appendChild(loop);
+                sys_setTimeout(
+                    function(){
+                        miao_objs.emy.forEach(
+                            function(e){
+                                var dis = cal_dis(e.pos, tower.pos);
+                                if(dis<towers[tower.kind].range)
+                                {
+                                    console.log("s")
+                                    e.suffer(tower.kind)
+                                }
+                            }
+                        )
+                    },900/4/1000*60
+                )
+                setTimeout(
+                    function(){
+                        if(tower){
+                            tower.d.removeChild(loop);
+                        }
+                    },900
+                )
             },
             cost: 10,
             rotate: false,
@@ -201,7 +226,10 @@ window.onload = function () {
             range: 2.5,
             power: 20,
             des: "Powerful tower.",
-            emit: function () {},
+            blast: function (emy) {
+                emy.add_state(states.cold)
+                
+            },
             cost: 10,
             bias: [0, -15],
             rotate: false,
@@ -210,7 +238,7 @@ window.onload = function () {
             range: 2.5,
             power: 30,
             des: "Final tower.",
-            emit: function () {},
+//            emit: function () {},
             cost: 10,
             bias: [0, 0],
             rotate: false,
@@ -581,7 +609,7 @@ window.onload = function () {
 
     Bul.prototype = new miao_obj();
     Bul.prototype.blast = function () {
-        this.target.suffer(this.tower.kind);
+        this.target.suffer(this.tower.kind, this.tower);
         this.unregister();
     }
     Bul.prototype.cal_pos = function (src, target, speed) {
@@ -675,7 +703,12 @@ window.onload = function () {
                     if (tower.model.rotate)
                         tower.f_rotate(tower.pos[1] - e.pos[1], tower.pos[0] - e.pos[0])
                     if (tower.ready) {
-                        var bul = new Bul(tower.kind, tower.pos, e, tower.model.bias ? tower.model.bias : null, tower);
+                        if (towers[tower.kind].emit) {
+                            towers[tower.kind].emit(tower);
+                        } else {
+                            var bul = new Bul(tower.kind, tower.pos, e, tower.model.bias ? tower.model.bias : null, tower);
+
+                        }
                         tower.ready = false;
                         tower.prepare = 0;
                     }
@@ -694,7 +727,7 @@ window.onload = function () {
 
     var Emy = function (kind, pos) {
         this.name = "emy";
-        
+
         this.init.apply(this, arguments);
         obj_add(this, {
             is_continue: true,
@@ -708,8 +741,8 @@ window.onload = function () {
             dead: false,
             buls: [],
         })
-        this.states=[];
-        this.speed_k=1;
+        this.states = [];
+        this.speed_k = 1;
         var emy = this;
         setTimeout(
             function () {
@@ -725,6 +758,7 @@ window.onload = function () {
     }
     Emy.prototype.add_state = function (state) {
         state.add(this);
+
     }
     Emy.prototype.destroy = function () {
         if (this.dead)
@@ -767,7 +801,7 @@ window.onload = function () {
         if (!this.is_continue) {
             return
         }
-        this.path_len += this.speed * global_speed*this.speed_k;;
+        this.path_len += this.speed * global_speed * this.speed_k;;
         var path_len_i = Math.floor(this.path_len)
         if (path_len_i >= current_map.dirs.length) {
             current_map.suffer(this);
@@ -1022,6 +1056,7 @@ window.onload = function () {
     }
     Eq.prototype.unregister = function () {
         //        console.log(sys_tick)
+        if(current_map.side=="ta")
         this.cb();
         emy_queue.remove(this);
         //        console.log("un")
@@ -1145,7 +1180,7 @@ window.onload = function () {
             tower.id = ""
             left_panel.appendChild(d);
 
-            console.log(v)
+            //            console.log(v)
             var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost]
             var lens_k = [3, 20, 3, 3]
             Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
@@ -1513,13 +1548,16 @@ window.onload = function () {
         enter_level(++current_level);
 
     }
-
+    
     function show_panel(name) {
         fadein(body_mask, 500);
         addClass($("#" + name), "down")
         fadein($("#" + name), 300, true);
     }
-
+    btn_start_game.onclick=function(){
+        hide_panel("game_cover")
+    }
+    if(!dbg)show_panel("game_cover")
     function step() {
         if (sys_play_state == "Pause") {
 

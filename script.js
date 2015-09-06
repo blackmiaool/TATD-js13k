@@ -1,6 +1,6 @@
 window.onload = function () {
-    var testside = "ta"
-    var current_level = 3;
+    var testside = "td"
+    var current_level = 5;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
@@ -23,6 +23,7 @@ window.onload = function () {
     }
     var level = 0;
     var fps = 60;
+    var panel_showing=false;
     var names = ["bul", "tower", "emy"];
     var doc = document;
     var $ = function (tag) {
@@ -77,7 +78,7 @@ window.onload = function () {
             end: [14, 7],
             hp: 1,
             power: 40,
-            preset: [[6, 1, 0], [8, 1,0], [8, 3, 0], ],
+            preset: [[6, 1, 0], [8, 1, 0], [8, 3, 0], ],
         },
         {
             map: [
@@ -111,11 +112,11 @@ window.onload = function () {
                 "111101111111111",
                 "111101111111111",
             ],
-            start: [7,0],
+            start: [7, 0],
             end: [4, 9],
             hp: 2,
-            power: 30,
-            preset: [[5, 5, 1], [7, 3, 0], [6,2, 0],  ],
+            power: 60,
+            preset: [[5, 5, 1], [7, 3, 0], [6, 2, 0], ],
         },
         {
             map: [
@@ -130,18 +131,56 @@ window.onload = function () {
                 "111111110111111",
                 "111111110111111",
             ],
-            start: [7,0],
+            start: [7, 0],
             end: [8, 9],
-            hp: 2,
-            power: 30,
-            preset: [[5, 5, 1], [7, 3, 0], [6,2, 0],  ],
+            hp: 5,
+            power: 60,
+            preset: [[7,3,1],[8,5,1],[8,1,2],[7,7,0], ],
+        },
+        {
+            map: [
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111101111111",
+            ],
+            start: [7, 0],
+            end: [7, 9],
+            hp: 5,
+            power: 70,
+            preset: [[8,4,2],[6,6,2],[8,5,0],[8,6,0],[6,5,0] ],
+        },
+        {
+            map: [
+                "011111111111111",
+                "001111111111111",
+                "100111111111111",
+                "110011111111111",
+                "111001111111111",
+                "111100111111111",
+                "111110011111111",
+                "111111001111111",
+                "111111100111111",
+                "111111110111111",
+            ],
+            start: [0, 0],
+            end: [8, 9],
+            hp: 5,
+            power: 80,
+            preset: [[8,4,2],[6,6,2],[8,5,0],[8,6,0],[6,5,0] ],
         },
         ]
 
 
     var speed = {
             bul: [4, 5, 5, 5, 5, 5],
-            tower: [30, 50, 50, 10],
+            tower: [30, 50, 50, 100],
             emy: [0.03, 0.05, 0.03, 0.02],
         }
         //health str callback
@@ -159,23 +198,23 @@ window.onload = function () {
                 des: "Basic warrior.",
                 cb: function () {},
                 cd: 0.5,
-                
+
         },
             {
-                hp: 50,
+                hp: 70,
                 str: 1,
                 des: "Fast warrior.",
                 cb: function () {},
                 cd: 0.3,
-                st:2,
+                st: 2,
         },
             {
-                hp: 170,
+                hp: 110,
                 str: 2,
                 des: "Solid warrior.",
                 cb: function () {},
                 cd: 1,
-                st:4,
+                st: 4,
         },
             {
                 hp: 170,
@@ -183,7 +222,7 @@ window.onload = function () {
                 des: "Final warrior.",
                 cb: function () {},
                 cd: 1.5,
-                st:6,
+                st: 6,
         },
     ]
         //range,power,des,callback,cost
@@ -198,7 +237,7 @@ window.onload = function () {
 
         cold: {
             add: function (emy) {
-                var speed_k = 0.7
+                var speed_k = 0.4
                 addClass(emy.d, "cold");
 
                 if (emy.cold_cnt == undefined)
@@ -225,7 +264,7 @@ window.onload = function () {
             range: 2,
             power: 10,
             des: "Basic tower.",
-//            emit: function () {},
+            //            emit: function () {},
             cost: 10,
             rotate: true,
         },
@@ -233,60 +272,59 @@ window.onload = function () {
             range: 1.5,
             power: 10,
             des: "Fast tower.",
-            
-            emit:function(tower){
-//                console.log(tower)
-                var loop=doc.createElement("div");
-                addClass(loop,"loop");
+
+            emit: function (tower) {
+                //                console.log(tower)
+                var loop = doc.createElement("div");
+                addClass(loop, "loop");
                 tower.d.appendChild(loop);
                 sys_setTimeout(
-                    function(){
+                    function () {
                         miao_objs.emy.forEach(
-                            function(e){
+                            function (e) {
                                 var dis = cal_dis(e.pos, tower.pos);
-                                if(dis<towers[tower.kind].range)
-                                {
-                                    console.log("s")
+                                if (dis < towers[tower.kind].range) {
+//                                    console.log("s")
                                     e.suffer(tower.kind)
                                 }
                             }
                         )
-                    },900/4/1000*60
+                    }, 900 / 4 / 1000 * 60
                 )
                 setTimeout(
-                    function(){
-                        if(tower){
+                    function () {
+                        if (tower) {
                             tower.d.removeChild(loop);
                         }
-                    },900
+                    }, 900
                 )
             },
             cost: 15,
             rotate: false,
-            st:1,
+            st: 1,
         },
         {
             range: 2.5,
-            power: 20,
+            power: 5,
             des: "Powerful tower.",
             blast: function (emy) {
                 emy.add_state(states.cold)
-                
+
             },
-            cost: 10,
+            cost: 20,
             bias: [0, -15],
             rotate: false,
-            st:3,
+            st: 3,
         },
         {
-            range: 2.5,
+            range: 1.5,
             power: 30,
             des: "Final tower.",
-//            emit: function () {},
-            cost: 10,
+            //            emit: function () {},
+            cost: 25,
             bias: [0, 0],
             rotate: false,
-            st:5,
+            st: 5,
         }
     ]
 
@@ -392,7 +430,9 @@ window.onload = function () {
     var sys_cb_queue = [];
 
     function sys_setTimeout(func, ticks) {
-        sys_cb_queue.push([func, sys_tick + ticks]);
+        var config = [func, sys_tick + ticks]
+        sys_cb_queue.push(config);
+        return config;
     }
     btn3.onclick = function () {
         btn_next_level.onclick();
@@ -984,7 +1024,7 @@ window.onload = function () {
 
     }
     mn.onclick = function (event) {
-        console.log("click")
+//        console.log("click")
         if (catching_thing && event.target.lang == "wall") {
             if (current_map.left_tower_points >= towers[catching_thing.kind].cost) {
                 current_map.left_tower_points -= towers[catching_thing.kind].cost;
@@ -1102,8 +1142,8 @@ window.onload = function () {
     }
     Eq.prototype.unregister = function () {
         //        console.log(sys_tick)
-        if(current_map.side=="ta")
-        this.cb();
+        if (current_map.side == "ta")
+            this.cb();
         emy_queue.remove(this);
         //        console.log("un")
     }
@@ -1137,9 +1177,9 @@ window.onload = function () {
         this.remove_things();
         left_panel.innerHTML = "";
         setTimeout(
-            function(){
+            function () {
                 emys_left.innerHTML = ""
-            },100
+            }, 100
         )
         var tpl = $("#emy_panel_to_copy")
         this.hp = this.hp_max;
@@ -1147,9 +1187,8 @@ window.onload = function () {
         this.queue = emy_queue_to_copy.cloneNode(true);
         left_panel.appendChild(this.queue);
         emys.forEach(function (v, k) {
-            if(v.st)
-            {
-                if(current_level<v.st){
+            if (v.st) {
+                if (current_level < v.st) {
                     return;
                 }
             }
@@ -1223,9 +1262,8 @@ window.onload = function () {
         left_panel.appendChild(tower_points);
         this.side_init();
         towers.forEach(function (v, k) {
-            if(v.st)
-            {
-                if(current_level<v.st){
+            if (v.st) {
+                if (current_level < v.st) {
                     return;
                 }
             }
@@ -1278,29 +1316,32 @@ window.onload = function () {
     Map.prototype.remove_things = function () {
         //        console.log("remove_things")
         names.forEach(
-                function (name) {
-                    //                console.log("name ", name)
-                    //                console.log(miao_objs[name])
-                    var len = miao_objs[name].length;
-                    for (var i = len - 1; i >= 0; i--) {
-                        var obj = miao_objs[name][i];
-                        //                    console.log(obj)
-                        if (obj.destroy) {
-                            obj.destroy()
-                        } else {
+            function (name) {
+                //                console.log("name ", name)
+                //                console.log(miao_objs[name])
+                var len = miao_objs[name].length;
+                for (var i = len - 1; i >= 0; i--) {
+                    var obj = miao_objs[name][i];
+                    //                    console.log(obj)
+                    if (obj.destroy) {
+                        obj.destroy()
+                    } else {
 
-                            obj.unregister();
-                        }
+                        obj.unregister();
                     }
                 }
-            )
-            //        console.log(miao_objs)
+            }
+        )
+        sys_cb_queue.length = 0;
+        emy_queue.length = 0;
+        //        console.log(miao_objs)
     }
     Map.prototype.start = function () {
         var seq = current_map.emy_seq;
         //        csl.log(seq, seq.length)
         var index = 0;
         var kind_next;
+        var map = this;
 
         function output_emy() {
             emys_left.innerHTML = (current_map.emy_seq_len - index - 1) + "/" + current_map.emy_seq_len;
@@ -1308,7 +1349,7 @@ window.onload = function () {
             index++;
             if (index < seq.length) {
                 kind_next = seq[index][1];
-                sys_setTimeout(
+                map.outputing = sys_setTimeout(
                     output_emy, seq[index][0]
                 )
             } else {
@@ -1418,6 +1459,7 @@ window.onload = function () {
     Map.prototype.destroy = function () {
         console.log(this.side)
         console.log(my_panel.style.transform)
+        sys_cb_queue.remove(this.outputing)
         if (this.side == "td") {
             var m = this;
             reverse(startp_to_copy);
@@ -1463,13 +1505,13 @@ window.onload = function () {
 
 
                 set_success_info(this.emy_seq.length, maps[this.level].power - this.left_tower_points, parseInt(time_cost) + "ms")
-                if(current_level==(maps.length-1)){
+                if (current_level == (maps.length - 1)) {
                     show_panel("game_over");
-                }else{
-                    
+                } else {
+
                     show_panel("level_finish");
                 }
-                
+
             }
 
         }
@@ -1598,6 +1640,7 @@ window.onload = function () {
         level_state = "normal";
         current_map.td_enter();
         hide_panel("level_failed")
+        hide_panel("level_setting")
         current_map.reversing = false;
     }
     btn_restart_defence1.onclick = restart_defence;
@@ -1606,6 +1649,7 @@ window.onload = function () {
     function hide_panel(name) {
         fadeout($("#" + name), 500, true);
         fadeout(body_mask, 500)
+        panel_showing=false;;
     }
     btn_continue.onclick = function () {
 
@@ -1617,18 +1661,22 @@ window.onload = function () {
         enter_level(++current_level);
 
     }
-    
+
     function show_panel(name) {
+        if(current_map.reversing)
+            return;
         fadein(body_mask, 500);
         addClass($("#" + name), "down")
         fadein($("#" + name), 300, true);
+        panel_showing=true;
     }
-    btn_start_game.onclick=function(){
+    btn_start_game.onclick = function () {
         hide_panel("game_cover")
     }
-    if(!dbg)show_panel("game_cover")
+    if (!dbg) show_panel("game_cover")
+
     function step() {
-        if (sys_play_state == "Pause") {
+        if (sys_play_state == "Pause"&&!panel_showing) {
 
             emy_order_cal = true;
             miao_objs.emy.sort(

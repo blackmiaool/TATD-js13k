@@ -1,5 +1,5 @@
 window.onload = function () {
-    var testside = "td"
+    var testside = "ta"
     var current_level = 5;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
@@ -173,7 +173,7 @@ window.onload = function () {
             end: [8, 9],
             hp: 5,
             power: 80,
-            preset: [[8,4,2],[6,6,2],[8,5,0],[8,6,0],[6,5,0] ],
+            preset: [[5,4,2],[7,6,3],[3,5,0],[4,6,0],[6,5,0] ],
         },
         ]
 

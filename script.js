@@ -1,6 +1,6 @@
 window.onload = function () {
     var testside = "ta"
-    var current_level = 0;
+    var current_level = 5;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
@@ -23,7 +23,7 @@ window.onload = function () {
     }
     var level = 0;
     var fps = 60;
-    var panel_showing=false;
+    var panel_showing = false;
     var names = ["bul", "tower", "emy"];
     var doc = document;
     var $ = function (tag) {
@@ -135,7 +135,7 @@ window.onload = function () {
             end: [8, 9],
             hp: 5,
             power: 60,
-            preset: [[7,3,1],[8,5,1],[8,1,2],[7,7,0], ],
+            preset: [[7, 3, 1], [8, 5, 1], [8, 1, 2], [7, 7, 0], ],
         },
         {
             map: [
@@ -154,7 +154,7 @@ window.onload = function () {
             end: [7, 9],
             hp: 5,
             power: 70,
-            preset: [[8,4,2],[6,6,2],[8,5,0],[8,6,0],[6,5,0] ],
+            preset: [[8, 4, 2], [6, 6, 2], [8, 5, 0], [8, 6, 0], [6, 5, 0]],
         },
         {
             map: [
@@ -173,14 +173,33 @@ window.onload = function () {
             end: [8, 9],
             hp: 5,
             power: 80,
-            preset: [[5,4,2],[7,6,3],[3,5,0],[4,6,0],[6,5,0] ],
+            preset: [[5, 4, 2], [7, 6, 3], [3, 5, 1], [4, 6, 1], [6, 5, 1]],
+        },
+        {
+            map: [
+                "011111111111111",
+                "00000111111111",
+                "110101111111111",
+                "110001111111111",
+                "110110001111111",
+                "110000101111111",
+                "111111101111111",
+                "111111101111111",
+                "111111100111111",
+                "111111110111111",
+            ],
+            start: [0, 0],
+            end: [8, 9],
+            hp: 10,
+            power: 100,
+            preset: [[5, 4, 2], [7, 6, 3], [3, 5, 1], [4, 6, 1], [6, 5, 1]],
         },
         ]
 
 
     var speed = {
             bul: [4, 5, 5, 5, 5, 5],
-            tower: [30, 50, 50, 100],
+            tower: [30, 50, 50, 60],
             emy: [0.03, 0.05, 0.03, 0.02],
         }
         //health str callback
@@ -267,6 +286,7 @@ window.onload = function () {
             //            emit: function () {},
             cost: 10,
             rotate: true,
+            st:0,
         },
         {
             range: 1.5,
@@ -284,7 +304,7 @@ window.onload = function () {
                             function (e) {
                                 var dis = cal_dis(e.pos, tower.pos);
                                 if (dis < towers[tower.kind].range) {
-//                                    console.log("s")
+                                    //                                    console.log("s")
                                     e.suffer(tower.kind)
                                 }
                             }
@@ -306,7 +326,7 @@ window.onload = function () {
         {
             range: 2.5,
             power: 5,
-            des: "Powerful tower.",
+            des: "AOE tower.",
             blast: function (emy) {
                 emy.add_state(states.cold)
 
@@ -319,7 +339,7 @@ window.onload = function () {
         {
             range: 1.5,
             power: 30,
-            des: "Final tower.",
+            des: "Cold tower.",
             //            emit: function () {},
             cost: 25,
             bias: [0, 0],
@@ -960,12 +980,20 @@ window.onload = function () {
         my_panel.onmousemove(pre_mouse_pos)
             //        
     }
-    body.oncontextmenu = function () {
+
+    function uncatch() {
         if (is_catching()) {
 
             catching_thing.parentNode.removeChild(catching_thing);
             catching_thing = undefined;
             removeClass(body, "catching");
+
+        }
+    }
+    body.oncontextmenu = function () {
+        if (is_catching()) {
+
+            uncatch();
             return false;
         }
     }
@@ -1024,7 +1052,7 @@ window.onload = function () {
 
     }
     mn.onclick = function (event) {
-//        console.log("click")
+        //        console.log("click")
         if (catching_thing && event.target.lang == "wall") {
             if (current_map.left_tower_points >= towers[catching_thing.kind].cost) {
                 current_map.left_tower_points -= towers[catching_thing.kind].cost;
@@ -1116,7 +1144,7 @@ window.onload = function () {
     Eq = function (k, cb) {
         this.kind = k;
         this.cb = cb;
-        this.emy = get_emy(k);
+        this.emy = clone_tpl($("#emy_to_copy[kind='" + k + "']"));
         this.grid = emy_queue_grid_to_copy.cloneNode(true);
         this.grid.id = "";
         this.wrap = this.grid.querySelector(".wrap");
@@ -1164,11 +1192,26 @@ window.onload = function () {
         }
     }
 
-    function get_emy(k) {
-        var emy = $("#emy_to_copy[kind='" + k + "']").cloneNode(true);
-        emy.id = "";
-        removeClass(emy, "hide trans")
-        return emy;
+
+
+    function get_emy_block(v, k) {
+        var d = clone_tpl($("#emy_panel_to_copy"))
+        var emy = clone_tpl($("#emy_to_copy[kind='" + k + "']"));
+        var lens = [v.hp, speed.emy[k] * 1000, v.str]
+        var lens_k = [0.3, 1, 15];
+        Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
+            function (bar, index) {
+                //                    csl.log(bar)
+                bar.style.width = lens[index] * lens_k[index] + "px"
+                var value = document.createElement("label")
+                addClass(value, "prop-value");
+                value.innerHTML = parseInt(lens[index]);
+                bar.appendChild(value);
+            }
+        )
+        d.querySelector(".top").appendChild(emy)
+        d.querySelector(".bottom p").innerHTML = v.des;
+        return d;
     }
     Map.prototype.ta_enter = function () {
         var m = this;
@@ -1179,9 +1222,39 @@ window.onload = function () {
         setTimeout(
             function () {
                 emys_left.innerHTML = ""
-            }, 100
-        )
-        var tpl = $("#emy_panel_to_copy")
+                
+                function check_new_unit(v,k){
+                    if(v.st===m.level)
+                    {
+                        csl.log(v.st,m.level)
+                        show_panel("new_panel");
+                        $("#new_panel").querySelector("#panel").innerHTML="";
+                        
+                        if(!v.range)
+                        {
+                            $("#new_panel").querySelector("h1").innerHTML="New Warrior";
+                            $("#new_panel").querySelector("#panel").appendChild(get_emy_block(v,k));
+                        }                        
+                        else
+                        {
+                            $("#new_panel").querySelector("h1").innerHTML="New Tower";
+                            $("#new_panel").querySelector("#panel").appendChild(get_tower_block(v,k));
+                        }
+                            
+                    }
+                    
+                }
+                if(!dbg){
+                    emys.forEach(check_new_unit)
+                towers.forEach(check_new_unit)
+                }
+                
+                
+                
+            }, 50
+        ) 
+        
+
         this.hp = this.hp_max;
         this.set_hp(maps[current_level].hp);
         this.queue = emy_queue_to_copy.cloneNode(true);
@@ -1192,8 +1265,7 @@ window.onload = function () {
                     return;
                 }
             }
-            var d = tpl.cloneNode(true);
-            removeClass(d, "hide")
+            var d = get_emy_block(v, k);
             d.onclick = function () {
                 var e = new Eq(k, function () {
                     put_emy(k, m.map_start)
@@ -1206,38 +1278,41 @@ window.onload = function () {
                 });
 
             }
-            var emy = get_emy(k);
-
-            //            console.log(emy)
-            emy.id = ""
-                //            console.log(d, d.querySelector(".emy"))
             left_panel.appendChild(d);
-            //                d.replaceChild(emy, d.querySelector(".top>.emy"));
-            var lens = [v.hp, speed.emy[k] * 1000, v.str]
-            var lens_k = [0.3, 1, 15];
-            Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
-                function (bar, index) {
-                    //                    csl.log(bar)
-                    bar.style.width = lens[index] * lens_k[index] + "px"
-                    var value = document.createElement("label")
-                    addClass(value, "prop-value");
-                    value.innerHTML = parseInt(lens[index]);
-                    bar.appendChild(value);
-                }
-            )
-            d.querySelector(".top").appendChild(emy)
-            d.querySelector(".bottom p").innerHTML = v.des;
         })
 
         maps[this.level].preset.forEach(
             function (t) {
-                //                csl.log(t);
+
                 put_tower(t[2], t[0], t[1])
             }
         )
 
     }
 
+    function get_tower_block(v, k) {
+        var d = clone_tpl($("#tower_panel_to_copy"))
+        var tower = clone_tpl($("#tower_to_copy[kind='" + k + "']"))
+
+        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost]
+        var lens_k = [3, 20, 3, 3]
+        Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
+            function (bar, index) {
+                //                    csl.log(bar)
+                bar.style.width = lens[index] * lens_k[index] + "px";
+                var value = document.createElement("label")
+                addClass(value, "prop-value");
+
+                value.innerHTML = index != 1 ? parseInt(lens[index]) : lens[index];
+                bar.appendChild(value);
+            }
+        )
+
+
+        d.querySelector(".top").appendChild(tower)
+        d.querySelector(".bottom p").innerHTML = v.des;
+        return d;
+    }
 
 
     Map.prototype.td_enter = function () {
@@ -1252,7 +1327,7 @@ window.onload = function () {
         this.emy_seq_len = this.emy_seq.length;
         emys_left.innerHTML = this.emy_seq.length + "/" + this.emy_seq_len;
         left_panel.innerHTML = "";
-        var tpl = $("#tower_panel_to_copy")
+
         this.hp = this.hp_max;
         this.set_hp();
         tower_points = tower_points_to_copy.cloneNode(true);
@@ -1267,38 +1342,14 @@ window.onload = function () {
                     return;
                 }
             }
-            var d = tpl.cloneNode(true);
-            removeClass(d, "hide")
+            var d = get_tower_block(v, k);
+
+
+            left_panel.appendChild(d);
             d.onclick = function () {
 
                 catch_tower(k, m.map_start)
             }
-
-            var tower = $("#tower_to_copy[kind='" + k + "']").cloneNode(true);
-            removeClass(tower, "hide")
-            removeClass(tower, "trans")
-                //            console.log(tower)
-            tower.id = ""
-            left_panel.appendChild(d);
-
-            //            console.log(v)
-            var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost]
-            var lens_k = [3, 20, 3, 3]
-            Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
-                function (bar, index) {
-                    //                    csl.log(bar)
-                    bar.style.width = lens[index] * lens_k[index] + "px";
-                    var value = document.createElement("label")
-                    addClass(value, "prop-value");
-
-                    value.innerHTML = index != 1 ? parseInt(lens[index]) : lens[index];
-                    bar.appendChild(value);
-                }
-            )
-
-
-            d.querySelector(".top").appendChild(tower)
-            d.querySelector(".bottom p").innerHTML = v.des;
 
         })
     }
@@ -1649,7 +1700,7 @@ window.onload = function () {
     function hide_panel(name) {
         fadeout($("#" + name), 500, true);
         fadeout(body_mask, 500)
-        panel_showing=false;;
+        panel_showing = false;;
     }
     btn_continue.onclick = function () {
 
@@ -1661,14 +1712,17 @@ window.onload = function () {
         enter_level(++current_level);
 
     }
-
+    btn_new_start.onclick=function(){
+        hide_panel("new_panel")
+    }
     function show_panel(name) {
-        if(current_map.reversing)
+        uncatch();
+        if (current_map.reversing)
             return;
         fadein(body_mask, 500);
         addClass($("#" + name), "down")
         fadein($("#" + name), 300, true);
-        panel_showing=true;
+        panel_showing = true;
     }
     btn_start_game.onclick = function () {
         hide_panel("game_cover")
@@ -1676,7 +1730,7 @@ window.onload = function () {
     if (!dbg) show_panel("game_cover")
 
     function step() {
-        if (sys_play_state == "Pause"&&!panel_showing) {
+        if (sys_play_state == "Pause" && !panel_showing) {
 
             emy_order_cal = true;
             miao_objs.emy.sort(

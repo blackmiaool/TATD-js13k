@@ -1077,3 +1077,27 @@ label.prop-value {
         opacity: 0;
     }
 }
+#new_panel{
+    height: 270px;
+    width: 500px;
+}
+#new_panel .emy-panel {
+    margin-right: 0px;
+    width: 400px;
+    display: inline-block;
+    margin-top: 10px;
+    background: none;
+    border-bottom: none;
+    cursor: auto !important;
+    text-align: left;
+    
+    
+        position: relative;
+    left: 80px;
+}
+#new_panel .emy-panel *{
+    cursor: auto !important;
+}
+#new_panel .emy-panel .tower,#new_panel .emy-panel .emy{
+    margin: 0px;
+}

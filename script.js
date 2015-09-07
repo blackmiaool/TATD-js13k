@@ -1,4 +1,6 @@
 window.onload = function () {
+
+
     var testside = "ta"
     var current_level = 6;
     g = {};
@@ -60,6 +62,14 @@ window.onload = function () {
 
 
     var just_a_grid;
+    var towers_sound=[[0,,0.0633,,0.2587,0.4054,,-0.3755,,,,,,0.2628,,,,,1,,,,,0.44],
+                     [3,,0.01,,0.206,0.4598,,-0.4236,,,,,,,,,,,1,,,,,0.44],
+                      [0,,0.2368,0.1023,,0.7157,0.2,-0.2371,,,,,,0.446,-0.1164,,,,1,,,0.2673,,0.44],
+                      [0,,0.01,,0.2515,0.3345,,0.2292,,,0.2991,,,0.0972,,,,,1,,,,,0.44],
+                     ]
+    var map_suffer_sound=[3,,0.2585,0.7193,0.0618,0.7524,,-0.389,,,,0.4458,0.8618,,,,0.1306,-0.1808,1,,,,,0.44];
+   var level_finish_sound=[0,,0.2352,,0.4135,0.4361,,0.4238,,,,,,0.1343,,0.5811,,,1,,,,,0.44];
+    var new_unit=[1,,0.3399,,0.4035,0.3884,,0.4556,,,,,,,,0.5184,,,1,,,,,0.44];
     var maps = [
         {
             map: [
@@ -193,8 +203,8 @@ window.onload = function () {
             hp: 10,
             power: 100,
             preset: [[5, 3, 3], [6, 6, 0], [3, 4, 1], [4, 4, 0], [6, 5, 1]],
-        }, 
-        
+        },
+
         ]
 
 
@@ -287,7 +297,7 @@ window.onload = function () {
             //            emit: function () {},
             cost: 10,
             rotate: true,
-            st:0,
+            st: 0,
         },
         {
             range: 1.5,
@@ -888,7 +898,7 @@ window.onload = function () {
 
     }
     Emy.prototype.suffer = function (kind) {
-
+        play_sound(towers_sound[kind])
         this.hp -= towers[kind].power;
         if (towers[kind].blast)
             towers[kind].blast(this);
@@ -1135,6 +1145,7 @@ window.onload = function () {
         progress.innerHTML = this.hp + "/" + this.hp_max;
     }
     Map.prototype.suffer = function (emy) {
+        play_sound(map_suffer_sound);
         this.set_hp(this.hp - emy.str);
     }
     Map.prototype.enter_init = function () {
@@ -1223,38 +1234,35 @@ window.onload = function () {
         setTimeout(
             function () {
                 emys_left.innerHTML = ""
-                
-                function check_new_unit(v,k){
-                    if(v.st===m.level)
-                    {
-                        csl.log(v.st,m.level)
+
+                function check_new_unit(v, k) {
+                    if (v.st === m.level) {
+                        csl.log(v.st, m.level)
+                        play_sound(new_unit)
                         show_panel("new_panel");
-                        $("#new_panel").querySelector("#panel").innerHTML="";
-                        
-                        if(!v.range)
-                        {
-                            $("#new_panel").querySelector("h1").innerHTML="New Warrior";
-                            $("#new_panel").querySelector("#panel").appendChild(get_emy_block(v,k));
-                        }                        
-                        else
-                        {
-                            $("#new_panel").querySelector("h1").innerHTML="New Tower";
-                            $("#new_panel").querySelector("#panel").appendChild(get_tower_block(v,k));
+                        $("#new_panel").querySelector("#panel").innerHTML = "";
+
+                        if (!v.range) {
+                            $("#new_panel").querySelector("h1").innerHTML = "New Warrior";
+                            $("#new_panel").querySelector("#panel").appendChild(get_emy_block(v, k));
+                        } else {
+                            $("#new_panel").querySelector("h1").innerHTML = "New Tower";
+                            $("#new_panel").querySelector("#panel").appendChild(get_tower_block(v, k));
                         }
-                            
+
                     }
-                    
+
                 }
-                if(!dbg){
+                if (!dbg) {
                     emys.forEach(check_new_unit)
-                towers.forEach(check_new_unit)
+                    towers.forEach(check_new_unit)
                 }
-                
-                
-                
+
+
+
             }, 50
-        ) 
-        
+        )
+
 
         this.hp = this.hp_max;
         this.set_hp(maps[current_level].hp);
@@ -1285,8 +1293,8 @@ window.onload = function () {
         maps[this.level].preset.forEach(
             function (t) {
 
-                var t=put_tower(t[2], t[0], t[1]);
-                addClass(t.d,"preset");
+                var t = put_tower(t[2], t[0], t[1]);
+                addClass(t.d, "preset");
             }
         )
 
@@ -1439,6 +1447,8 @@ window.onload = function () {
     }
     Map.prototype.half_level_finish = function (state) {
         //        console.log(state);
+        
+        play_sound(level_finish_sound);
         var m = this;
 
         if (this.reversing)
@@ -1714,9 +1724,10 @@ window.onload = function () {
         enter_level(++current_level);
 
     }
-    btn_new_start.onclick=function(){
+    btn_new_start.onclick = function () {
         hide_panel("new_panel")
     }
+
     function show_panel(name) {
         uncatch();
         if (current_map.reversing)
@@ -1730,6 +1741,21 @@ window.onload = function () {
         hide_panel("game_cover")
     }
     if (!dbg) show_panel("game_cover")
+
+
+    console.log(jsfxr);
+//    var tes=[0,391.38368610805287,100000,1,0,0.5,0,1,20032,0,0.1,1,0.55,0,1,0,0,0,501,9955,0.5444117140257732,0,0,0,0.2840254166877416,44100,8,]
+    
+    
+
+    function play_sound(so){
+        var soundURL = jsfxr(so);
+    var player = new Audio();
+    player.src = soundURL;
+    player.play();
+    }
+
+
 
     function step() {
         if (sys_play_state == "Pause" && !panel_showing) {

@@ -814,6 +814,16 @@ div#tower_points label.zoom {
     box-sizing: border-box;
     /*            transition: 0.3s linear;*/
 }
+.tower.preset{
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    overflow: visible;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    box-sizing: border-box;
+    /*            transition: 0.3s linear;*/
+}
 
 .tower>.range {
     transform: translate(-50%, -50%);

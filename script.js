@@ -1,6 +1,6 @@
 window.onload = function () {
     var testside = "ta"
-    var current_level = 5;
+    var current_level = 6;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
@@ -178,8 +178,8 @@ window.onload = function () {
         {
             map: [
                 "011111111111111",
-                "00000111111111",
-                "110101111111111",
+                "000001111111111",
+                "111101111111111",
                 "110001111111111",
                 "110110001111111",
                 "110000101111111",
@@ -192,8 +192,9 @@ window.onload = function () {
             end: [8, 9],
             hp: 10,
             power: 100,
-            preset: [[5, 4, 2], [7, 6, 3], [3, 5, 1], [4, 6, 1], [6, 5, 1]],
-        },
+            preset: [[5, 3, 3], [6, 6, 0], [3, 4, 1], [4, 4, 0], [6, 5, 1]],
+        }, 
+        
         ]
 
 
@@ -236,7 +237,7 @@ window.onload = function () {
                 st: 4,
         },
             {
-                hp: 170,
+                hp: 300,
                 str: 3,
                 des: "Final warrior.",
                 cb: function () {},
@@ -1198,7 +1199,7 @@ window.onload = function () {
         var d = clone_tpl($("#emy_panel_to_copy"))
         var emy = clone_tpl($("#emy_to_copy[kind='" + k + "']"));
         var lens = [v.hp, speed.emy[k] * 1000, v.str]
-        var lens_k = [0.3, 1, 15];
+        var lens_k = [0.2, 1, 15];
         Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
             function (bar, index) {
                 //                    csl.log(bar)
@@ -1284,7 +1285,8 @@ window.onload = function () {
         maps[this.level].preset.forEach(
             function (t) {
 
-                put_tower(t[2], t[0], t[1])
+                var t=put_tower(t[2], t[0], t[1]);
+                addClass(t.d,"preset");
             }
         )
 

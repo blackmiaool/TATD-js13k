@@ -847,9 +847,11 @@ window.onload = function () {
     }
 
 
-    function put_tower(kind, x, y) {
-        current_map.towers_map[kind] ++;
-        current_map.set_tower_panel();
+    function put_tower(kind, x, y,update) {
+        if(update){
+        if(current_map&&towers_map)
+        {towers_map[kind]++;
+        current_map.set_tower_panel();}}
         return new Tower(kind, [x, y]);
     }
 
@@ -1079,10 +1081,10 @@ window.onload = function () {
     mn.onclick = function (event) {
         //        console.log("click")
         if (catching_thing && event.target.lang == "wall") {
-            if (current_map.left_tower_points >= towers[catching_thing.kind].cost + current_map.towers_map[catching_thing.kind] * 5) {
+            if (current_map.left_tower_points >= towers[catching_thing.kind].cost + towers_map[catching_thing.kind] * 5) {
                 current_map.left_tower_points -= towers[catching_thing.kind].cost;
                 current_map.tower_points_update();
-                put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
+                put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y),true)
             } else {
                 addClass(tower_points_label, "zoom");
                 setTimeout(function () {
@@ -1307,7 +1309,7 @@ window.onload = function () {
         maps[this.level].preset.forEach(
             function (t) {
 
-                var t = put_tower(t[2], t[0], t[1]);
+                var t = put_tower(t[2], t[0], t[1],false);
                 addClass(t.d, "preset");
             }
         )
@@ -1320,7 +1322,7 @@ window.onload = function () {
         var d = clone_tpl($("#tower_panel_to_copy"))
         var tower = clone_tpl($("#tower_to_copy[kind='" + k + "']"))
 
-        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost + (current_map ? current_map.towers_map[k] * 5 : 0)]
+        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost + (current_map ? towers_map[k] * 5 : 0)]
         tower_lens_k = [3, 20, 3, 2]
         Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
             function (bar, index) {
@@ -1344,7 +1346,7 @@ window.onload = function () {
     Map.prototype.td_enter = function () {
         //        console.log("td enter")
         var m = this;
-        this.towers_map = [0, 0, 0, 0, 0, 0];
+        towers_map = [0, 0, 0, 0, 0, 0];
         this.level_state = "normal";
         emys_output_finish = false;
         //        console.log(JSON.stringify(this.emy_seq));
@@ -1398,7 +1400,7 @@ window.onload = function () {
             left_panel.appendChild(tower_points);
             this.left_tower_points = maps[this.level].power;
             for (var i = 0; i < towers.length; i++) {
-                for (var j = 0; j < current_map.towers_map[i]; j++) {
+                for (var j = 0; j < towers_map[i]; j++) {
                     this.left_tower_points -= towers[i].cost + j * 5;
                 }
 

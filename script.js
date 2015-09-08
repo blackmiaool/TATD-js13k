@@ -1,17 +1,18 @@
 window.onload = function () {
 
 
-    var testside = "ta"
+    var testside = "td"
     var current_level = 0;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     if (dbg) {
         my_panel.style.transition = "transform 0s"
         current_level = 6;
-        
+
     }
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
-    function toggle_dbg(){
+
+    function toggle_dbg() {
         dbg = !dbg;
         localStorage.setItem("dbg", dbg ? "true" : "false");
         console.log("dbg=", dbg)
@@ -26,8 +27,8 @@ window.onload = function () {
         else
             return b;
     }
-    
-    
+
+
     var level = 0;
     var fps = 60;
     var panel_showing = false;
@@ -40,9 +41,9 @@ window.onload = function () {
         return doc.querySelectorAll(tag);
     }
     body = $("body")
-    if(dbg){
-        (new Array).forEach.call($$(".debug-btn"),function(e,i){
-            e.style.display="inline-block"
+    if (dbg) {
+        (new Array).forEach.call($$(".debug-btn"), function (e, i) {
+            e.style.display = "inline-block"
         })
     }
     var m = Math;
@@ -73,14 +74,14 @@ window.onload = function () {
 
 
     var just_a_grid;
-    var towers_sound=[[1,,0.1693,0.111,0.0106,0.8855,0.0802,-0.5639,,,,,,0.0314,0.1647,,,,1,,,,,0.5],
-                     [3,,0.01,,0.206,0.4598,,-0.4236,,,,,,,,,,,1,,,,,0.44],
-                      [0,,0.2368,0.1023,,0.7157,0.2,-0.2371,,,,,,0.446,-0.1164,,,,1,,,0.2673,,0.44],
-                      [2,,0.2386,0.2191,0.3293,0.6307,0.0235,-0.405,,,,,,0.7376,-0.6784,,,,1,,,,,0.5],
+    var towers_sound = [[1, , 0.1693, 0.111, 0.0106, 0.8855, 0.0802, -0.5639, , , , , , 0.0314, 0.1647, , , , 1, , , , , 0.5],
+                     [3, , 0.01, , 0.206, 0.4598, , -0.4236, , , , , , , , , , , 1, , , , , 0.44],
+                      [0, , 0.2368, 0.1023, , 0.7157, 0.2, -0.2371, , , , , , 0.446, -0.1164, , , , 1, , , 0.2673, , 0.44],
+                      [2, , 0.2386, 0.2191, 0.3293, 0.6307, 0.0235, -0.405, , , , , , 0.7376, -0.6784, , , , 1, , , , , 0.5],
                      ]
-    var map_suffer_sound=[3,,0.2585,0.7193,0.0618,0.7524,,-0.389,,,,0.4458,0.8618,,,,0.1306,-0.1808,1,,,,,0.44];
-   var level_finish_sound=[0,,0.2352,,0.4135,0.4361,,0.4238,,,,,,0.1343,,0.5811,,,1,,,,,0.44];
-    var new_unit=[1,,0.3399,,0.4035,0.3884,,0.4556,,,,,,,,0.5184,,,1,,,,,0.44];
+    var map_suffer_sound = [3, , 0.2585, 0.7193, 0.0618, 0.7524, , -0.389, , , , 0.4458, 0.8618, , , , 0.1306, -0.1808, 1, , , , , 0.44];
+    var level_finish_sound = [0, , 0.2352, , 0.4135, 0.4361, , 0.4238, , , , , , 0.1343, , 0.5811, , , 1, , , , , 0.44];
+    var new_unit = [1, , 0.3399, , 0.4035, 0.3884, , 0.4556, , , , , , , , 0.5184, , , 1, , , , , 0.44];
     var maps = [
         {
             map: [
@@ -370,7 +371,7 @@ window.onload = function () {
     ]
 
     dbg_btn.onclick = toggle_dbg;
-    body.onkeypress=toggle_dbg;
+    body.onkeypress = toggle_dbg;
 
     var row_sum = 10;
     var column_sum = 15;
@@ -444,7 +445,7 @@ window.onload = function () {
         }
     }
 
-    
+
     btn1.onclick = function () {
         //        addClass(title, "td");
         //        setTimeout(
@@ -847,6 +848,8 @@ window.onload = function () {
 
 
     function put_tower(kind, x, y) {
+        current_map.towers_map[kind] ++;
+        current_map.set_tower_panel();
         return new Tower(kind, [x, y]);
     }
 
@@ -1076,7 +1079,7 @@ window.onload = function () {
     mn.onclick = function (event) {
         //        console.log("click")
         if (catching_thing && event.target.lang == "wall") {
-            if (current_map.left_tower_points >= towers[catching_thing.kind].cost) {
+            if (current_map.left_tower_points >= towers[catching_thing.kind].cost + current_map.towers_map[catching_thing.kind] * 5) {
                 current_map.left_tower_points -= towers[catching_thing.kind].cost;
                 current_map.tower_points_update();
                 put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y))
@@ -1311,16 +1314,18 @@ window.onload = function () {
 
     }
 
+
+
     function get_tower_block(v, k) {
         var d = clone_tpl($("#tower_panel_to_copy"))
         var tower = clone_tpl($("#tower_to_copy[kind='" + k + "']"))
 
-        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost]
-        var lens_k = [3, 20, 3, 3]
+        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost + (current_map ? current_map.towers_map[k] * 5 : 0)]
+        tower_lens_k = [3, 20, 3, 2]
         Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
             function (bar, index) {
                 //                    csl.log(bar)
-                bar.style.width = lens[index] * lens_k[index] + "px";
+                bar.style.width = lens[index] * tower_lens_k[index] + "px";
                 var value = document.createElement("label")
                 addClass(value, "prop-value");
 
@@ -1339,7 +1344,7 @@ window.onload = function () {
     Map.prototype.td_enter = function () {
         //        console.log("td enter")
         var m = this;
-
+        this.towers_map = [0, 0, 0, 0, 0, 0];
         this.level_state = "normal";
         emys_output_finish = false;
         //        console.log(JSON.stringify(this.emy_seq));
@@ -1347,16 +1352,19 @@ window.onload = function () {
         this.remove_things();
         this.emy_seq_len = this.emy_seq.length;
         emys_left.innerHTML = this.emy_seq.length + "/" + this.emy_seq_len;
-        left_panel.innerHTML = "";
+        
 
         this.hp = this.hp_max;
         this.set_hp();
-        tower_points = tower_points_to_copy.cloneNode(true);
-        tower_points.id = "tower_points";
-        tower_points_value = tower_points.querySelector("#tower_points_value");
-        tower_points_label = tower_points.querySelector("#tower_points_label");
-        left_panel.appendChild(tower_points);
+
+        this.set_tower_panel();
+
+
+
+    }
+    Map.prototype.set_tower_panel = function () {
         this.side_init();
+
         towers.forEach(function (v, k) {
             if (v.st) {
                 if (current_level < v.st) {
@@ -1378,10 +1386,23 @@ window.onload = function () {
         tower_points_value.innerHTML = this.left_tower_points;
     }
     Map.prototype.side_init = function () {
+        //        
         if (this.side == "ta") {
 
         } else {
+            left_panel.innerHTML = "";
+            tower_points = tower_points_to_copy.cloneNode(true);
+            tower_points.id = "tower_points";
+            tower_points_value = tower_points.querySelector("#tower_points_value");
+            tower_points_label = tower_points.querySelector("#tower_points_label");
+            left_panel.appendChild(tower_points);
             this.left_tower_points = maps[this.level].power;
+            for (var i = 0; i < towers.length; i++) {
+                for (var j = 0; j < current_map.towers_map[i]; j++) {
+                    this.left_tower_points -= towers[i].cost + j * 5;
+                }
+
+            }
             tower_points_value.innerHTML = this.left_tower_points;
         }
     }
@@ -1458,7 +1479,7 @@ window.onload = function () {
     }
     Map.prototype.half_level_finish = function (state) {
         //        console.log(state);
-        
+
         play_sound(level_finish_sound);
         var m = this;
 
@@ -1654,15 +1675,15 @@ window.onload = function () {
     }
 
     function fadeout(d, time, up) {
-        addClass(d,"fadingout");
+        addClass(d, "fadingout");
         d.style.transition = "all " + time + "ms";
         if (up) {
             removeClass(d, "center");
         }
         addClass(d, "trans")
-        d.dataset.fadingcb=setTimeout(function () {
+        d.dataset.fadingcb = setTimeout(function () {
 
-            removeClass(d,"fadingout");
+            removeClass(d, "fadingout");
             hide(d);
         }, time)
     }
@@ -1756,15 +1777,18 @@ window.onload = function () {
 
 
     console.log(jsfxr);
-//    var tes=[0,391.38368610805287,100000,1,0,0.5,0,1,20032,0,0.1,1,0.55,0,1,0,0,0,501,9955,0.5444117140257732,0,0,0,0.2840254166877416,44100,8,]
-    
-    
+    //    var tes=[0,391.38368610805287,100000,1,0,0.5,0,1,20032,0,0.1,1,0.55,0,1,0,0,0,501,9955,0.5444117140257732,0,0,0,0.2840254166877416,44100,8,]
 
-    function play_sound(so){
+
+
+    function play_sound(so) {
         var soundURL = jsfxr(so);
-    var player = new Audio();
-    player.src = soundURL;
-    player.play();
+        var player = new Audio();
+        player.src = soundURL;
+        if (!dbg) {
+            player.play();
+        }
+
     }
 
 

@@ -18,7 +18,9 @@ body {
     border: 10px solid #222;
     perspective: 2000px;
 }
-
+.debug-btn{
+    display: none;
+}
 #stage>div {
     position: relative;
 }

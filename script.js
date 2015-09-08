@@ -2,16 +2,22 @@ window.onload = function () {
 
 
     var testside = "ta"
-    var current_level = 6;
+    var current_level = 0;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
+    if (dbg) {
+        my_panel.style.transition = "transform 0s"
+        current_level = 6;
+        
+    }
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
-    dbg_btn.onclick = function () {
+    function toggle_dbg(){
         dbg = !dbg;
         localStorage.setItem("dbg", dbg ? "true" : "false");
         console.log("dbg=", dbg)
         dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg"
     }
+
 
 
     function dg(a, b) {
@@ -20,9 +26,8 @@ window.onload = function () {
         else
             return b;
     }
-    if (dbg) {
-        my_panel.style.transition = "transform 0s"
-    }
+    
+    
     var level = 0;
     var fps = 60;
     var panel_showing = false;
@@ -33,6 +38,12 @@ window.onload = function () {
     }
     var $$ = function (tag) {
         return doc.querySelectorAll(tag);
+    }
+    body = $("body")
+    if(dbg){
+        (new Array).forEach.call($$(".debug-btn"),function(e,i){
+            e.style.display="inline-block"
+        })
     }
     var m = Math;
     var csl = console;
@@ -62,10 +73,10 @@ window.onload = function () {
 
 
     var just_a_grid;
-    var towers_sound=[[0,,0.0633,,0.2587,0.4054,,-0.3755,,,,,,0.2628,,,,,1,,,,,0.44],
+    var towers_sound=[[1,,0.1693,0.111,0.0106,0.8855,0.0802,-0.5639,,,,,,0.0314,0.1647,,,,1,,,,,0.5],
                      [3,,0.01,,0.206,0.4598,,-0.4236,,,,,,,,,,,1,,,,,0.44],
                       [0,,0.2368,0.1023,,0.7157,0.2,-0.2371,,,,,,0.446,-0.1164,,,,1,,,0.2673,,0.44],
-                      [0,,0.01,,0.2515,0.3345,,0.2292,,,0.2991,,,0.0972,,,,,1,,,,,0.44],
+                      [2,,0.2386,0.2191,0.3293,0.6307,0.0235,-0.405,,,,,,0.7376,-0.6784,,,,1,,,,,0.5],
                      ]
     var map_suffer_sound=[3,,0.2585,0.7193,0.0618,0.7524,,-0.389,,,,0.4458,0.8618,,,,0.1306,-0.1808,1,,,,,0.44];
    var level_finish_sound=[0,,0.2352,,0.4135,0.4361,,0.4238,,,,,,0.1343,,0.5811,,,1,,,,,0.44];
@@ -297,7 +308,6 @@ window.onload = function () {
             //            emit: function () {},
             cost: 10,
             rotate: true,
-            st: 0,
         },
         {
             range: 1.5,
@@ -359,7 +369,8 @@ window.onload = function () {
         }
     ]
 
-
+    dbg_btn.onclick = toggle_dbg;
+    body.onkeypress=toggle_dbg;
 
     var row_sum = 10;
     var column_sum = 15;
@@ -433,7 +444,7 @@ window.onload = function () {
         }
     }
 
-    body = $("body")
+    
     btn1.onclick = function () {
         //        addClass(title, "td");
         //        setTimeout(
@@ -1643,14 +1654,15 @@ window.onload = function () {
     }
 
     function fadeout(d, time, up) {
+        addClass(d,"fadingout");
         d.style.transition = "all " + time + "ms";
         if (up) {
             removeClass(d, "center");
         }
         addClass(d, "trans")
-        setTimeout(function () {
+        d.dataset.fadingcb=setTimeout(function () {
 
-
+            removeClass(d,"fadingout");
             hide(d);
         }, time)
     }

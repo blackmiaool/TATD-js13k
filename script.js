@@ -1483,6 +1483,7 @@ window.onload = function () {
         //        console.log(state);
 
         play_sound(level_finish_sound);
+        towers_map = [0, 0, 0, 0, 0, 0];
         var m = this;
 
         if (this.reversing)

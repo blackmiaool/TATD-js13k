@@ -313,7 +313,7 @@ window.onload = function () {
         {
             range: 1.5,
             power: 10,
-            des: "Fast tower.",
+            des: "AOE tower.",
 
             emit: function (tower) {
                 //                console.log(tower)
@@ -348,7 +348,7 @@ window.onload = function () {
         {
             range: 2.5,
             power: 5,
-            des: "AOE tower.",
+            des: "Cold tower.",
             blast: function (emy) {
                 emy.add_state(states.cold)
 
@@ -361,7 +361,7 @@ window.onload = function () {
         {
             range: 1.5,
             power: 30,
-            des: "Cold tower.",
+            des: "Powerful tower.",
             //            emit: function () {},
             cost: 25,
             bias: [0, 0],

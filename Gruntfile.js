@@ -24,7 +24,7 @@ module.exports = function (grunt) {
         zip: {
             'using-delate': {
                 src: 'build/index.html',
-                dest: 'build/files.zip',
+                dest: 'TATD.zip',
                 compression: 'DEFLATE'
             },
         },

@@ -1,14 +1,14 @@
 window.onload = function () {
 
 
-    var testside = "td"
+    var testside = "ta"
     var current_level = 0;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     if (dbg) {
         my_panel.style.transition = "transform 0s"
         current_level = 6;
-
+        testside="td";
     }
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
 

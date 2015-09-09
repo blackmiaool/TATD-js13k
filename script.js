@@ -99,7 +99,7 @@ window.onload = function () {
             start: [0, 2],
             end: [14, 7],
             hp: 1,
-            power: 40,
+            power: 45,
             preset: [[6, 1, 0], [8, 1, 0], [8, 3, 0], ],
         },
         {
@@ -175,7 +175,7 @@ window.onload = function () {
             start: [7, 0],
             end: [7, 9],
             hp: 5,
-            power: 70,
+            power: 80,
             preset: [[8, 4, 2], [6, 6, 2], [8, 5, 0], [8, 6, 0], [6, 5, 0]],
         },
         {
@@ -1263,7 +1263,7 @@ window.onload = function () {
                             $("#new_panel").querySelector("#panel").appendChild(get_emy_block(v, k));
                         } else {
                             $("#new_panel").querySelector("h1").innerHTML = "New Tower";
-                            $("#new_panel").querySelector("#panel").appendChild(get_tower_block(v, k));
+                            $("#new_panel").querySelector("#panel").appendChild(get_tower_block(v, k,true));
                         }
 
                     }
@@ -1318,11 +1318,11 @@ window.onload = function () {
 
 
 
-    function get_tower_block(v, k) {
+    function get_tower_block(v, k,raw) {
         var d = clone_tpl($("#tower_panel_to_copy"))
         var tower = clone_tpl($("#tower_to_copy[kind='" + k + "']"))
 
-        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost + (current_map ? towers_map[k] * 5 : 0)]
+        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost + (raw?  0:towers_map[k] * 5 )]
         tower_lens_k = [3, 20, 3, 2]
         Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
             function (bar, index) {
@@ -1602,13 +1602,14 @@ window.onload = function () {
                 console.log(this.emy_seq)
 
 
-                set_success_info(this.emy_seq.length, maps[this.level].power - this.left_tower_points, parseInt(time_cost) + "ms")
-                if (current_level == (maps.length - 1)) {
-                    show_panel("game_over");
-                } else {
-
-                    show_panel("level_finish");
-                }
+                set_success_info(this.emy_seq.length, maps[this.level].power - this.left_tower_points, parseInt(time_cost) + "ms");
+                show_panel("level_finish");
+//                if (current_level == (maps.length - 1)) {
+//                    show_panel("game_over");
+//                } else {
+//
+//                    
+//                }
 
             }
 
@@ -1756,8 +1757,17 @@ window.onload = function () {
     }
     btn_next_level.onclick = function () {
         hide_panel("level_finish");
-
-        enter_level(++current_level);
+        setTimeout(
+            function(){
+                if(current_level == (maps.length - 1)){
+                    show_panel("game_over")
+                }else{
+                    enter_level(++current_level);
+                }
+                
+            },550
+        )
+        
 
     }
     btn_new_start.onclick = function () {

@@ -8,7 +8,7 @@ window.onload = function () {
     if (dbg) {
         my_panel.style.transition = "transform 0s"
         current_level = 6;
-        testside="td";
+        testside = "td";
     }
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
 
@@ -667,12 +667,19 @@ window.onload = function () {
     function hasChild(parent, child) {
         if (!child)
             return
-        while (child.parentElement) {
+        while (child.parentNode) {
 
             //            console.log(child.parentNode)
-            if (child.parentNode == parent)
-                return true;
-            child = child.parentElement;
+            if (typeof (parent) == "function") {
+                if (parent(child)) {
+                    return parent(child);
+                }
+            } else {
+                if (child.parentNode == parent)
+                    return child.parentNode;
+            }
+
+            child = child.parentNode;
         }
         return false;
     }
@@ -847,15 +854,39 @@ window.onload = function () {
     }
 
 
-    function put_tower(kind, x, y,update) {
-        if(update){
-        if(current_map&&towers_map)
-        {towers_map[kind]++;
-        current_map.set_tower_panel();}}
+    function put_tower(kind, x, y, handle) {
+        if (handle) {
+            if (current_map && towers_map) {
+                towers_map[kind] ++;
+                current_map.set_tower_panel();
+            }
+        }
         return new Tower(kind, [x, y]);
     }
 
+    function remove_tower(ele) {
 
+        if (current_map && towers_map) {
+
+
+            towers_map[parseInt(ele.dataset.kind)] --;
+
+            current_map.set_tower_panel();
+            miao_objs.tower.r_forEach(
+                function(d,i){
+                    if(d.d==ele)
+                    {
+                        miao_objs.tower.remove(d);
+                        return true;
+                    }
+                        
+                    
+                }
+            )
+            
+            mn.removeChild(ele);
+        }
+    }
 
     var Emy = function (kind, pos) {
         this.name = "emy";
@@ -1078,13 +1109,34 @@ window.onload = function () {
         }
 
     }
+    mn.oncontextmenu = function (event) {
+        //        csl.log("wlek",event)
+        if (is_catching()) {
+
+            uncatch();
+            return false;
+        }
+        var target = hasChild(function (ele) {
+            if (hasClass(ele, "tower")) {
+                return ele;
+            } else {
+                return false;
+            }
+        }, event.target);
+        if (target) {
+            remove_tower(target);
+            event.stopPropagation();
+             return false;
+        }
+//        return false;
+    }
     mn.onclick = function (event) {
         //        console.log("click")
         if (catching_thing && event.target.lang == "wall") {
             if (current_map.left_tower_points >= towers[catching_thing.kind].cost + towers_map[catching_thing.kind] * 5) {
                 current_map.left_tower_points -= towers[catching_thing.kind].cost;
                 current_map.tower_points_update();
-                put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y),true)
+                put_tower(catching_thing.kind, parseInt(event.target.dataset.x), parseInt(event.target.dataset.y), true)
             } else {
                 addClass(tower_points_label, "zoom");
                 setTimeout(function () {
@@ -1263,7 +1315,7 @@ window.onload = function () {
                             $("#new_panel").querySelector("#panel").appendChild(get_emy_block(v, k));
                         } else {
                             $("#new_panel").querySelector("h1").innerHTML = "New Tower";
-                            $("#new_panel").querySelector("#panel").appendChild(get_tower_block(v, k,true));
+                            $("#new_panel").querySelector("#panel").appendChild(get_tower_block(v, k, true));
                         }
 
                     }
@@ -1309,7 +1361,7 @@ window.onload = function () {
         maps[this.level].preset.forEach(
             function (t) {
 
-                var t = put_tower(t[2], t[0], t[1],false);
+                var t = put_tower(t[2], t[0], t[1], false);
                 addClass(t.d, "preset");
             }
         )
@@ -1318,11 +1370,11 @@ window.onload = function () {
 
 
 
-    function get_tower_block(v, k,raw) {
+    function get_tower_block(v, k, raw) {
         var d = clone_tpl($("#tower_panel_to_copy"))
         var tower = clone_tpl($("#tower_to_copy[kind='" + k + "']"))
 
-        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost + (raw?  0:towers_map[k] * 5 )]
+        var lens = [v.power, v.range, 1 / speed.tower[k] / 3 * 900, v.cost + (raw ? 0 : towers_map[k] * 5)]
         tower_lens_k = [3, 20, 3, 2]
         Array.prototype.forEach.call(d.querySelectorAll(".bar span"),
             function (bar, index) {
@@ -1354,7 +1406,7 @@ window.onload = function () {
         this.remove_things();
         this.emy_seq_len = this.emy_seq.length;
         emys_left.innerHTML = this.emy_seq.length + "/" + this.emy_seq_len;
-        
+
 
         this.hp = this.hp_max;
         this.set_hp();
@@ -1604,12 +1656,12 @@ window.onload = function () {
 
                 set_success_info(this.emy_seq.length, maps[this.level].power - this.left_tower_points, parseInt(time_cost) + "ms");
                 show_panel("level_finish");
-//                if (current_level == (maps.length - 1)) {
-//                    show_panel("game_over");
-//                } else {
-//
-//                    
-//                }
+                //                if (current_level == (maps.length - 1)) {
+                //                    show_panel("game_over");
+                //                } else {
+                //
+                //                    
+                //                }
 
             }
 
@@ -1758,16 +1810,16 @@ window.onload = function () {
     btn_next_level.onclick = function () {
         hide_panel("level_finish");
         setTimeout(
-            function(){
-                if(current_level == (maps.length - 1)){
+            function () {
+                if (current_level == (maps.length - 1)) {
                     show_panel("game_over")
-                }else{
+                } else {
                     enter_level(++current_level);
                 }
-                
-            },550
+
+            }, 550
         )
-        
+
 
     }
     btn_new_start.onclick = function () {

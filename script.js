@@ -1116,6 +1116,9 @@ window.onload = function () {
             uncatch();
             return false;
         }
+        if(sys_play_state!="Start"){
+            return false;
+        }
         var target = hasChild(function (ele) {
             if (hasClass(ele, "tower")) {
                 return ele;
@@ -1412,7 +1415,7 @@ window.onload = function () {
         this.set_hp();
 
         this.set_tower_panel();
-
+//        this.td_start=false;
 
 
     }

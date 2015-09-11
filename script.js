@@ -7,7 +7,7 @@ window.onload = function () {
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     if (dbg) {
         my_panel.style.transition = "transform 0s"
-        current_level = 6;
+        current_level = 0;
         testside = "td";
     }
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
@@ -1167,7 +1167,7 @@ window.onload = function () {
             this.emy_seq = [];
             title.innerHTML = "LV" + (level + 1) + "&nbsp;-&nbsp;TA";
         }
-
+        this.tipped=false;
         this.load_map(level);
         this.reversing = false;
         map = maps[level].map;
@@ -1298,6 +1298,7 @@ window.onload = function () {
     }
     Map.prototype.ta_enter = function () {
         var m = this;
+        
         set_sys_play_state("Pause");
         emys_left.innerHTML = ""
         this.remove_things();
@@ -1400,6 +1401,7 @@ window.onload = function () {
 
     Map.prototype.td_enter = function () {
         //        console.log("td enter")
+        
         var m = this;
         towers_map = [0, 0, 0, 0, 0, 0];
         this.level_state = "normal";
@@ -1415,6 +1417,10 @@ window.onload = function () {
         this.set_hp();
 
         this.set_tower_panel();
+        
+        
+
+        
 //        this.td_start=false;
 
 
@@ -1534,6 +1540,20 @@ window.onload = function () {
         }
         //        console.log("finish", dom.style.transform)
     }
+    Map.prototype.td_enter_finish=function(){
+        console.log(this.level,this.tipped)
+        if(this.level==0&&(!this.tipped)){
+            this.tipped=true;
+            console.log("tip")
+            show_panel("game_tip0");
+            btn_tip0_continue.onclick=function(){
+                hide_panel("game_tip0")
+            }
+        }
+    }
+    Map.prototype.ta_enter_finish=function(){
+        
+    }
     Map.prototype.half_level_finish = function (state) {
         //        console.log(state);
 
@@ -1554,6 +1574,11 @@ window.onload = function () {
             setTimeout(
                 function () {
                     m.reversing = false;
+                    if(m.side=="td"){
+                        m.td_enter_finish();
+                    }else{
+                        m.ta_enter_finish();
+                    }
                 }, dg(4000, 0)
             )
             setTimeout(

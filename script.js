@@ -873,17 +873,16 @@ window.onload = function () {
 
             current_map.set_tower_panel();
             miao_objs.tower.r_forEach(
-                function(d,i){
-                    if(d.d==ele)
-                    {
+                function (d, i) {
+                    if (d.d == ele) {
                         miao_objs.tower.remove(d);
                         return true;
                     }
-                        
-                    
+
+
                 }
             )
-            
+
             mn.removeChild(ele);
         }
     }
@@ -1116,9 +1115,7 @@ window.onload = function () {
             uncatch();
             return false;
         }
-        if(sys_play_state!="Start"){
-            return false;
-        }
+
         var target = hasChild(function (ele) {
             if (hasClass(ele, "tower")) {
                 return ele;
@@ -1127,11 +1124,14 @@ window.onload = function () {
             }
         }, event.target);
         if (target) {
+            if (sys_play_state != "Start") {
+                return false;
+            }
             remove_tower(target);
             event.stopPropagation();
-             return false;
+            return false;
         }
-//        return false;
+        //        return false;
     }
     mn.onclick = function (event) {
         //        console.log("click")
@@ -1153,7 +1153,7 @@ window.onload = function () {
         var m = this;
         this.side = "ta";
         this.level_state = "normal";
-
+        this.new_unitted = false;
         if (testside == "td") {
             this.emy_seq = JSON.parse("[[0,0],[14,0],[33,0],[90,0]]")
             addClass(title, "td");
@@ -1167,7 +1167,7 @@ window.onload = function () {
             this.emy_seq = [];
             title.innerHTML = "LV" + (level + 1) + "&nbsp;-&nbsp;TA";
         }
-        this.tipped=false;
+        this.tipped = false;
         this.load_map(level);
         this.reversing = false;
         map = maps[level].map;
@@ -1298,7 +1298,7 @@ window.onload = function () {
     }
     Map.prototype.ta_enter = function () {
         var m = this;
-        
+
         set_sys_play_state("Pause");
         emys_left.innerHTML = ""
         this.remove_things();
@@ -1310,8 +1310,14 @@ window.onload = function () {
                 function check_new_unit(v, k) {
                     if (v.st === m.level) {
                         csl.log(v.st, m.level)
+
+                        if (!this.new_unitted) {
+                            this.new_unitted = true;
+                            show_panel("new_panel");
+                        } else {
+                            return;
+                        }
                         play_sound(new_unit)
-                        show_panel("new_panel");
                         $("#new_panel").querySelector("#panel").innerHTML = "";
 
                         if (!v.range) {
@@ -1401,7 +1407,7 @@ window.onload = function () {
 
     Map.prototype.td_enter = function () {
         //        console.log("td enter")
-        
+
         var m = this;
         towers_map = [0, 0, 0, 0, 0, 0];
         this.level_state = "normal";
@@ -1417,11 +1423,11 @@ window.onload = function () {
         this.set_hp();
 
         this.set_tower_panel();
-        
-        
 
-        
-//        this.td_start=false;
+
+
+
+        //        this.td_start=false;
 
 
     }
@@ -1540,19 +1546,19 @@ window.onload = function () {
         }
         //        console.log("finish", dom.style.transform)
     }
-    Map.prototype.td_enter_finish=function(){
-        console.log(this.level,this.tipped)
-        if(this.level==0&&(!this.tipped)){
-            this.tipped=true;
+    Map.prototype.td_enter_finish = function () {
+        console.log(this.level, this.tipped)
+        if (this.level == 0 && (!this.tipped)) {
+            this.tipped = true;
             console.log("tip")
             show_panel("game_tip0");
-            btn_tip0_continue.onclick=function(){
+            btn_tip0_continue.onclick = function () {
                 hide_panel("game_tip0")
             }
         }
     }
-    Map.prototype.ta_enter_finish=function(){
-        
+    Map.prototype.ta_enter_finish = function () {
+
     }
     Map.prototype.half_level_finish = function (state) {
         //        console.log(state);
@@ -1574,9 +1580,9 @@ window.onload = function () {
             setTimeout(
                 function () {
                     m.reversing = false;
-                    if(m.side=="td"){
+                    if (m.side == "td") {
                         m.td_enter_finish();
-                    }else{
+                    } else {
                         m.ta_enter_finish();
                     }
                 }, dg(4000, 0)
@@ -1634,9 +1640,8 @@ window.onload = function () {
         this.end_grid.appendChild(endp_to_copy);
 
     }
-    Map.prototype.destroy = function () {
-        console.log(this.side)
-        console.log(my_panel.style.transform)
+    Map.prototype.destroy = function (delay) {
+
         sys_cb_queue.remove(this.outputing)
         if (this.side == "td") {
             var m = this;
@@ -1645,10 +1650,16 @@ window.onload = function () {
             my_panel.style.transform += " rotateY(180deg)"
             reverse(left_panel);
             reverse(my_panel.querySelector(".ftr"))
-                //            addClass(title, "td");
-                //            title.innerHTML = "LV" + (this.level + 1) + "&nbsp;-&nbsp;TA";
         }
-        this.remove_things();
+        var m=this;
+        if(delay){
+            setTimeout(function(){
+                m.remove_things();
+            },300)
+        }else{
+            this.remove_things();
+        }
+        
     }
     Map.prototype.step = function () {
         //        console.log("step", miao_objs.emy, miao_objs.emy.length, emys_output_finish)
@@ -1696,12 +1707,19 @@ window.onload = function () {
         }
     }
 
-    function enter_level(level) {
+    function enter_level(level,delay) {
         if (current_map) {
-            current_map.destroy();
+            current_map.destroy(delay);
         }
-
-        current_map = new Map(level)
+        if(delay){
+            setTimeout(
+            function(){
+              current_map = new Map(level)  
+            },300)
+        }else{
+            current_map = new Map(level)
+        }
+        
     }
 
     enter_level(current_level);
@@ -1842,7 +1860,7 @@ window.onload = function () {
                 if (current_level == (maps.length - 1)) {
                     show_panel("game_over")
                 } else {
-                    enter_level(++current_level);
+                    enter_level(++current_level,true);
                 }
 
             }, 550

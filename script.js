@@ -1,3 +1,8 @@
+
+
+
+
+
 window.onload = function () {
 
 
@@ -10,14 +15,12 @@ window.onload = function () {
         current_level = 0;
         testside = "td";
     }
-    dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
 
     function toggle_dbg() {
         return;
         dbg = !dbg;
         localStorage.setItem("dbg", dbg ? "true" : "false");
         console.log("dbg=", dbg)
-        dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg"
     }
 
 
@@ -43,11 +46,6 @@ window.onload = function () {
         return doc.querySelectorAll(tag);
     }
     body = $("body")
-    if (dbg) {
-        (new Array).forEach.call($$(".debug-btn"), function (e, i) {
-            e.style.display = "inline-block"
-        })
-    }
     var m = Math;
     var csl = console;
     var sys_tick = 0;
@@ -88,16 +86,16 @@ window.onload = function () {
     var maps = [
         {
             map: [
-                "111111111111111",
-                "111111111111111",
-                "000000000000001",
-                "111111111111101",
-                "100000000000001",
-                "101111111111111",
-                "101111111111111",
+                "",
+                "",
+                "00000000000000",
+                "11111111111110",
+                "10000000000000",
+                "10",
+                "10",
                 "100000000000000",
-                "111111111111111",
-                "111111111111111",
+                "",
+                "",
             ],
             start: [0, 2],
             end: [14, 7],
@@ -107,16 +105,16 @@ window.onload = function () {
         },
         {
             map: [
-                "111111111111111",
-                "111111111111111",
-                "000011111111111",
-                "111011111111111",
-                "100011111111111",
-                "101111111111111",
-                "101111111111111",
+                "",
+                "",
+                "0000",
+                "1110",
+                "1000",
+                "10",
+                "10",
                 "100000000000000",
-                "111111111111111",
-                "111111111111111",
+                "",
+                "",
             ],
             start: [0, 2],
             end: [14, 7],
@@ -126,16 +124,16 @@ window.onload = function () {
         },
         {
             map: [
-                "111111101111111",
-                "111111101111111",
-                "111111100111111",
-                "111111110111111",
-                "111100000111111",
-                "111101111111111",
-                "111101111111111",
-                "111101111111111",
-                "111101111111111",
-                "111101111111111",
+                "11111110",
+                "11111110",
+                "111111100",
+                "111111110",
+                "111100000",
+                "11110",
+                "11110",
+                "11110",
+                "11110",
+                "11110",
             ],
             start: [7, 0],
             end: [4, 9],
@@ -145,16 +143,16 @@ window.onload = function () {
         },
         {
             map: [
-                "111111101111111",
-                "111111101111111",
-                "111111100111111",
-                "111111110111111",
-                "111111100111111",
-                "111111101111111",
-                "111111100111111",
-                "111111110111111",
-                "111111110111111",
-                "111111110111111",
+                "11111110",
+                "11111110",
+                "111111100",
+                "111111110",
+                "111111100",
+                "11111110",
+                "111111100",
+                "111111110",
+                "111111110",
+                "111111110",
             ],
             start: [7, 0],
             end: [8, 9],
@@ -164,16 +162,16 @@ window.onload = function () {
         },
         {
             map: [
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111101111111",
+                "11111110",
+                "11111110",
+                "11111110",
+                "11111110",
+                "11111110",
+                "11111110",
+                "11111110",
+                "11111110",
+                "11111110",
+                "11111110",
             ],
             start: [7, 0],
             end: [7, 9],
@@ -183,16 +181,16 @@ window.onload = function () {
         },
         {
             map: [
-                "011111111111111",
-                "001111111111111",
-                "100111111111111",
-                "110011111111111",
-                "111001111111111",
-                "111100111111111",
-                "111110011111111",
-                "111111001111111",
-                "111111100111111",
-                "111111110111111",
+                "0",
+                "00",
+                "100",
+                "1100",
+                "11100",
+                "111100",
+                "1111100",
+                "11111100",
+                "111111100",
+                "111111110",
             ],
             start: [0, 0],
             end: [8, 9],
@@ -202,16 +200,16 @@ window.onload = function () {
         },
         {
             map: [
-                "011111111111111",
-                "000001111111111",
-                "111101111111111",
-                "110001111111111",
-                "110110001111111",
-                "110000101111111",
-                "111111101111111",
-                "111111101111111",
-                "111111100111111",
-                "111111110111111",
+                "0",
+                "00000",
+                "11110",
+                "11000",
+                "11011000",
+                "11000010",
+                "11111110",
+                "11111110",
+                "111111100",
+                "111111110",
             ],
             start: [0, 0],
             end: [8, 9],
@@ -398,7 +396,7 @@ window.onload = function () {
         }
     ]
 
-    dbg_btn.onclick = toggle_dbg;
+
     body.onkeypress = toggle_dbg;
 
     var row_sum = 10;
@@ -438,17 +436,7 @@ window.onload = function () {
             if (f(this[i])) return;
         }
     }
-    Array.prototype.average = function () {
-        var sum = 0;
-        this.forEach(
-            function (d) {
-                sum += d;
-            }
-        )
-        if (this.length)
-            sum /= this.length;
-        return sum;
-    }
+
 
     function hasClass(obj, cls) {
         return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
@@ -474,42 +462,12 @@ window.onload = function () {
     }
 
 
-    btn1.onclick = function () {
-        //        addClass(title, "td");
-        //        setTimeout(
-        //            function () {
-        //                title.innerHTML = "LV1&nbsp;-&nbsp;TD";
-        //            }, 250
-        //        )
-        show_panel("level_failed")
-    }
-    btn2.onclick = function () {
-        var output_str = "";
-        miao_objs.tower.forEach(
-            function (t) {
-                output_str += "[";
-                output_str += t.d.dataset.x;
-                output_str += ",";
-                output_str += t.d.dataset.y;
-                output_str += ",";
-                output_str += t.d.dataset.kind;
-                output_str += "],";
-            }
-        )
-        csl.log(output_str)
-    }
     var sys_cb_queue = [];
 
     function sys_setTimeout(func, ticks) {
         var config = [func, sys_tick + ticks]
         sys_cb_queue.push(config);
         return config;
-    }
-    btn3.onclick = function () {
-        btn_next_level.onclick();
-    }
-    btn4.onclick = function () {
-        current_map.ta_finish();
     }
 
 
@@ -546,6 +504,8 @@ window.onload = function () {
 
     function get_pos_value(map, x, y) {
         //            console.log(map, x, y)
+        if(map[y][x]==undefined)
+            return 1;
         return parseInt(map[y][x]);
     }
 
@@ -1973,9 +1933,7 @@ window.onload = function () {
                     }
                 }
             )
-            if (!(sys_tick % 120)) {
 
-            }
             for (var i in miao_objs) {
                 miao_objs[i].forEach(obj_step);
             }

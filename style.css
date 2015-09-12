@@ -192,6 +192,11 @@ body {
     background-color: #444;
     /*            border: */
 }
+.phone .tower.catching{
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+}
 
 body.inactive .catching {
     display: none;

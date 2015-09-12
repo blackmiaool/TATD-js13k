@@ -294,10 +294,12 @@ window.onload = function () {
         var meta=doc.createElement("meta");
         meta.name="viewport";
         global_spped_k=2;
+        addClass(body,"phone")
+        global_speed*=global_spped_k;
         meta.content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no";
         $("head").appendChild(meta);
-       zoom_auto();
-    window.addEventListener("resize", zoom_auto, false);
+        zoom_auto();
+        window.addEventListener("resize", zoom_auto, false);
     }
     
     var states = {

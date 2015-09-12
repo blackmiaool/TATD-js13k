@@ -845,8 +845,8 @@ div#tower_points label.zoom {
 }
 
 .tower[kind='0']>.range.active {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
 }
 
 .tower[kind='1']>.range.active {
@@ -855,13 +855,13 @@ div#tower_points label.zoom {
 }
 
 .tower[kind='2']>.range.active {
-    width: 250px;
-    height: 250px;
+    width: 300px;
+    height: 300px;
 }
 
 .tower[kind='3']>.range.active {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
 }
 
 .tower[kind="0"] .shape {

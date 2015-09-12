@@ -2,7 +2,7 @@ window.onload = function () {
 
 
     var testside = "ta"
-    var current_level = 0;
+    var current_level = 6; 
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     if (dbg) {
@@ -31,6 +31,7 @@ window.onload = function () {
 
     var level = 0;
     var fps = 60;
+    var global_pause=false;
     var panel_showing = false;
     var names = ["bul", "tower", "emy"];
     var doc = document;
@@ -138,7 +139,7 @@ window.onload = function () {
             end: [4, 9],
             hp: 2,
             power: 60,
-            preset: [[5, 5, 1], [7, 3, 0], [6, 2, 0], ],
+            preset: [[5, 5, 1], [7, 3, 1], [6, 2, 1], ],
         },
         {
             map: [
@@ -156,8 +157,8 @@ window.onload = function () {
             start: [7, 0],
             end: [8, 9],
             hp: 5,
-            power: 60,
-            preset: [[7, 3, 1], [8, 5, 1], [8, 1, 2], [7, 7, 0], ],
+            power: 70,
+            preset: [[7, 3, 2], [8, 5, 0], [8, 1, 2], [7, 7, 1], ],
         },
         {
             map: [
@@ -176,7 +177,7 @@ window.onload = function () {
             end: [7, 9],
             hp: 5,
             power: 80,
-            preset: [[8, 4, 2], [6, 6, 2], [8, 5, 0], [8, 6, 0], [6, 5, 0]],
+            preset: [[8, 4, 2], [6, 6, 2], [8, 5, 1], [8, 6, 1]],
         },
         {
             map: [
@@ -194,7 +195,7 @@ window.onload = function () {
             start: [0, 0],
             end: [8, 9],
             hp: 5,
-            power: 80,
+            power: 95,
             preset: [[5, 4, 2], [7, 6, 3], [3, 5, 1], [4, 6, 1], [6, 5, 1]],
         },
         {
@@ -213,7 +214,7 @@ window.onload = function () {
             start: [0, 0],
             end: [8, 9],
             hp: 10,
-            power: 100,
+            power: 75,
             preset: [[5, 3, 3], [6, 6, 0], [3, 4, 1], [4, 4, 0], [6, 5, 1]],
         },
 
@@ -1652,9 +1653,13 @@ window.onload = function () {
             reverse(my_panel.querySelector(".ftr"))
         }
         var m=this;
+        
         if(delay){
+            global_pause=true;
+            
             setTimeout(function(){
                 m.remove_things();
+                global_pause=false;
             },300)
         }else{
             this.remove_things();
@@ -1773,7 +1778,7 @@ window.onload = function () {
         set_speed_btn(speedfor2, 2);
     }
     speedfor4.onclick = function () {
-        set_speed_btn(speedfor4, 16);
+        set_speed_btn(speedfor4, 4);
     }
 
     function fadeout(d, time, up) {
@@ -1826,7 +1831,7 @@ window.onload = function () {
 
     function restart_whole_level() {
         //        current_map.destroy();
-        enter_level(current_level);
+        enter_level(current_level,true);
         hide_panel("level_setting")
         hide_panel("level_failed")
         current_map.reversing = false;
@@ -1884,7 +1889,7 @@ window.onload = function () {
     btn_start_game.onclick = function () {
         hide_panel("game_cover")
     }
-    if (!dbg) show_panel("game_cover")
+    if (!dbg&&current_level==0) show_panel("game_cover")
 
 
     console.log(jsfxr);
@@ -1905,7 +1910,7 @@ window.onload = function () {
 
 
     function step() {
-        if (sys_play_state == "Pause" && !panel_showing) {
+        if (sys_play_state == "Pause" && !panel_showing&&!global_pause) {
 
             emy_order_cal = true;
             miao_objs.emy.sort(

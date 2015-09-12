@@ -276,6 +276,29 @@ window.onload = function () {
         //    }, 10], [2.5, 10, "Basic tower.", function () {
         //
         //    }, 10]];
+    var usr_os = get_OS();
+    var zoom_auto = function () {
+        var height = parseInt(document.documentElement.clientHeight);
+        var width = parseInt(document.documentElement.clientWidth);
+        var scale1 = width / 1020;
+        var scale2 = height / 620;
+        var scale = Math.min(scale1, scale2) * 100;
+        if (usr_os == "iPhone" || usr_os == "iPad" || usr_os == "iPod") {
+            scale = Math.max(100, scale)
+        }
+        body.style.zoom=scale + "%";
+        console.log(scale,scale1,scale2,width)
+    }
+    if(usr_os){
+        var meta=doc.createElement("meta");
+        meta.name="viewport";
+        meta.content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no";
+        $("head").appendChild(meta);
+        fps=24;
+       zoom_auto();
+    window.addEventListener("resize", zoom_auto, false);
+    }
+    
     var states = {
 
         cold: {
@@ -1907,21 +1930,7 @@ window.onload = function () {
 
     }
 
-    function IsPC() {
-        var userAgentInfo = navigator.userAgent;
-        var Agents = ["Android", "iPhone",
-                    "SymbianOS", "Windows Phone",
-                    "iPad", "iPod"
-                    ];
-        var flag = true;
-        for (var v = 0; v < Agents.length; v++) {
-            if (userAgentInfo.indexOf(Agents[v]) > 0) {
-                flag = false;
-                break;
-            }
-        }
-        return flag;
-    }
+
 
     function get_OS() {
         var userAgentInfo = navigator.userAgent;
@@ -1935,23 +1944,7 @@ window.onload = function () {
             }
         }
     }
-    var usr_os = get_OS();
-    var zoom_auto = function () {
-        var height = parseInt(document.documentElement.clientHeight);
-        var width = parseInt(document.documentElement.clientWidth);
-        var scale1 = width / 1020;
-        var scale2 = height / 620;
-        var scale = Math.min(scale1, scale2) * 100;
-        if (usr_os == "iPhone" || usr_os == "iPad" || usr_os == "iPod") {
-            scale = Math.max(100, scale)
-        }
-        body.style.zoom=scale + "%";
-    }
-    if(usr_os){
-       zoom_auto();
-    window.addEventListener("resize", zoom_auto, false);
-    }
-    
+
 
     function step() {
         if (sys_play_state == "Pause" && !panel_showing && !global_pause) {

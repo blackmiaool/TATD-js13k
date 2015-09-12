@@ -2,7 +2,7 @@ window.onload = function () {
 
 
     var testside = "ta"
-    var current_level = 0; 
+    var current_level = 0;
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     if (dbg) {
@@ -31,7 +31,7 @@ window.onload = function () {
 
     var level = 0;
     var fps = 60;
-    var global_pause=false;
+    var global_pause = false;
     var panel_showing = false;
     var names = ["bul", "tower", "emy"];
     var doc = document;
@@ -332,7 +332,7 @@ window.onload = function () {
                                 }
                             }
                         )
-                    }, 900 / 4 / 1000 * 60
+                    }, 900 / 4 / 1000 * fps
                 )
                 setTimeout(
                     function () {
@@ -858,7 +858,7 @@ window.onload = function () {
     function put_tower(kind, x, y, handle) {
         if (handle) {
             if (current_map && towers_map) {
-                towers_map[kind] ++;
+                towers_map[kind]++;
                 current_map.set_tower_panel();
             }
         }
@@ -870,7 +870,7 @@ window.onload = function () {
         if (current_map && towers_map) {
 
 
-            towers_map[parseInt(ele.dataset.kind)] --;
+            towers_map[parseInt(ele.dataset.kind)]--;
 
             current_map.set_tower_panel();
             miao_objs.tower.r_forEach(
@@ -1261,7 +1261,7 @@ window.onload = function () {
     }
     Eq.prototype.step = function () {
         //        console.log("step")
-        this.height -= queue_speed / 60;
+        this.height -= queue_speed / fps;
         this.set_height(this.height);
         if (this.height <= 0) {
             this.unregister();
@@ -1652,19 +1652,19 @@ window.onload = function () {
             reverse(left_panel);
             reverse(my_panel.querySelector(".ftr"))
         }
-        var m=this;
-        
-        if(delay){
-            global_pause=true;
-            
-            setTimeout(function(){
+        var m = this;
+
+        if (delay) {
+            global_pause = true;
+
+            setTimeout(function () {
                 m.remove_things();
-                global_pause=false;
-            },300)
-        }else{
+                global_pause = false;
+            }, 300)
+        } else {
             this.remove_things();
         }
-        
+
     }
     Map.prototype.step = function () {
         //        console.log("step", miao_objs.emy, miao_objs.emy.length, emys_output_finish)
@@ -1693,7 +1693,7 @@ window.onload = function () {
                     //                    csl.log(time_cost)
                     //                }
                     //                csl.log(time_cost);
-                time_cost /= 60; //s
+                time_cost /= fps; //s
                 time_cost *= 1000; //ms
                 console.log(this.emy_seq)
 
@@ -1712,19 +1712,19 @@ window.onload = function () {
         }
     }
 
-    function enter_level(level,delay) {
+    function enter_level(level, delay) {
         if (current_map) {
             current_map.destroy(delay);
         }
-        if(delay){
+        if (delay) {
             setTimeout(
-            function(){
-              current_map = new Map(level)  
-            },300)
-        }else{
+                function () {
+                    current_map = new Map(level)
+                }, 300)
+        } else {
             current_map = new Map(level)
         }
-        
+
     }
 
     enter_level(current_level);
@@ -1831,7 +1831,7 @@ window.onload = function () {
 
     function restart_whole_level() {
         //        current_map.destroy();
-        enter_level(current_level,true);
+        enter_level(current_level, true);
         hide_panel("level_setting")
         hide_panel("level_failed")
         current_map.reversing = false;
@@ -1865,7 +1865,7 @@ window.onload = function () {
                 if (current_level == (maps.length - 1)) {
                     show_panel("game_over")
                 } else {
-                    enter_level(++current_level,true);
+                    enter_level(++current_level, true);
                 }
 
             }, 550
@@ -1889,7 +1889,7 @@ window.onload = function () {
     btn_start_game.onclick = function () {
         hide_panel("game_cover")
     }
-    if (!dbg&&current_level==0) show_panel("game_cover")
+    if (!dbg && current_level == 0) show_panel("game_cover")
 
 
     console.log(jsfxr);
@@ -1907,10 +1907,54 @@ window.onload = function () {
 
     }
 
+    function IsPC() {
+        var userAgentInfo = navigator.userAgent;
+        var Agents = ["Android", "iPhone",
+                    "SymbianOS", "Windows Phone",
+                    "iPad", "iPod"
+                    ];
+        var flag = true;
+        for (var v = 0; v < Agents.length; v++) {
+            if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
 
+    function get_OS() {
+        var userAgentInfo = navigator.userAgent;
+        var Agents = ["Android", "iPhone",
+                    "SymbianOS", "Windows Phone",
+                    "iPad", "iPod"
+                    ];
+        for (var v in Agents) {
+            if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                return Agents[v];
+            }
+        }
+    }
+    var usr_os = get_OS();
+    var zoom_auto = function () {
+        var height = parseInt(document.documentElement.clientHeight);
+        var width = parseInt(document.documentElement.clientWidth);
+        var scale1 = width / 1020;
+        var scale2 = height / 620;
+        var scale = Math.min(scale1, scale2) * 100;
+        if (usr_os == "iPhone" || usr_os == "iPad" || usr_os == "iPod") {
+            scale = Math.max(100, scale)
+        }
+        body.style.zoom=scale + "%";
+    }
+    if(usr_os){
+       zoom_auto();
+    window.addEventListener("resize", zoom_auto, false);
+    }
+    
 
     function step() {
-        if (sys_play_state == "Pause" && !panel_showing&&!global_pause) {
+        if (sys_play_state == "Pause" && !panel_showing && !global_pause) {
 
             emy_order_cal = true;
             miao_objs.emy.sort(

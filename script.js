@@ -2,7 +2,7 @@ window.onload = function () {
 
 
     var testside = "ta"
-    var current_level = 6; 
+    var current_level = 0; 
     g = {};
     var dbg = (localStorage.getItem("dbg") == "true") ? true : false;
     if (dbg) {

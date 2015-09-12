@@ -13,6 +13,7 @@ window.onload = function () {
     dbg_btn.innerHTML = (!dbg) ? "dbg" : "stop dbg";
 
     function toggle_dbg() {
+        return;
         dbg = !dbg;
         localStorage.setItem("dbg", dbg ? "true" : "false");
         console.log("dbg=", dbg)

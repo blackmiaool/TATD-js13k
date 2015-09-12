@@ -71,8 +71,9 @@ window.onload = function () {
         tower: [],
         emy: []
     }
+    var global_spped_k=1;
     var global_speed = 1;
-
+    
 
     var just_a_grid;
     var towers_sound = [[1, , 0.1693, 0.111, 0.0106, 0.8855, 0.0802, -0.5639, , , , , , 0.0314, 0.1647, , , , 1, , , , , 0.5],
@@ -292,9 +293,9 @@ window.onload = function () {
     if(usr_os){
         var meta=doc.createElement("meta");
         meta.name="viewport";
+        global_spped_k=2;
         meta.content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no";
         $("head").appendChild(meta);
-        fps=24;
        zoom_auto();
     window.addEventListener("resize", zoom_auto, false);
     }
@@ -1782,7 +1783,7 @@ window.onload = function () {
     }
 
     function set_global_speed(times) {
-        global_speed = times;
+        global_speed = times*global_spped_k;
     }
 
     function set_speed_btn(btn, speed) {
